@@ -16,14 +16,6 @@ production:
   username: root
   password: 
 
-mongodb:
-  hostname: localhost
-  database: graylog2
-  port: 27017
-  authenticate: false
-  username:
-  password:
-        
 test:
   adapter: mysql2
   encoding: utf8
@@ -32,4 +24,3 @@ test:
   pool: 5
   username: root
   password:
-  
