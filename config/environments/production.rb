@@ -13,7 +13,9 @@ config.action_view.cache_template_loading            = true
 # config.log_level = :debug
 
 # Use a different logger for distributed setups
-# config.logger = SyslogLogger.new
+config.gem 'SyslogLogger', :lib => 'syslog_logger' 
+require 'syslog_logger' 
+config.logger = SyslogLogger.new ('graylog2-web-interface')
 
 # Use a different cache store in production
 # config.cache_store = :mem_cache_store

@@ -24,7 +24,6 @@ begin
     end
   end
 
-  
 rescue => e
   puts "ERROR: RRD: #{e.to_str}"
   puts e.backtrace
