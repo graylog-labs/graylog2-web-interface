@@ -1,14 +1,14 @@
 /* Messages */
 .messages-c-date {
-    width: 115px;
+  width: 115px;
 }
 
 .messages-c-severity {
-    width: 70px;
+  width: 70px;
 }
 
 #messages-favorited-streams {
-    float: right;
+  float: right;
 }
 
 #messages-favorited-streams select {
@@ -101,7 +101,7 @@
     font-family: 'Lucida Grande',Verdana,sans-serif;
 }
 
-#messages-show-message-full {
+.messages-show-message-full {
     font-size: 11px;
     font-family: monospace;
     line-height: 11px;
@@ -231,6 +231,10 @@
   float: right;
 }
 
+#hosts-new-hostgroup-link {
+  margin-bottom: 10px;
+}
+
 /* Statistics */
 #statistics {
     text-transform: uppercase;
@@ -268,8 +272,16 @@
     margin-left: 25px;
 }
 
-.users-form label {
-    font-size: 12px;
+#users-form label {
+    font-family: Georgia,"Times New Roman",Times,serif;
+}
+
+#users-form input {
+    font-family: Georgia,"Times New Roman",Times,serif;
+}
+
+#users-form dd {
+  padding-bottom: 5px;
 }
 
 #users-delete {

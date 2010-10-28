@@ -9,6 +9,7 @@ class Streamrule < ActiveRecord::Base
   TYPE_HOST = 2
   TYPE_SEVERITY = 3
   TYPE_FACILITY = 4
+  TYPE_TIMEFRAME = 5
 
   def self.get_types_for_select_options
     {
@@ -30,7 +31,7 @@ class Streamrule < ActiveRecord::Base
 
     conditions = Array.new
     terms.each do |term|
-      conditions << /#{Regexp.escape(term.value)}/
+      conditions << /#{Regexp.escape(term.value.strip)}/
     end
 
     return conditions
@@ -86,5 +87,5 @@ class Streamrule < ActiveRecord::Base
 
     return { "$in" => conditions }
   end
-
+  
 end

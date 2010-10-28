@@ -5,7 +5,7 @@ class MessagesController < ApplicationController
     else
       @messages = Message.all_by_quickfilter params[:filters], params[:page]
     end
-    @total_count =  Message.count
+    @total_count =  Message.count_since(0)
     @total_blacklisted_terms = BlacklistedTerm.count
 
     @favorites = FavoritedStream.find_all_by_user_id current_user.id
@@ -33,7 +33,7 @@ class MessagesController < ApplicationController
       conditions = Message.all_by_quickfilter(filters_with_symbols, 0, 0, true)
       throw "Missing conditions" if conditions.blank?
 
-      Message.delete_all(conditions)
+      Message.set(conditions, :deleted => true )
 
       flash[:notice] = "Messages have been deleted."
     rescue
@@ -48,7 +48,7 @@ class MessagesController < ApplicationController
       conditions = Message.all_of_stream params[:id].to_i, 0, true
       throw "Missing conditions" if conditions.blank?
 
-      Message.delete_all(conditions)
+      Message.set(conditions, :deleted => true )
 
       flash[:notice] = "Messages have been deleted."
     rescue

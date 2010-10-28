@@ -1,3 +1,5 @@
+<%= javascript_include_tag 'messageupdater' %>
+
 <div id="messages-show-quickfilter" <%= params[:filters].blank? ? nil : "class=\"messages-show-quickfilter-expanded\""  %>>
   Quickfilter
 </div>
@@ -53,5 +55,5 @@ messages in the last <%=h message_count_interval %> minutes.
 
 <br style="clear: both;" />
 
-<%= render :partial => "messages/table", :locals => { :messages => @messages, :inline_version => true } %>
+<%= render :partial => "messages/table", :locals => { :messages => @messages, :inline_version => true, :total_messages => @total_count } %>
 </div>
