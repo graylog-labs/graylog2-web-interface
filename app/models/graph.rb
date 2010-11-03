@@ -3,8 +3,8 @@ class Graph
 
   def self.get_title graph_type
     case graph_type
-      when self::GRAPH_TYPE_TOTAL
-          return "Total messages received"
+    when self::GRAPH_TYPE_TOTAL
+      return "Total messages received"
     end
 
     throw "Invalid graph type supplied"
