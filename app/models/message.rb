@@ -76,7 +76,7 @@ class Message
     return self.all :limit => limit, :order => "$natural DESC", :conditions => conditions, :offset => self.get_offset(page), :fields => { :full_message => 0 }
   end
 
-  def self.all_of_stream stream_id, page = 1, conditions_only = false
+  def self.all_of_stream stream_id, page = 1, conditions_only = false, newer_than = nil
     throw "Missing stream_id" if stream_id.blank?
     page = 1 if page.blank?
     conditions = Hash.new
@@ -106,6 +106,10 @@ class Message
 
      # Filter by severity.
     (by_severity = Streamrule.get_severity_condition_hash(stream_id)).blank? ? nil : conditions[:level] = by_severity;
+    
+    unless newer_than.nil?
+      conditions[:created_at] = { '$gt' => newer_than.to_i }
+    end
     
     conditions[:deleted] = false
 
