@@ -123,21 +123,12 @@ class Message
 
   def self.all_of_host host, page
     page = 1 if page.blank?
-<<<<<<< HEAD
     return self.all :limit => LIMIT, :order => "$natural DESC", :conditions => { :host => host, :deleted => false }, :offset => self.get_offset(page), :fields => { :full_message => 0 }
-=======
-    return self.all :limit => LIMIT, :order => "$natural DESC", :conditions => { :host => host, :deleted => [false, nil] }, :offset => self.get_offset(page), :fields => { :full_message => 0 }
->>>>>>> upstream/master
   end
   
   def self.all_of_hostgroup hostgroup, page
     page = 1 if page.blank?
-
-<<<<<<< HEAD
     return self.all :limit => LIMIT, :order => "$natural DESC", :conditions => { :host => { "$in" => hostgroup.get_hostnames }, :deleted => false }, :offset => self.get_offset(page), :fields => { :full_message => 0 }
-=======
-    return self.all :limit => LIMIT, :order => "$natural DESC", :conditions => { :host => { "$in" => hostgroup.get_hostnames }, :deleted => [false, nil] }, :offset => self.get_offset(page), :fields => { :full_message => 0 }
->>>>>>> upstream/master
   end
 
   def self.count_of_host host
