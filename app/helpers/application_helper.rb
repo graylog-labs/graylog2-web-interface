@@ -38,7 +38,8 @@ module ApplicationHelper
         ["local4 (20)", 20],
         ["local5 (21)", 21],
         ["local6 (22)", 22],
-        ["local7 (23)", 23]
+        ["local7 (23)", 23],
+        ["GELF (42)", 42],
       ]
   end
 
@@ -99,6 +100,7 @@ module ApplicationHelper
       when 21 then return "local5"
       when 22 then return "local6"
       when 23 then return "local7"
+      when 42 then return "GELF"
     end
 
     return "Unknown"

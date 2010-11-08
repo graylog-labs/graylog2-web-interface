@@ -59,8 +59,8 @@ class Message
       # Message
       filters[:message].blank? ? nil : conditions[:message] = /#{Regexp.escape(filters[:message].strip)}/
 
-      # Facility
-      filters[:facility].blank? ? nil : conditions[:facility] = filters[:facility].to_i
+      # Facility, GELF filter hack until we assign it an official facility! Hitchhiker's & rainbows. No RFC 3164 love here.
+      filters[:facility].blank? ? nil : conditions[:facility] = (filters[:facility].to_i == 42 ? nil : filters[:facility].to_i)
 
       # Severity
       filters[:severity].blank? ? nil : conditions[:level] = filters[:severity].to_i

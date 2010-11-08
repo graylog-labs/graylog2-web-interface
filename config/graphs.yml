@@ -1,11 +1,5 @@
-# osx
 development:
-  enable_graphs: true
-  rrdtool_binary_path: /usr/local/bin/rrdtool
-  rrd_storage_path: /tmp/rrd/
+  enable_graphs: false
 
-# ubuntu  
 production:
-  enable_graphs: true
-  rrdtool_binary_path: /usr/bin/rrdtool
-  rrd_storage_path: /var/lib/rrd
+  enable_graphs: false
