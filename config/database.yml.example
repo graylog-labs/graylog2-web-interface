@@ -4,8 +4,8 @@ development:
   reconnect: false
   database: graylog2_development
   pool: 5
-  username: root
-  password: 
+  username: graylog2
+  password: yourpass
 
 production:
   adapter: mysql2
@@ -15,12 +15,3 @@ production:
   pool: 5
   username: root
   password: 
-
-test:
-  adapter: mysql2
-  encoding: utf8
-  reconnect: false
-  database: graylog2_test
-  pool: 5
-  username: root
-  password:

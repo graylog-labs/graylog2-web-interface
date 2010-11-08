@@ -1,5 +1,0 @@
-development:
-  enable_graphs: false
-
-production:
-  enable_graphs: false

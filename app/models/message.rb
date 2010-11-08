@@ -16,131 +16,114 @@ class Message
   key :line, Integer
 
   LIMIT = 100
+  
+  scope :not_deleted, :deleted => [false, nil]
+  scope :by_blacklisted_terms, lambda { |terms|
+    where(:message.nin => terms.collect { |term| /#{Regexp.escape term}/})
+  }
+  scope :by_blacklist, lambda {|blacklist| by_blacklisted_terms(blacklist.all_terms)}
+  scope :page, lambda {|number| skip(self.get_offset(number))}
+  scope :default_scope, fields(:full_message => 0).order("$natural DESC").not_deleted.limit(LIMIT)
 
+  def self.get_conditions_from_date(timeframe)
+    conditions = {}
+    re = /^(from (.+)){0,1}?(to (.+))$/
+    re2 = /^(from (.+))$/
+    
+    if (matches = (re.match(timeframe) or re2.match(timeframe)))
+    
+      from = matches[2]
+      to = matches[4]
+      
+      conditions.merge!('$gt' => Chronic::parse(from).to_i) unless from.blank?
+      conditions.merge!('$lt' => Chronic::parse(to).to_i) unless to.blank?
+    end
+    
+    return conditions
+  end
+  
   def self.all_of_blacklist id, page = 1
     page = 1 if page.blank?
     
-    conditions = Hash.new
-
-    (blacklist = BlacklistedTerm.get_all_as_condition_hash(false, id)).blank? ? nil : conditions[:message] = blacklist;
-
-    conditions[:deleted] = false
-
-    return self.all :limit => LIMIT, :order => "$natural DESC", :conditions => conditions, :offset => self.get_offset(page), :fields => { :full_message => 0 }
+    b = Blacklist.find(id)
+    return by_blacklist(b).default_scope.page(page).all
   end
 
   def self.count_of_blacklist id
-    conditions = Hash.new
-
-    (blacklist = BlacklistedTerm.get_all_as_condition_hash(false, id)).blank? ? nil : conditions[:message] = blacklist;
-    conditions[:deleted] = false
-    
-    return self.count :conditions => conditions
+    b = Blacklist.find(id)
+    return by_blacklist(b).count
   end
 
   def self.all_with_blacklist page = 1, limit = LIMIT
     page = 1 if page.blank?
 
-    conditions = Hash.new
-
-    (blacklist = BlacklistedTerm.get_all_as_condition_hash).blank? ? nil : conditions[:message] = blacklist;
-    
-    conditions[:deleted] = false
-    
-    return self.all :limit => limit, :order => "$natural DESC", :conditions => conditions, :offset => self.get_offset(page), :fields => { :full_message => 0 }
+    terms = Blacklist.all_terms
+    by_blacklisted_terms(terms).default_scope.page(page)
   end
 
   def self.all_by_quickfilter filters, page = 1, limit = LIMIT, conditions_only = false
     page = 1 if page.blank?
 
-    conditions = Hash.new
+    conditions = self
 
     unless filters.blank?
       # Message
-      filters[:message].blank? ? nil : conditions[:message] = /#{Regexp.escape(filters[:message].strip)}/
+      conditions = conditions.where(:message => /#{Regexp.escape(filters[:message].strip)}/) unless filters[:message].blank?
 
-      # Facility, GELF filter hack until we assign it an official facility! Hitchhiker's & rainbows. No RFC 3164 love here.
-      filters[:facility].blank? ? nil : conditions[:facility] = (filters[:facility].to_i == 42 ? nil : filters[:facility].to_i)
+      # Time Frame
+      conditions = conditions.where(:created_at => get_conditions_from_date(filters[:date])) unless filters[:date].blank?
+      
+      # Facility
+      conditions = conditions.where(:facility => (filters[:facility].to_i == 42 ? nil : filters[:facility].to_i)) unless filters[:facility].blank?
 
       # Severity
-      filters[:severity].blank? ? nil : conditions[:level] = filters[:severity].to_i
+      conditions = conditions.where(:level => filters[:severity].to_i) unless filters[:severity].blank?
 
       # Host
-      filters[:host].blank? ? nil : conditions[:host] = filters[:host]
+      conditions = conditions.where(:host => filters[:host]) unless filters[:host].blank?
     end
-
-    conditions[:deleted] = false
-
-    return conditions if conditions_only
-
-    return self.all :limit => limit, :order => "$natural DESC", :conditions => conditions, :offset => self.get_offset(page), :fields => { :full_message => 0 }
+    
+    conditions.default_scope.limit(LIMIT).page(page)
   end
 
-  def self.all_of_stream stream_id, page = 1, conditions_only = false, newer_than = nil
-    throw "Missing stream_id" if stream_id.blank?
+  def self.by_stream(stream_id)
+    s = Stream.find(stream_id)
+    conditions = not_deleted
+    s.streamrules.each do |rule|
+      conditions = conditions.where(rule.to_condition)
+    end
+
+    conditions
+  end
+
+  def self.all_of_stream stream_id, page = 1, newer_than = nil
     page = 1 if page.blank?
-    conditions = Hash.new
 
-    # Filter by message.
-    by_message = Streamrule.get_message_condition_array stream_id
-    if by_message.blank?
-      # No messages to filter. Only add blacklist.
-      (blacklist = BlacklistedTerm.get_all_as_condition_hash).blank? ? nil : conditions[:message] = blacklist;
-    else
-      # There are messages to filter. Combine with blacklist.
-      blacklist = BlacklistedTerm.get_all_as_condition_hash true, nil, true
-      if blacklist.blank?
-        # Nothing on the blacklist. Just add message filter if exists.
-        by_message.blank? ? nil : conditions[:message] = { '$in' => by_message }
-      else
-        # Blacklist and message filter set. Combine both.
-        conditions[:message] = { '$nin' => blacklist, '$in' => by_message }
-      end
-    end
-
-    # Filter by host.
-    (by_host = Streamrule.get_host_condition_hash(stream_id)).blank? ? nil : conditions[:host] = by_host;
-
-    # Filter by facility.
-    (by_facility = Streamrule.get_facility_condition_hash(stream_id)).blank? ? nil : conditions[:facility] = by_facility;
-
-     # Filter by severity.
-    (by_severity = Streamrule.get_severity_condition_hash(stream_id)).blank? ? nil : conditions[:level] = by_severity;
-    
-    unless newer_than.nil?
-      conditions[:created_at] = { '$gt' => newer_than.to_i }
-    end
-    
-    conditions[:deleted] = false
-
-    # Return only conditions hash if requested.
-    return conditions if conditions_only === true
-
-    return self.all :limit => LIMIT, :order => "$natural DESC", :conditions => conditions, :offset => self.get_offset(page), :fields => { :full_message => 0 }
+    by_stream(stream_id).default_scope.page(page).all
   end
 
   def self.count_stream stream_id
-    conditions = self.all_of_stream stream_id, 0, true
-    conditions[:deleted] = false
-    return self.count :conditions => conditions
+    return by_stream(stream_id).count
   end
 
   def self.all_of_host host, page
     page = 1 if page.blank?
-    return self.all :limit => LIMIT, :order => "$natural DESC", :conditions => { :host => host, :deleted => false }, :offset => self.get_offset(page), :fields => { :full_message => 0 }
+
+    where(:host => host).default_scope.page(page)
   end
   
   def self.all_of_hostgroup hostgroup, page
     page = 1 if page.blank?
-    return self.all :limit => LIMIT, :order => "$natural DESC", :conditions => { :host => { "$in" => hostgroup.get_hostnames }, :deleted => false }, :offset => self.get_offset(page), :fields => { :full_message => 0 }
+
+    where(:host.in => hostgroup.get_hostnames).default_scope.page(page)
   end
 
   def self.count_of_host host
-    return self.count :conditions => { :host => host, :deleted => false }
+    where(:host => host).not_deleted.count
   end
 
   def self.count_of_hostgroup hostgroup
-    return self.count :conditions => { :host => { "$in" => hostgroup.get_hostnames }, :deleted => false }
+    where(:host.in => hostgroup.get_hostnames).not_deleted.count
   end
 
   def self.delete_all_of_host host
@@ -148,14 +131,10 @@ class Message
   end
 
   def self.count_since x
-    conditions = Hash.new
-
-    (blacklist = BlacklistedTerm.get_all_as_condition_hash).blank? ? nil : conditions[:message] = blacklist;
-
-    conditions[:created_at] = { '$gt' => (x).to_i }
-    conditions[:deleted] = false
-
-    return self.count :conditions => conditions
+    conditions = not_deleted.where(:created_at.gt => x.to_i)
+    conditions = conditions.by_blacklisted_terms(Blacklist.all_terms)
+    
+    conditions.count
   end
 
   def self.count_of_last_minutes x
