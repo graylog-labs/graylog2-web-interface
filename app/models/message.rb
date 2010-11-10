@@ -100,7 +100,7 @@ class Message
   def self.all_of_stream stream_id, page = 1, newer_than = nil
     page = 1 if page.blank?
 
-    by_stream(stream_id).default_scope.page(page).all
+    newer_than.nil? ? by_stream(stream_id).default_scope.page(page).all : by_stream(stream_id).order("$natural DESC").where(:created_at.gt => newer_than)
   end
 
   def self.count_stream stream_id
