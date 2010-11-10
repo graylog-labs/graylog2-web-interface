@@ -18,10 +18,16 @@ class Message
   LIMIT = 100
   
   scope :not_deleted, :deleted => [false, nil]
-  scope :by_blacklisted_terms, lambda { |terms|
-    where(:message.nin => terms.collect { |term| /#{Regexp.escape term}/})
+  scope :by_blacklisted_terms, lambda { |terms, modifier = 'nin'|
+    case modifier
+    when 'nin'
+      where(:message.nin => terms.collect { |term| /#{Regexp.escape term}/})
+    when 'in'
+      where(:message.in => terms.collect { |term| /#{Regexp.escape term}/})
+    end
   }
   scope :by_blacklist, lambda {|blacklist| by_blacklisted_terms(blacklist.all_terms)}
+  scope :by_blacklist_filtered, lambda {|blacklist| by_blacklisted_terms(blacklist.all_terms, 'in')}
   scope :page, lambda {|number| skip(self.get_offset(number))}
   scope :default_scope, fields(:full_message => 0).order("$natural DESC").not_deleted.limit(LIMIT)
 
@@ -46,7 +52,7 @@ class Message
     page = 1 if page.blank?
     
     b = Blacklist.find(id)
-    return by_blacklist(b).default_scope.page(page).all
+    return by_blacklist_filtered(b).default_scope.page(page).all
   end
 
   def self.count_of_blacklist id
