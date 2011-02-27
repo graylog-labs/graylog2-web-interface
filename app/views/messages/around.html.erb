@@ -21,7 +21,7 @@
   :inline_version => true,
   :total_messages => @total_count,
   :append_params => [{ :key => "message_id", :value => params[:message_id]} ]
-} %>
+} if @messages %>
 
 <script>
   $(function() {
