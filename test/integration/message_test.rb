@@ -11,9 +11,9 @@ class MessageTest < ActionDispatch::IntegrationTest
     page.execute_script "$('#loginform').submit();"
   end
 
-  test "viewing around messages" do
+  test "viewing messages" do
     visit messages_path
-save_and_open_page
+
     assert page.has_content? "Messages"
   end
 end
