@@ -14,7 +14,7 @@ gem 'bson', "~> 1.3.1"
 gem 'bson_ext', "~> 1.3.1", :platforms => :ruby
 gem 'home_run', '~> 1.0.2', :platforms => :ruby
 gem 'SystemTimer', '~> 1.2.3', :require => 'system_timer', :platforms => :ruby_18
-
+gem 'will_paginate', '~> 2.3.15'
 
 group :development, :test do
   # might be useful to generate fake data in development
