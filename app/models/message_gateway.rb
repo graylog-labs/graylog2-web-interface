@@ -53,8 +53,8 @@ class MessageGateway
     wrap search("host:#{hostname}", pagination_options(page).merge(@default_query_options))
   end
 
-  def self.retrieve_by_id(id)
-    wrap @index.retrieve(id)
+  def self.retrieve_by_id(type, id)
+    wrap @index.retrieve(type, id)
   end
 
   def self.dynamic_search(what, with_default_query_options = false)
@@ -181,8 +181,8 @@ class MessageGateway
     wrap(r)
   end
 
-  def self.delete_message(id)
-    result = Tire.index(INDEX_NAME).remove(id)
+  def self.delete_message(type, id)
+    result = Tire.index(INDEX_NAME).remove(type, id)
     Tire.index(INDEX_NAME).refresh
     return false if result.nil? or result["ok"] != true
 
