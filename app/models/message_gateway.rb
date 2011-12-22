@@ -25,10 +25,7 @@ class MessageGateway
     config_index.blank? ? INDEX_NAME = DEFAULT_INDEX_NAME : INDEX_NAME = config_index
   end
 
-  TYPE_NAME = "message"
-
   index_name(INDEX_NAME)
-  document_type(TYPE_NAME)
 
   @index = Tire.index(INDEX_NAME)
   @default_query_options = { :sort => "created_at desc" }
@@ -46,7 +43,7 @@ class MessageGateway
   end
 
   def self.retrieve_by_id(id)
-    wrap @index.retrieve(TYPE_NAME, id)
+    wrap @index.retrieve(id)
   end
 
   def self.dynamic_search(what, with_default_query_options = false)
@@ -79,6 +76,7 @@ class MessageGateway
   end
 
   def self.all_by_quickfilter(filters, page = 1, opts = {})
+    document_type(filters[:facility]) unless filters[:facility].blank?
     r = search pagination_options(page).merge(@default_query_options) do
       query do
         boolean do
@@ -173,7 +171,7 @@ class MessageGateway
   end
 
   def self.delete_message(id)
-    result = Tire.index(INDEX_NAME).remove(TYPE_NAME, id)
+    result = Tire.index(INDEX_NAME).remove(id)
     Tire.index(INDEX_NAME).refresh
     return false if result.nil? or result["ok"] != true
 
