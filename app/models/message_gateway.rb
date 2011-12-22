@@ -4,8 +4,7 @@ class UnsupportedResultType < StandardError; end
 #  - https://github.com/karmi/tire/issues/96
 module Tire::Model::Naming::ClassMethods
   def document_type(name=nil)
-    @document_type = name if name
-    @document_type || klass.model_name.singular
+    @document_type = name
   end
 end
 
