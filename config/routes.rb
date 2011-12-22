@@ -23,8 +23,6 @@ Graylog2WebInterface::Application.routes.draw do
       post :show
     end
   end
-  match '/messages/show/:id/:type', :to => "messages#show"
-  match '/messages/delete/:id/:type', :to => "messages#destroy"
 
   resources :blacklists do
     resources :blacklistedterms, :as => "terms"

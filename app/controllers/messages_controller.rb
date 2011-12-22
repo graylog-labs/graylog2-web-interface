@@ -81,7 +81,8 @@ class MessagesController < ApplicationController
     @has_sidebar = true
     @load_flot = true
 
-    @message = MessageGateway.retrieve_by_id(params[:type], params[:id])
+    type, id = params[:id].split("|")
+    @message = MessageGateway.retrieve_by_id(type, id)
     @terms = MessageGateway.analyze(@message.message)
 
     unless @message.accessable_for_user?(current_user)
@@ -99,7 +100,8 @@ class MessagesController < ApplicationController
   def destroy
     render :status => :forbidden, :text => "forbidden" and return if !::Configuration.allow_deleting
 
-    if MessageGateway.delete_message(params[:type], params[:id])
+    type, id = params[:id].split("|")
+    if MessageGateway.delete_message(type, id)
       flash[:notice] = "Message has been deleted."
     else
       flash[:error] = "Could not delete message."
