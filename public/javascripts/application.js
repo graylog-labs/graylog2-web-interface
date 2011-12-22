@@ -305,7 +305,7 @@ function bindMessageSidebarClicks() {
   $(".message-row").bind("click", function() {
     $("#gln").show();
 
-    $.post( relative_url_root + "/messages/" + $(this).attr("id") + $(this).attry("type") + "/" + "?partial=true", function(data) {
+    $.post( relative_url_root + "/messages/" + $(this).attr("id") + "/" + "?partial=true", function(data) {
       $("#sidebar-inner").html(data);
 
       // Show sidebar if hidden.
