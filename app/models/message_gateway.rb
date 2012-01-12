@@ -4,8 +4,7 @@ class UnsupportedResultType < StandardError; end
 #  - https://github.com/karmi/tire/issues/96
 module Tire::Model::Naming::ClassMethods
   def document_type(name=nil)
-    @document_type = name if name
-    @document_type || klass.model_name.singular
+    @document_type = name
   end
 end
 
@@ -36,10 +35,7 @@ class MessageGateway
     config_index.blank? ? INDEX_NAME = DEFAULT_INDEX_NAME : INDEX_NAME = config_index
   end
 
-  TYPE_NAME = "message"
-
   index_name(INDEX_NAME)
-  document_type(TYPE_NAME)
 
   @index = Tire.index(INDEX_NAME)
   @default_query_options = { :sort => "created_at desc" }
@@ -56,8 +52,8 @@ class MessageGateway
     wrap search("host:#{hostname}", pagination_options(page).merge(@default_query_options))
   end
 
-  def self.retrieve_by_id(id)
-    wrap @index.retrieve(TYPE_NAME, id)
+  def self.retrieve_by_id(type, id)
+    wrap @index.retrieve(type, id)
   end
 
   def self.dynamic_search(what, with_default_query_options = false)
@@ -90,6 +86,7 @@ class MessageGateway
   end
 
   def self.all_by_quickfilter(filters, page = 1, opts = {})
+    document_type(filters[:facility]) unless filters[:facility].blank?
     r = search pagination_options(page).merge(@default_query_options) do
       query do
         boolean do
@@ -189,8 +186,8 @@ class MessageGateway
     wrap(r)
   end
 
-  def self.delete_message(id)
-    result = Tire.index(INDEX_NAME).remove(TYPE_NAME, id)
+  def self.delete_message(type, id)
+    result = Tire.index(INDEX_NAME).remove(type, id)
     Tire.index(INDEX_NAME).refresh
     return false if result.nil? or result["ok"] != true
 
