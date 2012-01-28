@@ -20,6 +20,14 @@ class BlacklistsController < ApplicationController
     redirect_to :action => "index"
   end
 
+  def toggledisabled
+    @blacklist = Blacklist.find_by_id params[:id]
+    @blacklist.disabled = false if @blacklist.disabled.blank?
+    @blacklist.disabled = !@blacklist.disabled
+    @blacklist.save
+    redirect_to blacklists_path # (@blacklist)
+  end
+
   def destroy
     begin
       blacklist = Blacklist.find(BSON::ObjectId(params[:id]))

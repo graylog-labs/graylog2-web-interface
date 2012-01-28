@@ -3,9 +3,14 @@ class Blacklist
 
   embeds_many :blacklisted_terms
 
-  field :title, :type => String
+  field :title,    :type => String
+  field :disabled, :type => Boolean, :default => false
 
   validates_presence_of :title
+
+  def title_possibly_disabled
+    disabled ? title + " (disabled)" : title if title
+  end
 
   def self.find_by_id(_id)
     first(:conditions => {:_id => BSON::ObjectId(_id)})

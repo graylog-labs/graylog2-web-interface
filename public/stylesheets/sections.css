@@ -105,8 +105,13 @@
 
 /* Blacklist */
 #blacklists li {
-  margin-left: 15px;
+	border-left: 2px solid #111;
+  padding-left: 10px;
+  margin-left:   5px;
   margin-bottom: 4px;
+}
+#blacklists li .blacklist-terms li {
+	border-left: 1px solid #ccc;
 }
 
 #blacklist-terms li {
