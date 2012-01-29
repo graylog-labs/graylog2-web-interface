@@ -27,6 +27,9 @@ end
 group :development do
   # gem 'ruby-prof', '~> 0.10.5'  # works nice with NewRelic RPM Developer Mode
   # gem 'passenger', '~> 3.0.9'
+end
+
+group :production do
   gem 'unicorn'
 end
 
