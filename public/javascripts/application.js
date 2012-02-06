@@ -21,4 +21,20 @@ $(document).ready(function(){
   });
   // // //
 
+  // SPARKLINES //
+  $(".el-e-sparkline").sparkline(
+    "html",
+    {
+      type: "line",
+      width: "70px",
+      height: "23px",
+      lineColor: "#fd0c99",
+      fillColor: "#fdd",
+      spotColor: false,
+      minSpotColor: false,
+      maxSpotColor: false
+    }
+  );
+  // // //
+    
 });

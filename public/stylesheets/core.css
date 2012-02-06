@@ -44,3 +44,12 @@ td {
 .messages-full-message-details a {
   color: #000;
 }
+
+.tickLabel {
+  color: #555 !important;
+  font-size: 10px;
+}
+
+#sidebar-graph {
+  margin-top: 10px;
+}

@@ -99,11 +99,10 @@ module ApplicationHelper
     end
 
    r = "<script type='text/javascript'>
-      $(document).ready(function(){
       function plot#{uid}(data){
         $.plot($('#{options[:inject]}'),
           [ {
-              color: '#fd0c99',
+              color: '#333',
               shadowSize: 10,
               data: data,
               points: { show: false, },
@@ -135,11 +134,9 @@ module ApplicationHelper
     r += "
       $.post('#{url}', function(data) {
         json = eval('(' + data + ')');
-  alert('wat');
-        //plot#{uid}(json.data);
+        plot#{uid}(json.data);
       });
     
-    });
     </script>"
 
     return r
