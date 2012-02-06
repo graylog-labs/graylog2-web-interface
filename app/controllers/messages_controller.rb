@@ -91,7 +91,7 @@ class MessagesController < ApplicationController
     @comments = Messagecomment.all_matched(@message)
 
     if params[:partial]
-      render :partial => "full_message"
+      render :partial => "full_message_modal"
       return
     end
   end

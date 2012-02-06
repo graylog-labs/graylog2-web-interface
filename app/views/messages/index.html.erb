@@ -2,15 +2,11 @@
   <%= render :partial => partial_for(:sidebar, @scoping, params[:action]) %>
 <% end %>
 
-<%= render :partial => partial_for(:quickfilter_button) %>
+<%= render :partial => partial_for(:message_table_header, @scoping)%>
 
-<div id="messages-content">
-  <%= render :partial => partial_for(:message_table_header, @scoping)%>
+<%= render :partial => "quickfilter"%>
 
-  <%= render :partial => "quickfilter"%>
-
-  <br />
-  <%= render :partial => "messages/table", :locals => { :messages => @messages,
-                                                        :total_messages => (@quickfilter_result_count.blank? ? @total_count : @quickfilter_result_count), 
-                                                        :additional_columns => @stream ? @stream.additional_columns : Setting.get_additional_columns(current_user) } %>
-</div>
+<br />
+<%= render :partial => "messages/table", :locals => { :messages => @messages,
+                                                      :total_messages => (@quickfilter_result_count.blank? ? @total_count : @quickfilter_result_count), 
+                                                      :additional_columns => @stream ? @stream.additional_columns : Setting.get_additional_columns(current_user) } %>

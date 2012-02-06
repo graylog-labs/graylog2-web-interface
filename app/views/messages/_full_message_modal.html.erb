@@ -1,0 +1,59 @@
+<div class="modal-header">
+  <a class="close" data-dismiss="modal">x</a>
+  <h3>Message <span class="highlighted"><%= @message.id %></span></h3>
+</div>
+
+<div class="modal-body">
+  <h4><%= @message.message %></h4>
+
+  <ul class="messages-full-message-details">
+    <li><span>From:</span> <%= link_to(@message.host, host_messages_path(@message.host)) %></li>
+    <li><span>Date:</span> <%= Time.at(@message.created_at) %></li>
+    <li><span>Severity:</span> <%= syslog_level_to_human(@message.level) %>
+    <li><span>Facility:</span> <%= @message.facility %></li>
+
+    <% if @message.file_and_line.present? %>
+      <li>File: <%= @message.file_and_line %></li>
+    <% end %>
+
+    <% if @message.additional_fields? %>
+      <% @message.additional_fields.each_pair do |key, value| %>
+        <li>
+          <span><%= key %>:</span>
+          <%= link_to format_additional_field_value(key, value), {
+                :controller => :messages,
+                "filters[additional][keys][]" => key,
+                "filters[additional][values][]" => value
+              },
+              :title => "Search for value of this additional field"
+          %>
+        </li>
+    <% end %>
+  <% end %>
+  </ul>
+<!--
+  <% unless @message.full_message.blank? %>
+    <% escaped_fullmsg = h(@message.full_message) %>
+    Full message: <%= raw(auto_link(escaped_fullmsg.gsub(/\n/, '<br />'), :html => { :target => "blank" }, :link => :urls)) %>
+  <% end %>
+
+  <% unless @message.streams.blank? %>
+    Filed in following streams:
+    <ul id="message-referenced-streams">
+    <% @message.referenced_streams.each do |stream| %>
+      <% next if !stream.accessable_for_user?(current_user) %>
+      <li><%= link_to stream.title, stream_path(stream) %></li>
+    <% end %>
+    </ul>
+  <% end %>
+
+-->
+</div>
+
+<div class="modal-footer">
+  <a href="#" class="btn btn-primary" data-dismiss="modal">Close</a>
+  <% if !current_user.reader? and ::Configuration.allow_deleting %>
+    <%= link_to "Delete message", message_path(@message), :method => :delete, :confirm => "Really delete message?", :class => "btn btn-danger" %>
+  <% end %>
+  <a href="#" class="btn">Permalink</a>
+</div>

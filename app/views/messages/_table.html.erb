@@ -23,20 +23,20 @@ additional_columns ||= []
   });
 </script>
 
-<table class="messages<%= defined?(@inline_version) ? " messages-inline" : nil %>">
+<table class="table table-condensed table-striped messages-table<%= defined?(@inline_version) ? " messages-table-inline" : nil %>">
   <thead>
     <tr>
-      <th class="messages-c-date">Date</th>
-      <th class="messages-c-host">Host</th>
-      <th class="messages-c-severity">Sev.</th>
-      <th class="messages-c-facility">Facility</th>
+      <th class="messages-table-date">Date</th>
+      <th>Host</th>
+      <th>Sev.</th>
+      <th>Facility</th>
       <% additional_columns.each do |col| %>
       <th><%= col %></th>
       <% end %>
       <th>Message</th>
-      <th class="messages-c-tools">
+      <th class="messages-table-tools">
         <% unless defined?(@inline_version) %>
-          <%= image_tag "icons/sun.png", :class => "messages-from-today-link", :title => "Highlight messages from today" %>
+          <i class="icon-time"></i>
         <% end %>
       </th>
     </tr>
@@ -44,8 +44,8 @@ additional_columns ||= []
   <tbody>
     <% i = 0 %>
     <% @messages.each do |message|  %>
-      <tr id="<%= message.id %>"
-          class="<%= i.modulo(2) == 1 ? "tr-light" : "tr-dark" %> message-row udate-<%= message.uniform_date_string %> <%= "highlighted" if message.id.to_s == params[:message_id] %>">
+      <tr data-message-id="<%= message.id %>"
+          class="message-row udate-<%= message.uniform_date_string %> <%= "highlighted" if message.id.to_s == params[:message_id] %>">
         <td><%= time_to_formatted_s(Time.at(message.created_at)) %></td>
         <td style="white-space: nowrap;"><%= message.host.blank? ? nil : h(message.host) %></td>
         <td><%= syslog_level_to_human(message.level) %></td>
@@ -64,16 +64,15 @@ additional_columns ||= []
 </table>
 
 <% unless defined? inline_version %>
-<div id="messages-bottom">
   <% append_params = Array.new if !defined?(append_params) or append_params.blank? %>
-  <% unless current_page <= 1 %>
-    <%= link_to "previous page", params.merge(:page => previous_page), :class => "previous-page" %>
-  <% end %>
 
-  <% if total_messages > (Message::LIMIT*current_page) %>
-    <%= link_to "next page", params.merge(:page => next_page), :class => "next-page" %>
-  <% end %>
-</div>
+  <ul class="pager">
+    <% unless current_page <= 1 %>
+      <li class="previous"><%= link_to "previous page", params.merge(:page => previous_page), :class => "previous-page" %></li>
+    <% end %>
 
-<br style="clear: both;" />
+    <% if total_messages > (Message::LIMIT*current_page) %>
+     <li class="next"><%= link_to "next page", params.merge(:page => next_page), :class => "next-page" %></li>
+    <% end %>
+  </ul>
 <% end %>
