@@ -13,7 +13,7 @@ module ApplicationHelper
       current = where[1..-1]
     end
 
-    "<li class=\"#{"topmenu-active" if is_current_menu_item?(current)}\">#{link_to(title, "/#{current}")}</li>"
+    "<li class=\"#{"active" if is_current_menu_item?(current)}\">#{link_to(title, "/#{current}")}</li>"
   end
 
   def tab_link tab
@@ -99,6 +99,7 @@ module ApplicationHelper
     end
 
    r = "<script type='text/javascript'>
+      $(document).ready(function(){
       function plot#{uid}(data){
         $.plot($('#{options[:inject]}'),
           [ {
@@ -131,10 +132,14 @@ module ApplicationHelper
       });"
     end
 
-    r += "$.post('#{url}', function(data) {
+    r += "
+      $.post('#{url}', function(data) {
         json = eval('(' + data + ')');
-          plot#{uid}(json.data);
-        });
+  alert('wat');
+        //plot#{uid}(json.data);
+      });
+    
+    });
     </script>"
 
     return r
