@@ -19,7 +19,7 @@ class VisualsController < ApplicationController
 
     r["time"] = sprintf("%#.2f", time*1000);
 
-    render :js => r.to_json
+    render :text => r.to_json
   end
 
   private
