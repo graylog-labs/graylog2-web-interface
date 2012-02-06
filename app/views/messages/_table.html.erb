@@ -20,7 +20,24 @@ additional_columns ||= []
         $(this).addClass("active");
       }
     })
+
+    $('div#messages-bottom > form').bind('submit', function(ev){
+        var pageNumber = this.querySelector('input#go-to-page').value;
+        var newUrl = window.location.href.replace(/page\s*=\d*/, 'page='+pageNumber);
+
+        if (newUrl==window.location.href){
+            if (window.location.href.indexOf('?') < 0){
+                newUrl = window.location.href + '?page='+pageNumber;
+            } else{
+                newUrl = window.location.href += '&page='+pageNumber;
+            }
+        }
+        window.location = newUrl;
+        return false;
+    });
+    
   });
+
 </script>
 
 <table class="messages<%= defined?(@inline_version) ? " messages-inline" : nil %>">
@@ -64,15 +81,26 @@ additional_columns ||= []
 </table>
 
 <% unless defined? inline_version %>
-<div id="messages-bottom">
-  <% append_params = Array.new if !defined?(append_params) or append_params.blank? %>
-  <% unless current_page <= 1 %>
-    <%= link_to "previous page", params.merge(:page => previous_page), :class => "previous-page" %>
+  <div id="messages-bottom">
+  <form>
+    <input type="hidden" value="">
+
+    <% append_params = Array.new if !defined?(append_params) or append_params.blank? %>
+    <% unless current_page <= 1 %>
+      <%= link_to "previous page", params.merge(:page => previous_page), :class => "previous-page" %>
   <% end %>
 
-  <% if total_messages > (Message::LIMIT*current_page) %>
-    <%= link_to "next page", params.merge(:page => next_page), :class => "next-page" %>
+    <% if total_messages > (Message::LIMIT*current_page) %>
+      <%= link_to "next page", params.merge(:page => next_page), :class => "next-page" %>
   <% end %>
+
+    <div style="text-align: center">
+      Page 
+      <input type="text" value="<%= current_page %>" size="5" id="go-to-page">
+      of <%= Integer(messages.total_result_count / Message::LIMIT)+1 %>
+    </div>
+
+  </form>
 </div>
 
 <br style="clear: both;" />
