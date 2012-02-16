@@ -1,6 +1,6 @@
 body {
   position: relative;
-  padding-top: 60px;
+  padding-top: 53px;
   background-color: #fff;
 }
 
@@ -52,4 +52,29 @@ td {
 
 #sidebar-graph {
   margin-top: 10px;
+}
+
+.messages-table {
+  margin-top: 8px;
+}
+
+#quickfilter {
+  margin-top: 8px;
+}
+
+.qf-additional-field-key {
+  width: 100px;
+  float: left;
+  text-align: right;
+  margin-left: 35px;
+}
+
+#qf-fields {
+  padding-top: 18px;
+}
+
+/** bootstrap overwrites **/
+.alert {
+  margin-bottom: 10px !important;
+  margin-top: 5px !important;
 }
