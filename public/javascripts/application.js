@@ -36,5 +36,26 @@ $(document).ready(function(){
     }
   );
   // // //
-    
+
+  // SHOW QUICKFILTER
+  $("#show-quickfilter").on("click", function() {
+    btn = $(this);
+    highlight_class = "btn-info";
+    $("#quickfilter").toggle("fast", function() {
+      if (btn.hasClass(highlight_class)) {
+        btn.removeClass(highlight_class);
+      } else {
+        btn.addClass(highlight_class);
+      }
+    });
+  });
+
+  // ADD ADDITIONAL FIELD TO QUICKFILTER
+  $("#qf-add-additional-field").on("click", function() {
+    field  = "<div class='control-group'><input name='filters[additional][keys][]' type='text' class='input-xlarge qf-additional-field-key' />"
+    field += "<div class='controls'><input name='filters[additional][values][]' type='text' class='input-xlarge' /></div></div>";
+
+    $("#qf-fields").append(field)
+  });
+
 });

@@ -211,7 +211,7 @@ module ApplicationHelper
   end
 
   def tooltip(to)
-    link_to(image_tag("icons/tooltip.png"), "https://github.com/Graylog2/graylog2-web-interface/wiki/" + to, :class => "tooltip", :target => "_blank", :title => "Help page in the wiki")
+    "<a href=\"https://github.com/Graylog2/graylog2-web-interface/wiki/" + to + "\" target=\"_blank\"><i class='icon-question-sign'></i></a>"
   end
 
   def array_for_flot_with_timeseries(values)

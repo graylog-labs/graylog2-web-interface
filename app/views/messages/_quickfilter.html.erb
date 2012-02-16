@@ -1,45 +1,79 @@
-<div id="messages-quickfilter" <%= params[:filters].blank? ? raw("style='display: none;'") : nil %>>
-  <%= form_tag((@stream ? stream_messages_path(@stream) : messages_path), :method => "GET") do -%>
-  <dl id="messages-quickfilter-fields">
-    <dt><%= label_tag "filters[:message]", "Message:" %></dt>
-    <dd><%= text_field_tag "filters[message]", params[:filters].blank? ? nil : params[:filters][:message] %> <%=raw tooltip("Message-search-syntax") %></dd>
+<div id="quickfilter" class="form-horizontal" <%= params[:filters].blank? ? raw("style='display: none;'") : nil %>>
+  <%= form_tag((@stream ? stream_messages_path(@stream) : messages_path), :method => "GET", :id => "quickfilter-form") do -%>
+    <fieldset>
+      <legend>Quickfilter</legend>
+      
+      <div id="qf-fields">
+      <div class="control-group">
+        <label class="control-label" for="filters[message]">Message</label>
+        <div class="controls">
+          <%= text_field_tag "filters[message]", params[:filters].blank? ? nil : params[:filters][:message], :class => "input-xlarge" %>
+          <%=raw tooltip("Message-search-syntax") %>
+        </div>
+      </div>
+      
+      <div class="control-group">
+        <label class="control-label" for="filters[date]">Time frame</label>
+        <div class="controls">
+          <%= text_field_tag "filters[date]", params[:filters].blank? ? nil : params[:filters][:date], :class => "input-xlarge" %>
+          <%=raw tooltip("Timeframe-Filters") %>
+        </div>
+      </div>
+      
+      <div class="control-group">
+        <label class="control-label" for="filters[facility]">Facility</label>
+        <div class="controls">
+          <%= text_field_tag "filters[facility]", params[:filters].blank? ? nil : params[:filters][:facility], :class => "input-xlarge" %>
+        </div>
+      </div>
+      
+      <div class="control-group">
+        <label class="control-label" for="filters[file]">Filename</label>
+        <div class="controls">
+          <%= text_field_tag "filters[file]", params[:filters].blank? ? nil : params[:filters][:file], :class => "input-xlarge" %>
+        </div>
+      </div>
+      
+      <div class="control-group">
+        <label class="control-label" for="filters[line]">Line number</label>
+        <div class="controls">
+          <%= text_field_tag "filters[line]", params[:filters].blank? ? nil : params[:filters][:line], :class => "input-xlarge" %>
+        </div>
+      </div>
 
-    <dt><%= label_tag "filters[date]", "Timeframe:" %></dt>
-    <dd><%= text_field_tag "filters[date]", params[:filters].blank? ? nil : params[:filters][:date] %> <%=raw tooltip("Timeframe-Filters") %></dd>
-
-    <dt><%= label_tag "filters[facility]", "Facility:" %></dt>
-    <dd><%= text_field_tag "filters[facility]", params[:filters].blank? ? nil : params[:filters][:facility] %></dd>
-
-    <dt><%= label_tag "filters[file]", "File:" %></dt>
-    <dd><%= text_field_tag "filters[file]", params[:filters].blank? ? nil : params[:filters][:file] %></dd>
-
-    <dt><%= label_tag "filters[line]", "Line number:" %></dt>
-    <dd><%= text_field_tag "filters[line]", params[:filters].blank? ? nil : params[:filters][:line] %></dd>
-
-    <dt><%= label_tag "filters[severity]", "Severity:" %></dt>
-    <dd>
-      <%= select_tag "filters[severity]", raw("<option></option>" + options_for_select(get_ordered_severities_for_select, :selected => get_quickfilter_selected(params[:filters], :severity))) %>
-      <%= check_box_tag "filters[severity_above]", true, get_quickfilter_selected(params[:filters], :severity_above), :style => "width: 15px;" || false %>
-      <label for="filters_severity_above">or higher</label>
-    </dd>
-
-    <% if @host.blank? %>
-    <dt><%= label_tag "filters[host]", "Host:" %></dt>
-    <dd>
-      <%= select_tag "filters[host]", raw("<option></option>" + options_for_select(Host.all.collect {|host| [ h(host.host) ]}.sort, :selected => get_quickfilter_selected(params[:filters], :host, :bson_id))) %>
-    </dd>
-    <% end %>
-
-    <% unless @additional_filters.blank? %>
-      <% @additional_filters.each do |k,v| %>
-        <dt><%= text_field_tag "filters[additional][keys][]", (k.to_s.at(0) == '_' ? k.to_s[1..k.to_s.length] : k.to_s), :class => "messages-quickfilter-additional-key" %></dt>
-        <dd><%= text_field_tag "filters[additional][values][]", v, :class => "messages-quickfilter-additional-value" %></dd>
+      <div class="control-group">
+        <label class="control-label" for="filters[severity]">Severity</label>
+        <div class="controls">
+          <%= select_tag "filters[severity]", raw("<option></option>" + options_for_select(get_ordered_severities_for_select, :selected => get_quickfilter_selected(params[:filters], :severity))) %>
+          <%= check_box_tag "filters[severity_above]", true, get_quickfilter_selected(params[:filters], :severity_above) %>
+          or higher
+        </div>
+      </div>
+     
+      <% if @host.blank? %>
+        <div class="control-group">
+          <label class="control-label" for="filters[host]">Host</label>
+          <div class="controls">
+            <%= select_tag "filters[host]", raw("<option></option>" + options_for_select(Host.all.collect {|host| [ h(host.host) ]}.sort, :selected => get_quickfilter_selected(params[:filters], :host, :bson_id))) %>
+          </div>
+        </div>
       <% end %>
-    <% end %>
 
-  </dl>
+      <% unless @additional_filters.blank? %>
+        <% @additional_filters.each do |k,v| %>
+          <%= text_field_tag "filters[additional][keys][]", (k.to_s.at(0) == '_' ? k.to_s[1..k.to_s.length] : k.to_s), :class => "input-xlarge qf-additional-field-key" %>
+          <div class="controls">
+            <%= text_field_tag "filters[additional][values][]", v, :class => "input-xlarge" %>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
 
-  <br />
+    <div class="form-actions">
+      <button type="button" id="qf-add-additional-field" class="btn">Add additional field</button>
+      <button type="submit" class="btn btn-primary">Run filter</button>
+    </div>
+  </fieldset>
 
   <% if !@stream.blank? %>
     <%= hidden_field_tag "stream_id", @stream.id %>
@@ -47,9 +81,6 @@
   <% if !@host.blank? %>
     <%= hidden_field_tag "host_id", @host.host %>
   <% end %>
-
-  <%= awesome_link "Add additional field", "#", :id => "messages-quickfilter-add-additional" %>
-  <%= awesome_submit_link "Run filter" %>
 <% end -%>
 
 <% unless @quickfilter_result_count.blank? %>

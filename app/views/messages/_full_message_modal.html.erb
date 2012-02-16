@@ -31,12 +31,12 @@
     <% end %>
   <% end %>
   </ul>
-<!--
   <% unless @message.full_message.blank? %>
     <% escaped_fullmsg = h(@message.full_message) %>
     Full message: <%= raw(auto_link(escaped_fullmsg.gsub(/\n/, '<br />'), :html => { :target => "blank" }, :link => :urls)) %>
   <% end %>
 
+<!--
   <% unless @message.streams.blank? %>
     Filed in following streams:
     <ul id="message-referenced-streams">
