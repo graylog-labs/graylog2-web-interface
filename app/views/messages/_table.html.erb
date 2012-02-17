@@ -35,12 +35,18 @@ additional_columns ||= []
         window.location = newUrl;
         return false;
     });
-    
+
   });
 
 </script>
 
+<div id="messages-container">
+
 <table class="messages<%= defined?(@inline_version) ? " messages-inline" : nil %>">
+  <caption>
+    Page <%= current_page %>
+      of <%= Integer(messages.total_result_count / Message::LIMIT)+1 %>
+  </caption>
   <thead>
     <tr>
       <th class="messages-c-date">Date</th>
@@ -65,7 +71,7 @@ additional_columns ||= []
           class="<%= i.modulo(2) == 1 ? "tr-light" : "tr-dark" %> message-row udate-<%= message.uniform_date_string %> <%= "highlighted" if message.id.to_s == params[:message_id] %>">
         <td><%= time_to_formatted_s(Time.at(message.created_at)) %></td>
         <td style="white-space: nowrap;"><%= message.host.blank? ? nil : h(message.host) %></td>
-        <td><%= syslog_level_to_human(message.level) %></td>
+        <td><img src="/images/icons/log_severity/<%= syslog_level_to_icons(message.level) %>" alt="<%= syslog_level_to_human(message.level) %>" title="<%= syslog_level_to_human(message.level) %>"></td>
         <td><%= message.facility %></td>
         <% additional_columns.each do |col| %>
           <td><%= message.additional_fields[col].blank? ? "-" : message.additional_fields[col] %></td>
@@ -105,3 +111,5 @@ additional_columns ||= []
 
 <br style="clear: both;" />
 <% end %>
+
+</div>
