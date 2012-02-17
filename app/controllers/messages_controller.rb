@@ -72,6 +72,8 @@ class MessagesController < ApplicationController
     @load_flot = true
     @use_backtotop = true
 
+    @show_severity_as = ::Configuration.nested_general_config :ui, :show_severity_as, :text
+
     if ::Configuration.allow_version_check
       @last_version_check = current_user.last_version_check
     end

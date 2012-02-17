@@ -37,3 +37,84 @@
   height: 200px;
   margin-top: 20px;
 }
+
+.message-severity-background-0 {
+    background-color: #FF6659;
+}
+.message-severity-background-1 {
+    background-color: #FF8A80;
+}
+.message-severity-background-2 {
+    background-color: #FFADA6;
+}
+.message-severity-background-3 {
+    background-color: #FFD0CC;
+}
+.message-severity-background-4 {
+    background-color: #FFE1A6;
+}
+.message-severity-background-5 {
+    background-color: #FFEECC;
+}
+.message-severity-background-6 {
+    background-color: #FFF;
+}
+.message-severity-background-7 {
+    background-color: #DDD;
+}
+
+.message-severity-icon-0 {
+    background-image: url('/images/icons/log_severity/emergency.png');
+    background-repeat: no-repeat;
+    background-position: center 2px;
+    text-indent: -9000px;
+}
+
+.message-severity-icon-1 {
+    background-image: url('/images/icons/log_severity/alert.png');
+    background-repeat: no-repeat;
+    background-position: center 2px;
+    text-indent: -9000px;
+}
+
+.message-severity-icon-2 {
+    background-image: url('/images/icons/log_severity/critical.png');
+    background-repeat: no-repeat;
+    background-position: center 2px;
+    text-indent: -9000px;
+}
+
+.message-severity-icon-3 {
+    background-image: url('/images/icons/log_severity/error.png');
+    background-repeat: no-repeat;
+    background-position: center 2px;
+    text-indent: -9000px;
+}
+
+.message-severity-icon-4 {
+    background-image: url('/images/icons/log_severity/warning.png');
+    background-repeat: no-repeat;
+    background-position: center 2px;
+    text-indent: -9000px;
+}
+
+.message-severity-icon-5 {
+    background-image: url('/images/icons/log_severity/notice.png');
+    background-repeat: no-repeat;
+    background-position: center 2px;
+    text-indent: -9000px;
+}
+
+.message-severity-icon-6 {
+    background-image: url('/images/icons/log_severity/info.png');
+    background-repeat: no-repeat;
+    background-position: center 2px;
+    text-indent: -9000px;
+}
+
+.message-severity-icon-7 {
+    background-image: url('/images/icons/log_severity/debug.png');
+    background-repeat: no-repeat;
+    background-position: center 2px;
+    text-indent: -9000px;
+}
