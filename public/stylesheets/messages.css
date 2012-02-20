@@ -38,28 +38,28 @@
   margin-top: 20px;
 }
 
-.message-severity-background-0 {
+tr.message-severity-background-0 {
     background-color: #FF6659;
 }
-.message-severity-background-1 {
+tr.message-severity-background-1 {
     background-color: #FF8A80;
 }
-.message-severity-background-2 {
+tr.message-severity-background-2 {
     background-color: #FFADA6;
 }
-.message-severity-background-3 {
+tr.message-severity-background-3 {
     background-color: #FFD0CC;
 }
-.message-severity-background-4 {
+tr.message-severity-background-4 {
     background-color: #FFE1A6;
 }
-.message-severity-background-5 {
+tr.message-severity-background-5 {
     background-color: #FFEECC;
 }
-.message-severity-background-6 {
+tr.message-severity-background-6 {
     background-color: #FFF;
 }
-.message-severity-background-7 {
+tr.message-severity-background-7 {
     background-color: #DDD;
 }
 
