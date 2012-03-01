@@ -19,8 +19,12 @@
 <% else %>
 <% @blacklists.each do |blacklist| %>
   <li>
-    <h3 style="display: inline;"><%= blacklist.title %></h3>
+    <span class="<%= "el-e-title-disabled" if blacklist.disabled? %>">
+      <h3 style="display: inline;"><%= link_to blacklist.title_possibly_disabled, blacklist_path(blacklist) %></h3>
+	  </span>
     <%= link_to "Manage terms", blacklist_path(blacklist) %>
+    /
+    <%= link_to "#{blacklist.disabled? ? 'En' : 'Dis'}able", toggledisabled_blacklist_path(blacklist), :method => :post %>
     /
     <%= link_to "Delete", blacklist_path(blacklist), :method => :delete, :confirm => "Really delete this blacklist with all it's terms?" %>
     <ul class="blacklist-terms">

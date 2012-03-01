@@ -27,6 +27,9 @@ Graylog2WebInterface::Application.routes.draw do
 
   resources :blacklists do
     resources :blacklistedterms, :as => "terms"
+    member do
+      post :toggledisabled
+    end
   end
 
   resources :hosts, :constraints => { :id => /.*/ } do

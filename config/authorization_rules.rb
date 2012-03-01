@@ -47,7 +47,7 @@ authorization do
 
     has_permission_on :hosts, :to => [:index, :show, :destroy, :quickjump, :showrange]
 
-    has_permission_on :blacklists, :to => [:index, :show, :create, :destroy]
+    has_permission_on :blacklists, :to => [:index, :show, :toggledisabled, :create, :destroy]
     has_permission_on :blacklistedterms, :to => [:create, :destroy]
 
     has_permission_on :settings, :to => [:index, :store, :removecolumn]
