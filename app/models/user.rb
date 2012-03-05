@@ -22,7 +22,7 @@ class User
   # HACK HACK HACK -- how to do attr_accessible from here?
   # prevents a user from submitting a crafted form that bypasses activation
   # anything else you want your user to change should be added here.
-  attr_accessible :login, :email, :name, :password, :password_confirmation, :role, :stream_ids
+  attr_accessible :login, :email, :name, :password, :password_confirmation, :role, :stream_ids, :ldap_autocreated
 
   field :login, :type => String
   field :email, :type => String
@@ -34,6 +34,7 @@ class User
   field :remember_token, :type => String
   field :remember_token_expires_at
   field :last_version_check, :type => Integer
+  field :ldap_autocreated, :type =>  Boolean, :default => false
 
   index :login,          :background => true, :unique => true
   index :remember_token, :background => true, :unique => true
@@ -65,6 +66,11 @@ class User
 
   def self.find_by_login(login)
     find(:first, :conditions => {:login => login})
+  end
+
+  alias :super_password_required? :password_required?
+  def password_required?
+    !ldap_autocreated && super_password_required?
   end
 
   def login=(value)

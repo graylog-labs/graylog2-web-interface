@@ -1,23 +1,26 @@
 <%= form_for @user do |f| -%>
 
 <dl id="users-form">
+
   <dt><%= label_tag 'login', "Username" %></dt>
   <dd>
-    <%= f.text_field :login %>
+    <%= f.text_field :login, :disabled => @user.ldap_autocreated %>
     <span class="highlighted"><%= @user.errors[:login].join(" and ")%></span>
   </dd>
 
   <dt><%= label_tag 'email' %></dt>
   <dd>
-    <%= f.text_field :email %>
+    <%= f.text_field :email, :disabled => @user.ldap_autocreated %>
     <span class="highlighted"><%= @user.errors[:email].join(" and ")%></span>
   </dd>
 
   <dt><%= label_tag 'name' %></dt>
   <dd>
-    <%= f.text_field :name %>
+    <%= f.text_field :name, :disabled => @user.ldap_autocreated %>
     <span class="highlighted"><%= @user.errors[:name].join(" and ")%></span>
   </dd>
+
+  <% if not @user.ldap_autocreated -%>
 
   <dt><%= label_tag 'password' %></dt>
   <dd>
@@ -31,9 +34,11 @@
     <span class="highlighted"><%= @user.errors[:password_confirmation].join(" and ")%></span>
   </dd>
 
+  <% end -%>
+
   <dt><%= label_tag 'role', 'Role'%></dt>
   <dd>
-    <%= f.select(:role, user.valid_roles.collect {|r| [r.to_s.capitalize, r.to_s]}, :selected => (@user.role.blank? ? "admin" : @user.role)) %>
+    <%= f.select(:role, user.valid_roles.collect {|r| [r.to_s.capitalize, r.to_s]}, {:selected => (@user.role.blank? ? "admin" : @user.role)}, {:disabled => @user.ldap_autocreated}) %>
     <span class="highlighted"><%= @user.errors[:role].join(" and ")%></span>
   </dd>
 
@@ -46,7 +51,9 @@
     </ul>
   </dd>
 
+  <% if not ( @user.ldap_autocreated and @user.role == 'admin' )-%>
   <dt>&nbsp;</dt>
   <dd><%= submit_tag "#{form_action.capitalize} user" %></dd>
+  <% end -%>
 </dl>
 <% end -%>

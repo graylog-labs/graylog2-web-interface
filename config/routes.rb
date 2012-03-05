@@ -128,6 +128,8 @@ Graylog2WebInterface::Application.routes.draw do
   end
 
   resources :retentiontime
+
+  resources :ldap
   
   resources :additionalcolumns
 
@@ -145,3 +147,4 @@ Graylog2WebInterface::Application.routes.draw do
 
   root :to => 'messages#index'
 end
+

@@ -13,7 +13,17 @@ class SessionsController < ApplicationController
 
   def create
     logout_keeping_session!
-    user = User.authenticate(params[:login], params[:password])
+
+    @ldap_settings = Setting::get_ldap_settings
+
+    if @ldap_settings[:enabled]
+      user = ldap_auth(params[:login], params[:password])
+    end
+
+    if !user
+      user = User.authenticate(params[:login], params[:password])
+    end
+
     if user
       # Protects against session fixation attacks, causes request forgery
       # protection if user resubmits an earlier form using back
@@ -45,3 +55,67 @@ protected
     Rails.logger.warn "Failed login for '#{params[:login]}' from #{request.remote_ip} at #{Time.now.utc}"
   end
 end
+
+private
+
+  def ldap_auth login, password
+    require 'net/ldap'
+
+    @ldap = Net::LDAP.new :host => @ldap_settings[:server],
+                          :port => @ldap_settings[:port],
+                          :auth => {
+                            :method => :simple,
+                            :username => @ldap_settings[:bind_dn],
+                            :password => @ldap_settings[:bind_password]
+                         }
+
+    # try to bind as user
+    def rebind login, password, fltr
+      complite_filter = "(&#{fltr}(#{@ldap_settings[:username_attr]}=#{login}))"
+      Rails.logger.info "LDAP: #{complite_filter}"
+      @ldap.bind_as(
+                  :base => @ldap_settings[:base_dn],
+                  :filter => complite_filter,
+                  :password => password
+           )
+    end
+
+    begin
+
+      if rebind_result = rebind(login, password, @ldap_settings[:filter_admins])
+        role = 'admin'
+      elsif rebind_result = rebind(login, password, @ldap_settings[:filter_readers])
+        role = 'reader'
+      else
+        return
+      end
+
+    rescue Net::LDAP::LdapError => e
+      Rails.logger.error "LDAP: #{e}"
+      return
+    end
+
+    email = rebind_result[0][ @ldap_settings[:email_attr] ][0]
+    name = rebind_result[0][ @ldap_settings[:name_attr] ][0]
+
+    if u = User.find_by_login(login)
+
+      # refresh user profile from LDAP
+      u.email = email
+      u.name = name
+      u.role = role
+      u.ldap_autocreated = true
+      u.save ? u : nil
+
+    else
+
+      User.new( :login => login,
+                    :email => email,
+                    :name => name,
+                    :role => role,
+                    :ldap_autocreated => true
+                  )
+    end
+
+  end
+

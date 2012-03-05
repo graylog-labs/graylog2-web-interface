@@ -61,6 +61,8 @@ authorization do
     has_permission_on :health, :to => [:index]
 
     has_permission_on :retentiontime, :to => [:index]
+
+    has_permission_on :ldap, :to => [:index]
     
     has_permission_on :additionalcolumns, :to => [:index]
   end
