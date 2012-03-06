@@ -27,7 +27,9 @@
     <br />The base object of the LDAP search.
 
     <h4><label>Search scope</h4>
-    <%= text_field_tag :search_scope, @ldap_settings[:search_scope] %>
+      <%= select_tag :search_scope, @ldap_scope_variants.collect{ |v|
+                                            "<option #{ "selected" if @ldap_settings[:search_scope] == v[:value] } value=\"#{v[:value]}\">#{v[:text]}</option>"
+                                    }.join.html_safe  %>
     <br />The scope construct is used to specify the scope of the search to perform in the given LDAP server.
 
     <h4><label>Bind DN</h4>

@@ -66,6 +66,7 @@ class SettingsController < ApplicationController
       for_store =  params.reject { |k,v| ! Setting::TYPE_LDAP_DEFAULT.has_key? k.to_sym }
       # convert checknox to boolean
       for_store[:enabled] = !params[:enabled].nil?
+      for_store[:search_scope] = params[:search_scope].to_i
       setting = create_setting(params[:setting_type], for_store )
       save_setting(setting)
     end

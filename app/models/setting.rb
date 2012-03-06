@@ -29,7 +29,7 @@ class Setting
     :server         => 'ldap.domain.tld',
     :port           => 389,
     :base_dn        => 'ou=People,dc=domain,dc=tld',
-    :search_scope   => 'sub',
+    :search_scope   => 2,
     :bind_dn        => 'cn=Graylog2Web,ou=People,dc=domain,dc=tld',
     :bind_password  => 'secret',
     :username_attr  => 'uid',

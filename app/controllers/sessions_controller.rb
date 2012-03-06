@@ -75,6 +75,7 @@ private
       Rails.logger.info "LDAP: #{complite_filter}"
       @ldap.bind_as(
                   :base => @ldap_settings[:base_dn],
+                  :scope => @ldap_settings[:search_scope],
                   :filter => complite_filter,
                   :password => password
            )
