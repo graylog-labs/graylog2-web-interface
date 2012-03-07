@@ -129,8 +129,6 @@ Graylog2WebInterface::Application.routes.draw do
 
   resources :retentiontime
 
-  resources :ldap
-  
   resources :additionalcolumns
 
   resources :settings do

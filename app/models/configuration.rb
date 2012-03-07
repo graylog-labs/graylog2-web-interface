@@ -3,6 +3,13 @@ class Configuration
   @email_config = YAML::load File.read(Rails.root.to_s + "/config/email.yml")
   @indexer_config = YAML::load File.read(Rails.root.to_s + "/config/indexer.yml")
 
+  begin
+    @ldap_config = YAML::load File.read(Rails.root.to_s + "/config/ldap.yml")
+  # if file not found -> ldap is disabled
+  rescue Errno::ENOENT
+    @ldap_config = nil
+  end
+
   def self.config_value(root, nesting, key, default = nil)
     [root, root[nesting.to_s], root[nesting.to_s][key.to_s]].any?(&:blank?) ? default : root[nesting.to_s][key.to_s]
   rescue
@@ -146,4 +153,23 @@ class Configuration
   def self.indexer_index_name
     indexer_config :index_name
   end
+
+  def self.ldap_config(key = nil, default = nil)
+    case key
+    when :search_scope
+        case config_value(@ldap_config, Rails.env, key, default)
+        when 'base'
+          Net::LDAP::SearchScope_BaseObject
+        when 'one'
+          Net::LDAP::SearchScope_SingleLevel
+        when 'sub'
+          Net::LDAP::SearchScope_WholeSubtree
+        end
+    when nil
+      @ldap_config
+    else
+      config_value(@ldap_config, Rails.env, key, default)
+    end
+  end
+
 end

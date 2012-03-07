@@ -1,0 +1,13 @@
+production:
+    host: ldap.domain.tld
+    port: 389
+    bind_dn: cn=Graylog2Web,ou=People,dc=domain,dc=tld
+    bind_password: secret
+    base_dn: ou=People,dc=domain,dc=tld
+    filter_admins: (&(objectClass=User)(memberOf=cn=graylog-admins,ou=Groups,dc=domain,dc=tld))
+    filter_readers: (&(objectClass=User)(memberOf=cn=graylog-readers,ou=Groups,dc=domain,dc=tld))
+    search_scope: sub
+    username_attr: uid
+    name_attr: displayName
+    email_attr: mail
+

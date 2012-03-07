@@ -14,9 +14,7 @@ class SessionsController < ApplicationController
   def create
     logout_keeping_session!
 
-    @ldap_settings = Setting::get_ldap_settings
-
-    if @ldap_settings[:enabled]
+    if ::Configuration.ldap_config
       user = ldap_auth(params[:login], params[:password])
     end
 
@@ -61,21 +59,25 @@ private
   def ldap_auth login, password
     require 'net/ldap'
 
-    @ldap = Net::LDAP.new :host => @ldap_settings[:server],
-                          :port => @ldap_settings[:port],
+    @ldap = Net::LDAP.new :host => ::Configuration.ldap_config(:host),
+                          :port => ::Configuration.ldap_config(:port, 389),
                           :auth => {
                             :method => :simple,
-                            :username => @ldap_settings[:bind_dn],
-                            :password => @ldap_settings[:bind_password]
-                         }
+                            :username => ::Configuration.ldap_config(:bind_dn),
+                            :password => ::Configuration.ldap_config(:bind_password)
+                          }
 
     # try to bind as user
     def rebind login, password, fltr
-      complite_filter = "(&#{fltr}(#{@ldap_settings[:username_attr]}=#{login}))"
+      complite_filter = "(#{::Configuration.ldap_config(:username_attr)}=#{login})"
+      if fltr
+        complite_filter = "(&#{fltr}#{complite_filter})"
+      end
+
       Rails.logger.info "LDAP: #{complite_filter}"
       @ldap.bind_as(
-                  :base => @ldap_settings[:base_dn],
-                  :scope => @ldap_settings[:search_scope],
+                  :base => ::Configuration.ldap_config(:base_dn),
+                  :scope => ::Configuration.ldap_config(:search_scope),
                   :filter => complite_filter,
                   :password => password
            )
@@ -83,9 +85,9 @@ private
 
     begin
 
-      if rebind_result = rebind(login, password, @ldap_settings[:filter_admins])
+      if rebind_result = rebind(login, password, ::Configuration.ldap_config(:filter_admins))
         role = 'admin'
-      elsif rebind_result = rebind(login, password, @ldap_settings[:filter_readers])
+      elsif rebind_result = rebind(login, password, ::Configuration.ldap_config(:filter_readers))
         role = 'reader'
       else
         return
@@ -96,14 +98,14 @@ private
       return
     end
 
-    email = rebind_result[0][ @ldap_settings[:email_attr] ][0]
-    name = rebind_result[0][ @ldap_settings[:name_attr] ][0]
+    email = ::Configuration.ldap_config(:email_attr) ? rebind_result[0][ ::Configuration.ldap_config(:email_attr) ][0] : nil
+    name = ::Configuration.ldap_config(:name_attr) ? rebind_result[0][ ::Configuration.ldap_config(:name_attr) ][0] : nil
 
     if u = User.find_by_login(login)
 
       # refresh user profile from LDAP
-      u.email = email
-      u.name = name
+      u.email = email ? email : nil
+      u.name = name ? name : nil
       u.role = role
       u.ldap_autocreated = true
       u.save ? u : nil
@@ -111,8 +113,8 @@ private
     else
 
       User.new( :login => login,
-                    :email => email,
-                    :name => name,
+                    :email => email ? email : nil,
+                    :name => name ? name : nil,
                     :role => role,
                     :ldap_autocreated => true
                   )

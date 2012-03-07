@@ -10,7 +10,6 @@ module SettingsHelper
       ["Message retention time", retentiontime_index_path],
       ["Message comments", messagecomments_path],
       ["Filtered terms", filteredterms_path],
-      ["LDAP", ldap_index_path],
     ]
 
     tabs << ["Version check", versioncheck_index_path] if Configuration.allow_version_check
