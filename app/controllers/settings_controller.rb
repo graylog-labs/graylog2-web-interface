@@ -10,8 +10,6 @@ class SettingsController < ApplicationController
   def store
     if params[:setting_type].to_i == Setting::TYPE_ADDITIONAL_COLUMNS
       store_additional_column_setting
-    elsif params[:setting_type].to_i == Setting::TYPE_LDAP
-      store_ldap_setting
     else
       store_regular_setting
     end
@@ -43,8 +41,6 @@ class SettingsController < ApplicationController
         controller = "retentiontime"
       elsif setting_type == Setting::TYPE_ADDITIONAL_COLUMNS
         controller = "additionalcolumns"
-      elsif setting_type == Setting::TYPE_LDAP
-        controller = "ldap"
       else
         controller = "settings"
       end
@@ -57,17 +53,6 @@ class SettingsController < ApplicationController
           :setting_type => params[:setting_type]).delete_all
 
       setting = create_setting(params[:setting_type], params[:value].to_i)
-      save_setting(setting)
-    end
-
-    def store_ldap_setting
-      Setting.where(:setting_type => params[:setting_type]).delete_all
-      # symbolize keys
-      for_store =  params.reject { |k,v| ! Setting::TYPE_LDAP_DEFAULT.has_key? k.to_sym }
-      # convert checknox to boolean
-      for_store[:enabled] = !params[:enabled].nil?
-      for_store[:search_scope] = params[:search_scope].to_i
-      setting = create_setting(params[:setting_type], for_store )
       save_setting(setting)
     end
     

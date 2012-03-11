@@ -1,4 +1,5 @@
 require 'digest/sha1'
+require 'net/ldap'
 
 class User
   include Mongoid::Document
@@ -53,7 +54,7 @@ class User
   def self.authenticate(login, password)
     return nil if login.blank? || password.blank?
     u = find_by_login(login.downcase) # need to get the salt
-    u && !u.ldap_autocreated && u.authenticated?(password) ? u : nil
+    u && !u.ldap_autocreated && u.authenticated?(password) ? u : ( ::Configuration.ldap_config ? ldap_auth(u, login, password) : nil )
   end
 
   def self.find_by_id(_id)
@@ -100,4 +101,73 @@ class User
   def valid_roles
     [:admin, :reader]
   end
+
+  private
+
+  # try to bind as user
+  def self.ldap_rebind login, password, fltr
+    complite_filter = "(#{::Configuration.ldap_config(:username_attr)}=#{login})"
+    if fltr
+      complite_filter = "(&#{fltr}#{complite_filter})"
+    end
+
+    Rails.logger.info "LDAP: #{complite_filter}"
+    @ldap.bind_as(
+      :base => ::Configuration.ldap_config(:base_dn),
+      :scope => ::Configuration.ldap_config(:search_scope),
+      :filter => complite_filter,
+      :password => password
+    )
+  end
+
+
+  def self.ldap_auth user_instance, login, password
+
+    @ldap = Net::LDAP.new :host => ::Configuration.ldap_config(:host),
+      :port => ::Configuration.ldap_config(:port, 389),
+      :auth => {
+      :method => :simple,
+      :username => ::Configuration.ldap_config(:bind_dn),
+      :password => ::Configuration.ldap_config(:bind_password)
+    }
+
+    # check auth by ldap
+    begin
+      if rebind_result = ldap_rebind(login, password, ::Configuration.ldap_config(:filter_admins))
+        role = 'admin'
+      elsif rebind_result = ldap_rebind(login, password, ::Configuration.ldap_config(:filter_readers))
+        role = 'reader'
+      else
+        return
+      end
+    rescue Net::LDAP::LdapError => e
+      Rails.logger.error "LDAP: #{e}"
+      return
+    end
+
+    # this attributes may be not configured
+    email = ::Configuration.ldap_config(:email_attr) ? rebind_result[0][ ::Configuration.ldap_config(:email_attr) ][0] : nil
+    name = ::Configuration.ldap_config(:name_attr) ? rebind_result[0][ ::Configuration.ldap_config(:name_attr) ][0] : nil
+
+    if user_instance
+
+      # refresh user profile from LDAP
+      user_instance.email = email
+      user_instance.name = name
+      user_instance.role = role
+      user_instance.ldap_autocreated = true
+      user_instance.save ? user_instance : nil
+
+    else
+
+      User.new( :login => login,
+               :email => email,
+               :name => name,
+               :role => role,
+               :ldap_autocreated => true
+              )
+    end
+
+  end
+
 end
