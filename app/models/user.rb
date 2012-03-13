@@ -1,5 +1,4 @@
 require 'digest/sha1'
-require 'net/ldap'
 
 class User
   include Mongoid::Document
@@ -104,26 +103,8 @@ class User
 
   private
 
-  # try to bind as user
-  def self.ldap_rebind login, password, fltr
-    complite_filter = "(#{::Configuration.ldap_config(:username_attr)}=#{login})"
-    if fltr
-      complite_filter = "(&#{fltr}#{complite_filter})"
-    end
-
-    Rails.logger.info "LDAP: #{complite_filter}"
-    @ldap.bind_as(
-      :base => ::Configuration.ldap_config(:base_dn),
-      :scope => ::Configuration.ldap_config(:search_scope),
-      :filter => complite_filter,
-      :password => password
-    )
-  end
-
-
   def self.ldap_auth user_instance, login, password
-
-    @ldap = Net::LDAP.new :host => ::Configuration.ldap_config(:host),
+    @ldap = LDAP.new :host => ::Configuration.ldap_config(:host),
       :port => ::Configuration.ldap_config(:port, 389),
       :auth => {
       :method => :simple,
@@ -132,16 +113,11 @@ class User
     }
 
     # check auth by ldap
-    begin
-      if rebind_result = ldap_rebind(login, password, ::Configuration.ldap_config(:filter_admins))
-        role = 'admin'
-      elsif rebind_result = ldap_rebind(login, password, ::Configuration.ldap_config(:filter_readers))
-        role = 'reader'
-      else
-        return
-      end
-    rescue Net::LDAP::LdapError => e
-      Rails.logger.error "LDAP: #{e}"
+    if rebind_result = @ldap.try_rebind(login, password, ::Configuration.ldap_config(:filter_admins))
+      role = 'admin'
+    elsif rebind_result = @ldap.try_rebind(login, password, ::Configuration.ldap_config(:filter_readers))
+      role = 'reader'
+    else
       return
     end
 
@@ -150,23 +126,21 @@ class User
     name = ::Configuration.ldap_config(:name_attr) ? rebind_result[0][ ::Configuration.ldap_config(:name_attr) ][0] : nil
 
     if user_instance
-
       # refresh user profile from LDAP
       user_instance.email = email
       user_instance.name = name
       user_instance.role = role
       user_instance.ldap_autocreated = true
-      user_instance.save ? user_instance : nil
-
     else
-
-      User.new( :login => login,
+      user_instance = User.new( :login => login,
                :email => email,
                :name => name,
                :role => role,
                :ldap_autocreated => true
               )
     end
+
+    user_instance.save ? user_instance : nil
 
   end
 

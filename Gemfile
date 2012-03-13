@@ -37,4 +37,5 @@ group :test do
   gem 'mocha', '~> 0.9.12'
   gem 'database_cleaner', '~> 0.6.0'
   gem 'timecop', '~> 0.3.5'
+  gem 'ladle', '~> 0.2.0'
 end
