@@ -17,6 +17,7 @@ gem 'home_run', '~> 1.0.2', :platforms => :ruby
 gem 'SystemTimer', '~> 1.2.3', :require => 'system_timer', :platforms => :ruby_18
 gem 'rails_autolink', '~> 1.0.4'
 gem 'kaminari', '~> 0.12.4'
+gem 'net-ldap', '~> 0.3.1', :require => 'net/ldap'
 
 group :development, :test do
   # might be useful to generate fake data in development
@@ -36,4 +37,5 @@ group :test do
   gem 'mocha', '~> 0.9.12'
   gem 'database_cleaner', '~> 0.6.0'
   gem 'timecop', '~> 0.3.5'
+  gem 'ladle', '~> 0.2.0'
 end

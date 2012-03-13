@@ -5,6 +5,17 @@ class UserTest < ActiveSupport::TestCase
 
   setup do
     @user = User.make
+
+    #Start test LDAP server if not running
+    if !defined? @@ldap_server
+     @@ldap_server = Ladle::Server.new(
+           :port   => 3897,
+           :ldif   => "test/unit/user_test.ldif",
+           :domain => "dc=example,dc=org",
+           :tmpdir => 'tmp'
+        )
+     @@ldap_server.start
+    end
   end
 
   context "with stream" do
@@ -110,6 +121,41 @@ class UserTest < ActiveSupport::TestCase
     assert_not_nil @user.remember_token
     assert_not_nil @user.remember_token_expires_at
     assert @user.remember_token_expires_at.between?(before, after)
+  end
+
+  def test_should_authenticate_user_and_create_it_in_mongo
+    assert_difference "User.count" do
+      user = User.authenticate("aa729", "smada")
+      assert_not_nil user
+    end
+  end
+
+  def test_should_attributes_be_ldap_eq
+    user = User.authenticate("aa729", "smada")
+    assert_equal user.ldap_autocreated, true
+    # force attributes corruption
+    user.name = 'Wrong name'
+    user.email = 'Worng email'
+    user.role = 'Wrong role'
+    # auth. again, atts. should updated
+    user = User.authenticate("aa729", "smada")
+    assert_equal user.email, "alexandra@example.org"
+    assert_equal user.name, "Alexandra Adams"
+    assert_equal user.role, "admin"
+  end
+
+  def test_should_set_role_reader_from_ldap
+    assert_difference "User.count" do
+      user = User.authenticate("bb459", "niwdlab")
+      assert_equal user.role, "reader"
+    end
+  end
+
+  def test_should_not_authenticate_ldap_user
+    assert_no_difference 'User.count' do
+      assert_nil User.authenticate("aa729", "wrong password")
+      assert_nil User.authenticate("bb459", "")
+    end
   end
 
 end

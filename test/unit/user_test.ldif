@@ -1,0 +1,68 @@
+version: 1
+
+dn: ou=people,dc=example,dc=org
+objectClass: top
+objectClass: organizationalUnit
+ou: people
+
+dn: uid=aa729,ou=people,dc=example,dc=org
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Alexandra Adams
+sn: Adams
+givenName: Alexandra
+mail: alexandra@example.org
+uid: aa729
+# Password is "smada"
+userpassword: {SHA}pGlmZX1VOEdHHb30HZezeVNFxGM=
+
+dn: uid=bb459,ou=people,dc=example,dc=org
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Belle Baldwin
+sn: Baldwin
+givenName: Belle
+mail: belle@example.org
+uid: bb459
+# Password is "niwdlab"
+userpassword: {SHA}LRif2N+5TDSaO/rdkH2HHF8fF74=
+
+dn: uid=cc414,ou=people,dc=example,dc=org
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Claire Carpenter
+sn: Carpenter
+givenName: Claire
+mail: claire@example.org
+uid: cc414
+# Password is "retneprac"
+userpassword: {SHA}UL/iS+2R7GhwbhXOWoTHd4/qoMA=
+
+dn: uid=foo,ou=people,dc=example,dc=org
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Mr. Foo
+sn: Foo
+givenName: Test
+mail: foo@example.org
+uid: foo
+
+dn: uid=aric.smith,ou=people,dc=example,dc=org
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+cn: Aric Smith
+sn: Smith
+givenName: Aric
+mail: aric.smith@example.org
+uid: aric.smith
+
