@@ -1,0 +1,6 @@
+<%= @sets["title"] %>
+<%= "="*@sets["title"].length %>
+<% @lines.each do |l| %>
+<%= "%05.2f" % (l['count'].to_f/@allcount*100) %>% <%= "%6d" % l["count"] %> - <%= l["distinct"] %><% end %>
+
+Anzahl: <%= @allcount %>
