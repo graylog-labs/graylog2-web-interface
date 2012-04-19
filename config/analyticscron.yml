@@ -1,20 +1,42 @@
-; settingsfile for shell.rake
-; 
-; [anySectionname]
-; disabled=yes      ; ignore this section
-; title=Caption     ; any caption for this secton
-; query=all.count() ; Graylog2 Analytics Shell Query
-; limit=20          ; sets the maximum of replyd lines
-; sendmail=yes      ; sends the result as mail, no will show result on console
-; mailto=e@mail.com f@mail.com ; sends mail to these addresses, multiply address split by space
-; template=plain    ; use the template in file "shell_[type]_plain.erp"
+# settingsfile for analytics.rake
+# 
+# global:                          # this special section defines global settings
+#   TEMPLATEDIR : <GRAYLOG>/app/views/analyticscron # this dir contains your templates (you can use <GRAYLOG> for Graylog basedir as placeholder)
+#   VERBOSITY   : yes              # writes debug information to console
+#   SMTPSERVER  : smtp.mail.com    # outgoing mail server
+#   MAILFROM    : server@mail.com  # mail will be send from this address
+#
+# sectionname:
+#   disabled : yes         # ignore this section
+#   title    : Caption     # any caption for this secton
+#   query    : all.count() # Graylog2 Analytics Shell Query
+#   limit    : 20          # sets the maximum of replyd lines
+#   sendmail : yes         # sends the result as mail, no will show result on console
+#   mailto   : [e@mail.com, f@mail.com] # sends mail to these addresses
+#   format   : plain       # use this format (filename "[type_or_own_template].[format].erp")
+#   template : my          # only use if you want use a specific template
+#
+# 
+# 
+# you can start this job via
+# $ rake -f /opt/graylog2-web-interface/Rakefile analyticscron:exec
+#
+# the following will execute section job1 and job2 (disabled key ignored)
+# $ rake -f /opt/graylog2-web-interface/Rakefile analyticscron:exec jobs=job1,job2
+# 
 
-[404_t20]
-disabled=no
-title=Top 20 - HTTP 404 - File Not Found
-query=stream(http404).distribution({_request}, created_at > <%= (Time.now-1*24*60*60).to_i %>)
-limit=20
-sendmail=no
-mailto=user1@example.com user2@example.com
-template=plain
+global:
+  TEMPLATEDIR : <GRAYLOG>/app/views/analyticscron
+  VERBOSITY   : no
+  SMTPSERVER  : smtp.mail.com
+  MAILFROM    : server@mail.com
+
+404_t20:
+  disabled    : no
+  title       : Top 20 - HTTP 404 - File Not Found
+  query       : stream(http404).distribution({_request}, created_at > <%= (Time.now-1*24*60*60).to_i %>)
+  limit       : 20
+  sendmail    : no
+  mailto      : [user1@example.com, user2@example.com]
+  format      : plain
 

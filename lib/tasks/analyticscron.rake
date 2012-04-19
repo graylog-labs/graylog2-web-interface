@@ -1,14 +1,16 @@
 require 'erb'
+require 'syslog'
 
 #
 # GLOBAL SETTINGS
+# can overwrite via config/anlyticscron.yml
 #
-BASEDIR_GRAYLOGWEB = "/opt/graylog2/graylog2-web-interface"
-TEMPLATEDIR = BASEDIR_GRAYLOGWEB+"/lib/tasks"
-settings = nil
-VERBOSITY = false
-SMTPSERVER = "smtp.example.com"
-MAILFROM = "server@example.com"
+
+$global = { "GRAYLOG_BASEDIR" => File.expand_path('../../..', __FILE__), # sets Graylog basedir
+            "TEMPLATEDIR" => "<GRAYLOG>/app/views/analyticscron", # sets defaults
+            "VERBOSITY" => false,
+            "SMTPSERVER" => nil,
+            "MAILFROM" => nil }
 
 #
 # FUNCTIONS
@@ -20,73 +22,47 @@ MAILFROM = "server@example.com"
 #          { "block1" => { "query" => "...", "title" => "...", ... },
 #            "block2" => { "query" => "...", "title" => "...", ... } }
 def readSettings
-  # read file
-  f = File.new(BASEDIR_GRAYLOGWEB+"/lib/tasks/shell.ini","r")
-  lines = f.readlines
-  f.close
-  # set important vars
-  settings = {}
-  locsets = {}
-  # for each line in config
-  lines.each do |l|
-    # remove comment 
-    l = l.gsub(/[;#].*/,"").strip
-    if l.length == 0 then next end
-    # split
-    key,val = l.split("=",2)
-    key = key.strip
-    if val != nil then val = val.strip end
-    if key.starts_with?("[") # found new block
-      blockname = key[1..-2]
-      if settings.has_key?(blockname)
-        puts "*** WARNING: redefine block {blockname}"
-      end
-      locsets = { "htmlformat" => false,  # set defaults
-                  "enablemail" => false,
+  defaultsets = { "format" => "plain",  # set defaults
+                  "sendmail" => false,
                   "mailto" => nil,
                   "title" => "unknown",
                   "query" => nil,
-                  "linelimit" => 500,
+                  "limit" => 500,
                   "disabled" => false,
-                  "template" => "plain"}
-      settings[blockname] = locsets
-      next # line finish processed
-    end
-    case key
-      when "query"
-        queryerb = ERB.new(val)
-        locsets["query"] = queryerb.result(binding)
-      when "sendmail"
-        if val == "yes"
-          locsets['enablemail'] = true
+                  "template" => nil}
+  settings = open($global["GRAYLOG_BASEDIR"]+"/config/analyticscron.yml") { |f| YAML.load(f) }
+  settings.each do |sets| 
+    if sets[0] == "global" # overwrites global settings
+      sets[1].each do |glob|
+        $global[glob[0]] = glob[1]
+      end
+    else
+      defaultsets.each do |default| # checks settings section
+        if not sets[1].has_key?(default[0]) # check if not exists -> set default value
+          sets[1][default[0]] = default[1]
         end
-      when "disabled"
-        if val == "yes"
-          locsets["disabled"] = true
+        if default[0] == "query" # convert erb in query
+          queryerb = ERB.new( sets[1][default[0]] )
+          sets[1][default[0]] = queryerb.result(binding)
         end
-      when "limit"
-        locsets['linelimit'] = val.to_i
-      when "title"
-        locsets['title'] = val
-      when "mailto"
-        locsets['mailto'] = val.split(" ")
-      when "template"
-        locsets['template'] = val
-      else
-        puts "shell.ini: ignore key "+key
+      end
     end
   end
+  # remove global block from settings
+  if settings.has_key?("global") then settings.delete("global") end
+  # replace pattern in TEMPLATEDIR
+  $global["TEMPLATEDIR"] = $global["TEMPLATEDIR"].sub("<GRAYLOG>",$global["GRAYLOG_BASEDIR"])
   return settings
 end
 
 # checks commandline for jobs=job1,job2
 # If set, only these jobs will be executed.
 # 
-# param  settings   hash-table with all settings
+# @param  settings   hash-table with all settings
 def readParams(settings)
   if ENV["jobs"] # found
     jobs = ENV["jobs"].split(",")
-    if VERBOSITY then puts "*** jobs are explicit set: "+jobs.join(",") end
+    if $global["VERBOSITY"] then puts "*** jobs are explicit set: "+jobs.join(",") end
     # ignore disabled from config
     settings.each do |sets|
       sets[1]["disabled"] = true
@@ -95,10 +71,10 @@ def readParams(settings)
     jobs.each do |j|
       j = j.strip
       if settings.has_key?(j)
-        if VERBOSITY then puts "*** enable job "+j.strip end
+        if $global["VERBOSITY"] then puts "*** enable job "+j.strip end
         settings[ j.strip ]["disabled"] = false
       else
-        if VERBOSITY then puts "*** job '"+j+"' not exists" end
+        if $global["VERBOSITY"] then puts "*** job '"+j+"' not exists" end
       end
     end
   end
@@ -113,7 +89,7 @@ def queryGraylog(sets)
     puts "*** missing query!"
     return nil
   end
-  if VERBOSITY then puts "Query: "+sets["query"] end
+  if $global["VERBOSITY"] then puts "Query: "+sets["query"] end
   sh = Shell.new(sets["query"])
   result = sh.compute
   return result
@@ -126,7 +102,10 @@ end
 # @return string   pretty formatted text
 def generateoutput(sets, result)
   # load template from file
-  fname = TEMPLATEDIR+"/shell_"+result[:operation]+"_"+sets["template"]+".erb"
+  tmpl = sets["template"]
+  if tmpl == nil then tmpl = result[:operation] end
+  fname = $global["TEMPLATEDIR"]+"/"+tmpl+"."+sets["format"]+".erb"
+  if $global["VERBOSITY"] then puts "use template: "+fname end
   f = File.new(fname,"r")
   template = f.read
   f.close
@@ -139,18 +118,18 @@ def generateoutput(sets, result)
     when "distribution"
       # counts
       q = sets["query"].gsub(/distribution[ ]*\([ ]*{.*}[ ]*,?[ ]*/,"count(")
-      if VERBOSITY then puts "Count: "+q end
+      if $global["VERBOSITY"] then puts "Count: "+q end
       sh = Shell.new(q)
       countres = sh.compute
       # go on
       o = ERB_Distribution.new(sets, countres[:result])
-      n = (result[:result].length < sets["linelimit"] ? result[:result].length : sets["linelimit"])
+      n = (result[:result].length < sets["limit"] ? result[:result].length : sets["limit"])
       for i in (0...n)
         o.append( result[:result][i][:distinct], result[:result][i][:count] )
       end
     when "find"
       o = ERB_Find.new(sets)
-      n = (result[:result].length < sets["linelimit"] ? result[:result].length : sets["linelimit"])
+      n = (result[:result].length < sets["limit"] ? result[:result].length : sets["limit"])
       for i in (0...n)
         # parameters: deleted, total_result_count, file, message, id, facility, host, level, created_at, line, streams
         o.append(result[:result][i].deleted, result[:result][i].total_result_count, result[:result][i].file,
@@ -164,13 +143,21 @@ def generateoutput(sets, result)
 end
 
 # Sends text to all mail recipients.
-# sets['enablemail'] will be ignore
+# sets['sendmail'] will be ignore
 # 
 # @param sets   die lokalen Einstellungen
 # @param text   der zu sendende Text
-def sendmail(sets, text)
+def sendmail(blockname, sets, text)
+  if $global["SMTPSERVER"] == nil
+    puts "Cant send mail! No SMTP-Server defined."
+    return
+  end
+  if $global["MAILFROM"] == nil
+    puts "Cant send mail! No mail from defined."
+    return
+  end
   sets["mailto"].each do |m|
-    body = "From: "+MAILFROM+"
+    body = "From: "+$global["MAILFROM"]+"
 To: "+m+"
 Subject: "+sets["title"]+"
 X-Sender: graylog2
@@ -182,11 +169,23 @@ X-Sender: graylog2
     end
     body << "\n"
     body << text
-    if VERBOSITY then puts "---\n"+body+"---" end 
-    Net::SMTP.start(SMTPSERVER) do |smtp|
-      smtp.send_message body, MAILFROM, m
+    if $global["VERBOSITY"] then puts "---\n"+body+"---" end 
+    Net::SMTP.start($global["SMTPSERVER"]) do |smtp|
+      smtp.send_message body, $global["MAILFROM"], m
     end
-    puts "Mail sended to "+m
+    syslog("Report "+blockname+" ("+sets["title"]+") sended to "+m+".")
+  end
+end
+
+# sends data to the syslog
+#
+# @param text     message to log
+def syslog(text)
+  script_name = "analyticscron.rake"
+  syslog_option = Syslog::LOG_PID | Syslog::LOG_CONS
+  syslog_facility = Syslog::LOG_LOCAL7 # Syslog::LOG_DAEMON
+  Syslog.open(script_name, syslog_option, syslog_facility) do |s|
+    s.notice(text)
   end
 end
 
@@ -253,23 +252,26 @@ end
 # EXECUTE TASK
 #
 
-namespace :shell do
+namespace :analyticscron do
   desc "Fuehrt einen beliebigen Analytics Shell Befehl aus und sendet Antwort ggf. als Mail."
   task :exec => :environment do
-
     settings = readSettings() # config-file
-    if VERBOSITY then puts settings.inspect end
+    if $global["VERBOSITY"]
+      puts "-- global --\n"+$global.inspect
+      puts "-- settings --\n"+settings.inspect 
+    end
+    
     readParams(settings) # commandline parameters
     
     settings.each do |sets|
-      if sets[1]["disabled"] # ignore disabled block
-        if VERBOSITY then puts "*** "+sets[0]+" ("+sets[1]["title"]+") is disabled!" end
+      if sets[1]["disabled"] or sets[0] == "global" # ignore disabled block
+        if $global["VERBOSITY"] then puts "*** "+sets[0]+" ("+sets[1]["title"]+") is disabled!" end
       else
-        if VERBOSITY then puts "*** execute "+sets[0]+" ("+sets[1]["title"]+")..." end
+        if $global["VERBOSITY"] then puts "*** execute "+sets[0]+" ("+sets[1]["title"]+")..." end
         res = queryGraylog(sets[1])
         out = generateoutput(sets[1],res)
-        if sets[1]["enablemail"] # send mail if set
-          sendmail(sets[1], out)
+        if sets[1]["sendmail"] # send mail if set
+          sendmail(sets[0], sets[1], out)
         else
           puts out
         end
