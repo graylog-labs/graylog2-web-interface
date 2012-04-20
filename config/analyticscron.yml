@@ -13,7 +13,7 @@
 #   limit    : 20          # sets the maximum of replyd lines
 #   sendmail : yes         # sends the result as mail, no will show result on console
 #   mailto   : [e@mail.com, f@mail.com] # sends mail to these addresses
-#   format   : plain       # use this format (filename "[type_or_own_template].[format].erp")
+#   format   : plain       # use this format (filename "[type_or_own_template].[format].erb")
 #   template : my          # only use if you want use a specific template
 #
 # 

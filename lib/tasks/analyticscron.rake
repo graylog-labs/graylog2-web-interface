@@ -41,16 +41,16 @@ def readSettings
         if not sets[1].has_key?(default[0]) # check if not exists -> set default value
           sets[1][default[0]] = default[1]
         end
-        if default[0] == "query" # convert erb in query
+        if default[0] == "query" # converts erb in query
           queryerb = ERB.new( sets[1][default[0]] )
           sets[1][default[0]] = queryerb.result(binding)
         end
       end
     end
   end
-  # remove global block from settings
+  # removes 'global' block from settings
   if settings.has_key?("global") then settings.delete("global") end
-  # replace pattern in TEMPLATEDIR
+  # replaces pattern in TEMPLATEDIR
   $global["TEMPLATEDIR"] = $global["TEMPLATEDIR"].sub("<GRAYLOG>",$global["GRAYLOG_BASEDIR"])
   return settings
 end
@@ -60,14 +60,14 @@ end
 # 
 # @param  settings   hash-table with all settings
 def readParams(settings)
-  if ENV["jobs"] # found
+  if ENV["jobs"] # found param
     jobs = ENV["jobs"].split(",")
     if $global["VERBOSITY"] then puts "*** jobs are explicit set: "+jobs.join(",") end
     # ignore disabled from config
     settings.each do |sets|
       sets[1]["disabled"] = true
     end
-    # start jobs, which explicit sets
+    # start jobs, which explicit sets via jobs=job1,job2
     jobs.each do |j|
       j = j.strip
       if settings.has_key?(j)
@@ -85,7 +85,7 @@ end
 # @params  sets   local settings for this request
 # @return  hash-table with result set
 def queryGraylog(sets)
-  if sets["query"] == nil    # check query empthy
+  if sets["query"] == nil    # check query empty
     puts "*** missing query!"
     return nil
   end
@@ -137,7 +137,7 @@ def generateoutput(sets, result)
                  result[:result][i].level, result[:result][i].created_at, result[:result][i].line, result[:result][i].streams.join(", "))
       end
     else
-      puts "*** FAILED: Operation '{result[:operation]}' not implemented!"
+      puts "*** FAILED: Operation '#{result[:operation]}' not implemented!"
   end
   return rhtml.result(o.get_binding)
 end
@@ -145,15 +145,16 @@ end
 # Sends text to all mail recipients.
 # sets['sendmail'] will be ignore
 # 
-# @param sets   die lokalen Einstellungen
-# @param text   der zu sendende Text
+# @param block  name of this set block
+# @param sets   local settings
+# @param text   this text will be send
 def sendmail(blockname, sets, text)
   if $global["SMTPSERVER"] == nil
-    puts "Cant send mail! No SMTP-Server defined."
+    puts "Cant send mail! No SMTP server defined."
     return
   end
   if $global["MAILFROM"] == nil
-    puts "Cant send mail! No mail from defined."
+    puts "Cant send mail! No 'mail from' defined."
     return
   end
   sets["mailto"].each do |m|
@@ -173,7 +174,7 @@ X-Sender: graylog2
     Net::SMTP.start($global["SMTPSERVER"]) do |smtp|
       smtp.send_message body, $global["MAILFROM"], m
     end
-    syslog("Report "+blockname+" ("+sets["title"]+") sended to "+m+".")
+    syslog("Report "+blockname+" ("+sets["title"]+") sent to "+m+".")
   end
 end
 
@@ -253,7 +254,7 @@ end
 #
 
 namespace :analyticscron do
-  desc "Fuehrt einen beliebigen Analytics Shell Befehl aus und sendet Antwort ggf. als Mail."
+  desc "This job executes any command on analytics shell and sends result as mail."
   task :exec => :environment do
     settings = readSettings() # config-file
     if $global["VERBOSITY"]
