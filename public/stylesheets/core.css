@@ -21,6 +21,71 @@ td {
   color: #08c;
 }
 
+.light {
+  color: #333;
+  font-family: Georgia,"Times New Roman",Times,serif;
+}
+
+.bigger {
+  font-size: 15px;
+}
+
+.description {
+  position: relative;
+  top: -5px;
+  margin-bottom: 10px;
+  width: 70%;
+  color: #333;
+  font-family: Georgia,"Times New Roman",Times,serif;
+  font-size: 15px;
+  line-height: 19px;
+}
+
+.short-description {
+  position: relative;
+  top: -5px;
+  margin-bottom: 5px;
+  width: 70%;
+  font-family: Georgia,"Times New Roman",Times,serif;
+  font-size: 15px;
+  line-height: 19px;
+}
+
+.black {
+    color: #000 !important;
+}
+
+.loading {
+    height: 200px;
+    width: 100%;
+    background-image: url(../images/loading.gif);
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.center {
+    width: 100%;
+    text-align: center;
+}
+
+.top-right {
+  width: 25%;
+  text-align: right;
+  float: right;
+}
+
+.tickLabel {
+  color: #000 !important;
+}
+
+.status-okay-text {
+  color: green;
+}
+
+.status-alarm-text {
+  color: #f00;
+}
+
 .message-row:hover {
   color: #08c !important;
   cursor: pointer;
