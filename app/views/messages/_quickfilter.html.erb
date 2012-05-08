@@ -84,7 +84,10 @@
 <% end -%>
 
 <% unless @quickfilter_result_count.blank? %>
-  <br />Quickfilter hit <span class="highlighted"><%= number_with_delimiter(@quickfilter_result_count, :delimiter => '.')  %></span> messages.
+  <div>
+    <br />Quickfilter hit <span class="highlighted"><%= number_with_delimiter(@quickfilter_result_count, :delimiter => '.')  %></span> messages.
+    <%= render :partial => "download_quickfilter"%>
+  </div>
 <% end %>
 
 </div>

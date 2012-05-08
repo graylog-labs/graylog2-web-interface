@@ -91,9 +91,17 @@ class MessageGateway
 
   def self.all_by_quickfilter(filters, page = 1, opts = {})
     histogram_only = !opts[:date_histogram].blank? and opts[:date_histogram] == true
+    override_pagination = opts[:override_pagination_settings]
 
     if histogram_only
       options = nil
+    elsif override_pagination
+      begin
+        msgs_per_page = (opts[:messages_per_page].to_i == 0) ? Message::LIMIT : opts[:messages_per_page].to_i
+      rescue
+        msgs_per_page = Message::LIMIT
+      end
+      options = set_messages_per_page(msgs_per_page).merge(@default_query_options)
     else
       options = pagination_options(page).merge(@default_query_options)
     end
@@ -269,6 +277,10 @@ class MessageGateway
     page = 1 if page.blank?
 
     { :per_page => Message::LIMIT, :page => page }
+  end
+
+  def self.set_messages_per_page(messages_per_page)
+    { :per_page => messages_per_page }
   end
 
 end

@@ -108,7 +108,7 @@ class MessageGatewayTest < ActiveSupport::TestCase
       assert_equal 0, MessageGateway.all_by_quickfilter(:additional => {:keys => [:bar], :values => ["bar"]}).count
     end
 
-    context "quickfiltering by dates" do
+    context "by dates" do
 
       should "filter messages from date with matches" do
         bm(:created_at => (Time.now - (30)).to_f)
@@ -138,6 +138,42 @@ class MessageGatewayTest < ActiveSupport::TestCase
       should "filter messages from date to date without matches" do
         bm(:created_at => Time.now)
         assert_equal 0, MessageGateway.all_by_quickfilter(:date => "from 2 minutes ago to 1 minute ago").count
+      end
+
+    end
+
+    context "overriding pagination settings" do
+
+      setup do
+        messages = Message::LIMIT + 2
+        bm(:level => 3)
+        (1..messages).each { bm(:level => 4) }
+      end
+
+      should "using a lower limit" do
+        limit = Message::LIMIT - 2
+        assert_equal limit, MessageGateway.all_by_quickfilter({:severity => 4}, 1,
+                                                           :override_pagination_settings => true,
+                                                           :messages_per_page => limit).count
+      end
+
+      should "using an upper limit" do
+        limit = Message::LIMIT + 2
+        assert_equal limit, MessageGateway.all_by_quickfilter({:severity => 4}, 1,
+                                                           :override_pagination_settings => true,
+                                                           :messages_per_page => limit).count
+      end
+
+      should "keeping limit if override is false" do
+        assert_equal Message::LIMIT, MessageGateway.all_by_quickfilter({:severity => 4}, 1,
+                                                           :override_pagination_settings => false,
+                                                           :messages_per_page => "10").count
+      end
+
+      should "keeping limit if new limit is not a number" do
+        assert_equal Message::LIMIT, MessageGateway.all_by_quickfilter({:severity => 4}, 1,
+                                                           :override_pagination_settings => false,
+                                                           :messages_per_page => "lol").count
       end
 
     end

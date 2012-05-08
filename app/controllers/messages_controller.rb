@@ -1,6 +1,8 @@
 class MessagesController < ApplicationController
   before_filter :do_scoping
 
+  respond_to :html, :json, :only => :index
+
   filter_access_to :all
 
   # XXX ELASTIC clean up triple-duplicated quickfilter shit
@@ -46,7 +48,10 @@ class MessagesController < ApplicationController
         @total_count = @messages.total_result_count
       else
         @additional_filters = Quickfilter.extract_additional_fields_from_request(params[:filters])
-        @messages = MessageGateway.all_by_quickfilter(params[:filters], params[:page])
+        @messages = MessageGateway.all_by_quickfilter(params[:filters], params[:page], {
+                                                      :override_pagination_settings => (params[:format]) ? true : false,
+                                                      :messages_per_page => params[:number_messages]
+                                                     })
         @quickfilter_result_count = @messages.total_result_count
         @total_count = MessageGateway.total_count # XXX ELASTIC Possibly read cached from first all_paginated result?!
       end
@@ -75,6 +80,8 @@ class MessagesController < ApplicationController
     if ::Configuration.allow_version_check
       @last_version_check = current_user.last_version_check
     end
+
+    respond_with @messages
   end
 
   def show

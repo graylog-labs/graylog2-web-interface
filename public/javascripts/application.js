@@ -50,6 +50,11 @@ $(document).ready(function(){
     });
   });
 
+  // SHOW DOWNLOAD OPTIONS
+  $("#show-download-options").on("click", function() {
+    $("#download-options").toggle("fast");
+  });
+
   // ADD ADDITIONAL FIELD TO QUICKFILTER
   $("#qf-add-additional-field").on("click", function() {
     field  = "<div class='control-group'><input name='filters[additional][keys][]' type='text' class='input-xlarge qf-additional-field-key' />"
