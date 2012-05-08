@@ -1,0 +1,18 @@
+<%= link_to "Download results", "#", :id => "show-download-options" %>
+<%= form_tag(messages_path, :method => "GET", :id => "download-options", :class => "form-inline pull-right", :style => "display:none;") do -%>
+  <% params[:filters].each do |key, value| %>
+    <% if key == "additional" %>
+      <% value["keys"].each do |k| %>
+        <%= hidden_field_tag "filters[#{key}][keys][]", k %>
+      <% end %>
+      <% value["values"].each do |v| %>
+        <%= hidden_field_tag "filters[#{key}][values][]", v %>
+      <% end %>
+    <% else %>
+      <%= hidden_field_tag "filters[#{key}]", value %>
+    <% end %>
+  <% end %>
+  <%= hidden_field_tag "format", "json" %>
+  <%= text_field_tag "number_messages", nil, :placeholder => "Number of messages" %>
+  <button type="submit" class="btn">Download</button>
+<% end %>
