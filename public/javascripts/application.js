@@ -276,7 +276,7 @@ $(document).ready(function(){
   
     setInterval(function(){
       // Update current throughput every 5 seconds
-      $.post("/health/currentthroughput", function(data) {
+      $.post("health/currentthroughput", function(data) {
         json = eval('(' + data + ')');
         count = $(".health-throughput-current");
         count.html(json.count);
@@ -286,7 +286,7 @@ $(document).ready(function(){
       });
   
       // Update message queue size every 5 seconds
-      $.post("/health/currentmqsize", function(data) {
+      $.post("health/currentmqsize", function(data) {
         mqjson = eval('(' + data + ')');
         mqcount = $(".health-mqsize-current");
         mqcount.html(mqjson.count);
