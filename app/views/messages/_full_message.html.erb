@@ -13,7 +13,7 @@
   </span>
 </h2>
 
-<p class="messages-show-message"><%= @message.message %></p>
+<pre class="messages-show-message"><%= @message.message %></pre>
 
 <div id="messages-show-terms-modal" style="display: none;">
   <h2>Terms of message <span class="highlighted"><%= @message.id %></span></h2>
@@ -52,11 +52,8 @@
 <% end %>
 
 <% unless @message.full_message.blank? %>
-  <% escaped_fullmsg = h(@message.full_message) %>
   <h3>Full message:</h3>
-  <p class="messages-show-message messages-full-message">
-    <%= raw(auto_link(escaped_fullmsg.gsub(/\n/, '<br />'), :html => { :target => "blank" }, :link => :urls)) %>
-  </p>
+  <pre class="messages-show-message messages-full-message"><%= @message.full_message %></pre>
 <% end %>
 
 <% unless @message.streams.blank? %>
