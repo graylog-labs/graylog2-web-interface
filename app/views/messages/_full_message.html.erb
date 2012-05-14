@@ -13,7 +13,8 @@
   </span>
 </h2>
 
-<pre class="messages-show-message"><%= @message.message %></pre>
+<% elem = (@message.message.include? "\n") ? "pre" : "p" %>
+<<%= elem %> class="messages-show-message"><%= @message.message %></<%= elem %>>
 
 <div id="messages-show-terms-modal" style="display: none;">
   <h2>Terms of message <span class="highlighted"><%= @message.id %></span></h2>
@@ -53,7 +54,8 @@
 
 <% unless @message.full_message.blank? %>
   <h3>Full message:</h3>
-  <pre class="messages-show-message messages-full-message"><%= @message.full_message %></pre>
+  <% elem = (@message.full_message.include? "\n") ? "pre" : "p" %>
+  <<%= elem %> class="messages-show-message messages-full-message"><%= @message.full_message %></<%= elem %>>
 <% end %>
 
 <% unless @message.streams.blank? %>
