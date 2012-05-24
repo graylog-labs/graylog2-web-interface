@@ -107,8 +107,9 @@ module ApplicationHelper
             selection: { mode: 'x' }
           }
         );
-      }
-
+      };
+      
+      var from, to;
       $('#{options[:inject]}').bind('plotselected', function(event, ranges) {
         $('#streams-sidebar-totalcount').hide();
         from = (ranges.xaxis.from/1000).toFixed(0);
@@ -118,10 +119,9 @@ module ApplicationHelper
         $('#graph-rangeselector-to').val(to);
       });
 
-      $.post('#{url}', function(data) {
-        json = eval('(' + data + ')');
+      $.post('#{url}', function(json) {
           plot(json.data);
-        });
+        }, 'json');
     </script>"
   end
 
