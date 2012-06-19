@@ -41,7 +41,7 @@
 <% end %>
 
 <% if @message.additional_fields? %>
-  <% @message.additional_fields.each_pair do |key, value| %>
+  <% @message.additional_fields.sort.each do |key, value| %>
     <h4>
       <%= key %>:
       <span class="highlighted">
