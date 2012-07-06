@@ -16,7 +16,7 @@ ruby_string="${GRAYLOG2_RUBY_VERSION:-1.9.3}"
 bundler_gem_home="vendor/bundle" 
 
 if rvm list strings | grep -q "${ruby_string}" ; then 
-  rvm use --create "${ruby_string}@buildr" 
+  rvm use --create "${ruby_string}@graylog2" 
 
   gem list | grep 'bundler' &> /dev/null 
   if [ $? -gt 0 ]; then 
