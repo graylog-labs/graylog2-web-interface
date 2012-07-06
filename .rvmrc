@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+cat <<EOF
+********************************************************************
+*  RVM will install the environment for Graylog2 development now.
+*  By default it will use 1.9.3.
+*  To force use an other version of ruby, set GRAYLOG2_RUBY_VERSION.
+*  Examples:
+*     export GRAYLOG2_RUBY_VERSION=1.9.3
+*     export GRAYLOG2_RUBY_VERSION=ree
+*     export GRAYLOG2_RUBY_VERSION=jruby-1.6.7
+*     export GRAYLOG2_RUBY_VERSION=1.8.7
+********************************************************************
+EOF
+
+ruby_string="${GRAYLOG2_RUBY_VERSION:-1.9.3}"
+bundler_gem_home="vendor/bundle" 
+
+if rvm list strings | grep -q "${ruby_string}" ; then 
+  rvm use --create "${ruby_string}@buildr" 
+
+  gem list | grep 'bundler' &> /dev/null 
+  if [ $? -gt 0 ]; then 
+    echo "Installing bundler..." 
+    gem install bundler 
+  fi
+
+  bundle install
+else
+  echo "${ruby_string} was not found, please run 'rvm install ${ruby_string}' and then cd back into the project directory." 
+fi
