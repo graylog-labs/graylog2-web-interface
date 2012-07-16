@@ -20,10 +20,33 @@ additional_columns ||= []
         $(this).addClass("active");
       }
     })
+
+    $('div#messages-bottom > form').bind('submit', function(ev){
+        var pageNumber = this.querySelector('input#go-to-page').value;
+        var newUrl = window.location.href.replace(/page\s*=\d*/, 'page='+pageNumber);
+
+        if (newUrl==window.location.href){
+            if (window.location.href.indexOf('?') < 0){
+                newUrl = window.location.href + '?page='+pageNumber;
+            } else{
+                newUrl = window.location.href += '&page='+pageNumber;
+            }
+        }
+        window.location = newUrl;
+        return false;
+    });
+
   });
+
 </script>
 
+<div id="messages-container">
+
 <table class="messages<%= defined?(@inline_version) ? " messages-inline" : nil %>">
+  <caption>
+    Page <%= current_page %>
+      of <%= Integer(messages.total_result_count / Message::LIMIT)+1 %>
+  </caption>
   <thead>
     <tr>
       <th class="messages-c-date">Date</th>
@@ -45,10 +68,12 @@ additional_columns ||= []
     <% i = 0 %>
     <% @messages.each do |message|  %>
       <tr id="<%= message.id %>"
-          class="<%= i.modulo(2) == 1 ? "tr-light" : "tr-dark" %> message-row udate-<%= message.uniform_date_string %> <%= "highlighted" if message.id.to_s == params[:message_id] %>">
+          class="<%= "message-severity-background-#{message.level}" if @show_severity_as == "background" %> <%= i.modulo(2) == 1 ? "tr-light" : "tr-dark" %> message-row udate-<%= message.uniform_date_string %> <%= "highlighted" if message.id.to_s == params[:message_id] %> ">
         <td><%= time_to_formatted_s(Time.at(message.created_at)) %></td>
         <td style="white-space: nowrap;"><%= message.host.blank? ? nil : h(message.host) %></td>
-        <td><%= syslog_level_to_human(message.level) %></td>
+        <td class="<%="message-severity-#{@show_severity_as}-#{message.level}"%>" title="<%=syslog_level_to_human(message.level)%>">
+            <%= syslog_level_to_human(message.level) %>
+        </td>
         <td><%= message.facility %></td>
         <% additional_columns.each do |col| %>
           <td><%= message.additional_fields[col].blank? ? "-" : message.additional_fields[col] %></td>
@@ -64,16 +89,29 @@ additional_columns ||= []
 </table>
 
 <% unless defined? inline_version %>
-<div id="messages-bottom">
-  <% append_params = Array.new if !defined?(append_params) or append_params.blank? %>
-  <% unless current_page <= 1 %>
-    <%= link_to "previous page", params.merge(:page => previous_page), :class => "previous-page" %>
+  <div id="messages-bottom">
+  <form>
+    <input type="hidden" value="">
+
+    <% append_params = Array.new if !defined?(append_params) or append_params.blank? %>
+    <% unless current_page <= 1 %>
+      <%= link_to "previous page", params.merge(:page => previous_page), :class => "previous-page" %>
   <% end %>
 
-  <% if total_messages > (Message::LIMIT*current_page) %>
-    <%= link_to "next page", params.merge(:page => next_page), :class => "next-page" %>
+    <% if total_messages > (Message::LIMIT*current_page) %>
+      <%= link_to "next page", params.merge(:page => next_page), :class => "next-page" %>
   <% end %>
+
+    <div style="text-align: center">
+      Page 
+      <input type="text" value="<%= current_page %>" size="5" id="go-to-page">
+      of <%= Integer(messages.total_result_count / Message::LIMIT)+1 %>
+    </div>
+
+  </form>
 </div>
 
 <br style="clear: both;" />
 <% end %>
+
+</div>

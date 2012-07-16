@@ -35,6 +35,28 @@ module ApplicationHelper
       ]
   end
 
+  def syslog_level_to_icons level
+    return "" if level == nil
+
+    map = {
+      0 => "critical.png",
+      1 => "critical.png",
+      2 => "critical.png",
+      3 => "error.png",
+      4 => "warning.png",
+      5 => "info.png",
+      6 => "info.png",
+      7 => "info.png"
+    }
+
+    icon = map[level];
+    if not icon 
+      return ""
+    end
+
+    return icon;
+  end
+
   def syslog_level_to_human level
     return "None" if level == nil
 

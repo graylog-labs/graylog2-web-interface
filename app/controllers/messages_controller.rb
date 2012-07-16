@@ -73,6 +73,8 @@ class MessagesController < ApplicationController
     @use_backtotop = true
     @load_messages = true
 
+    @show_severity_as = ::Configuration.nested_general_config :ui, :show_severity_as, :text
+
     if ::Configuration.allow_version_check
       @last_version_check = current_user.last_version_check
     end
@@ -82,6 +84,8 @@ class MessagesController < ApplicationController
     @has_sidebar = true
     @load_flot = true
     @load_messages = true
+
+    @show_severity_as = ::Configuration.nested_general_config :ui, :show_severity_as, :text
 
     @message = MessageGateway.retrieve_by_id(params[:id])
     @terms = MessageGateway.analyze(@message.message)
@@ -114,6 +118,8 @@ class MessagesController < ApplicationController
     @has_sidebar = true
     @load_flot = true
     @use_backtotop = true
+
+    @show_severity_as = ::Configuration.nested_general_config :ui, :show_severity_as, :text
 
     @from = Time.at(params[:from].to_i-Time.now.utc_offset)
     @to = Time.at(params[:to].to_i-Time.now.utc_offset)
