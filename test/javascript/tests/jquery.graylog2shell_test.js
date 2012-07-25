@@ -41,6 +41,8 @@
   });
 
   test("input is emptied after pressing enter", 2, function() {
+  this.ajaxStub = sinon.stub($, "ajax").returns(true);
+
     this.elem.shell();
     $("#shell-command-input").val('graylog');
     strictEqual($("#shell-command-input").val(), 'graylog', "input should be graylog");
@@ -61,6 +63,8 @@
   });
 
   test("arrow key up should give the last command", 2, function() {
+    this.ajaxStub = sinon.stub($, "ajax").returns(true);
+
     this.elem.shell();
     $("#shell-command-input").val('graylog');
     strictEqual($("#shell-command-input").val(), "graylog", "input should be graylog");
@@ -75,6 +79,88 @@
 
     strictEqual($("#shell-command-input").val(), "graylog", "input should be graylog then");
   });
+
+  test("the shell history is 100 lines: integrational test", 4, function() {
+    this.ajaxStub = sinon.stub($, "ajax").returns(true);
+
+    this.elem.shell();
+    var e = $.Event("keyup"),
+        $input = $("#shell-command-input"),
+        i;
+
+    for (i = 0; i < 100; i++) {
+      this.enterText(i);
+    }
+
+    e.which = 38;
+    $input.trigger(e);
+
+    strictEqual($input.val(), "99");
+
+    $input.trigger(e);
+    $input.trigger(e);
+    $input.trigger(e);
+
+    strictEqual($input.val(), "96");
+
+    for (i = 0; i < 100; i++) {
+      $input.trigger(e);
+    }
+    strictEqual($input.val(), "0");
+
+    $input.trigger(e);
+    $input.trigger(e);
+    strictEqual($input.val(), "0");
+  });
+
+  test("the shell history: arrow down goes backward in history: integrational test", 4, function() {
+    this.ajaxStub = sinon.stub($, "ajax").returns(true);
+
+    this.elem.shell();
+    var e = $.Event("keyup"),
+        $input = $("#shell-command-input"),
+        i;
+
+    for (i = 0; i < 100; i++) {
+      this.enterText(i);
+    }
+
+    e.which = 38;
+    $input.trigger(e);
+
+    strictEqual($input.val(), "99");
+
+    $input.trigger(e);
+    $input.trigger(e);
+    $input.trigger(e);
+
+    strictEqual($input.val(), "96");
+
+    e.which = 40;
+
+    $input.trigger(e);
+    $input.trigger(e);
+    $input.trigger(e);
+
+    strictEqual($input.val(), "99");
+    $input.trigger(e);
+    strictEqual($input.val(), "99");
+  });
+
+  test("_handleHistory() sets up to 100 elements", 1, function() {
+    this.elem.shell();
+    var instance = $.data(this.elem[0], "shell"),
+        testinput = [],
+        i;
+
+    for (i = 0; i <= 100; i++) {
+      instance._handleHistory(i);
+      testinput[i] = i;
+    }
+
+    strictEqual(instance.history[99], 99);
+  });
+
 
   test("a loading div is shown after calling processInput", 1, function() {
     this.ajaxStub = sinon.stub($, "ajax").returns(true);
@@ -97,6 +183,8 @@
   });
 
   test("input 'clear' clears the shell", 2, function() {
+    this.ajaxStub = sinon.stub($, "ajax").returns(true);
+
     this.elem.shell();
     this.enterText("graylog");
     this.enterText("test");
@@ -117,6 +205,8 @@
   });
 
   test("if history is disabled, new input shows NOT up after submitting by pressing enter", 1, function() {
+    this.ajaxStub = sinon.stub($, "ajax").returns(true);
+
     this.elem.shell({history: false});
     this.enterText("graylog");
     this.enterText("test");
@@ -125,7 +215,8 @@
   });
 
   test("jQuery ajax should be called after pressing enter", 3, function() {
-    this.spy($, "ajax");
+    this.ajaxStub = sinon.stub($, "ajax").returns(true);
+
     this.elem.shell();
     this.enterText("test");
 
@@ -167,7 +258,7 @@
     instance._renderCallback({code: "error", reason: "Internal error."});
 
     strictEqual($('#shell').find('.shell-error').length, 1);
-    strictEqual($('#shell').find('.shell-error').text(), "01:00:00 - Internal error."); // sinon qunit date is always 01:00
+    strictEqual($('#shell').find('.shell-error').text(), "01:00:00 - Error: Internal error."); // sinon qunit date is always 01:00
   });
 
   test("renderCallback() renders count results", 3, function() {
