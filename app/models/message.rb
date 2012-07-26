@@ -4,11 +4,15 @@ class Message
   ADDITIONAL_FIELD_SEPARATOR = '_'
   RESERVED_ADDITIONAL_FIELDS = %w(_type _index _version)
 
-  @fields = [ :id, :message, :full_message, :created_at, :facility, :level, :host, :file, :line, :deleted, :streams ]
+  @fields = [ :id, :message, :full_message, :facility, :level, :host, :file, :line, :deleted, :streams ]
   @fields.each { |f| attr_accessor(f) }
 
   attr_accessor :plain, :total_result_count
 
+  def initialize
+    @created_at = 0
+  end
+  
   def self.parse_from_elastic(x)
     m = self.new
 
@@ -120,6 +124,19 @@ class Message
     return false
   end
 
+  def created_at
+    @created_at || 0
+  end
+  
+  def created_at=(t)
+    t ||= 0
+    begin
+      @created_at = Time.at(t).to_i
+    rescue RangeError
+      @created_at = 0
+    end  
+  end
+  
   def uniform_date_string
     d = Time.at(self.created_at)
     "#{d.year}-#{d.month}-#{d.day}"
