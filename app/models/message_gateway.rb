@@ -115,7 +115,7 @@ class MessageGateway
       query do
         boolean do
           # Short message
-          must { string("message:#{filters[:message]}") } unless filters[:message].blank?
+          must { string("#{filters[:message]}") } unless filters[:message].blank?
 
           # Facility
           must { term(:facility, filters[:facility]) } unless filters[:facility].blank?
