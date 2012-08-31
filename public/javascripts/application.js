@@ -273,19 +273,7 @@ $(document).ready(function() {
     //standardMapKeyOptions = { overlayClose:true }
     //$.mapKey("s", function() { $("#modal-stream-chooser").modal(standardMapKeyOptions); });
     //$.mapKey("h", function() { $("#modal-host-chooser").modal(standardMapKeyOptions); });
-  
-    var mqcount, count;
 
-    setInterval(function(){
-      // Update current throughput every 5 seconds
-      $.post("/health/currentthroughput", function(json) {
-        count = $(".health-throughput-current");
-        count.html(parseInt(parseInt(json.count)/5)); // /5, because this is the 5 second sum and we want only the 1 second average
-        count.fadeOut(200, function() {
-          count.fadeIn(200);
-        });
-      }, "json");
-    }, 5000);
 });
 
 function buildHostCssId(id) {

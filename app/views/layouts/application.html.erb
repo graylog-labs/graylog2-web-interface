@@ -34,6 +34,9 @@
   <% if @has_shell %>
     <%= javascript_include_tag "jquery.graylog2shell.js" %>
   <% end %>
+  <% if @health %>
+    <%= javascript_include_tag "health" %>
+  <% end %>
   <%= javascript_include_tag "realtime" if @has_realtime %>
   <%= javascript_include_tag "rails" %>
 </head>
