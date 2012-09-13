@@ -46,7 +46,7 @@
 
   <div id="top">
     <div id="userbar">
-      Logged in as <%= current_user.login %> &nbsp;<%= link_to "(Log out)", logout_path %>
+      <%= link_to "Logged in as " + h(current_user.login), :controller => 'users, :action => 'edit', :id => current_user.id %> &nbsp; <%= link_to "(Log out)", logout_path %>
     </div>
     <%= link_to image_tag("graylog.png", :id => "toplogo"), (current_user.reader? ? streams_path : messages_path)%>
     <ul id="topmenu">

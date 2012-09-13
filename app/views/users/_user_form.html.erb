@@ -1,11 +1,14 @@
 <%= form_for @user do |f| -%>
 
 <dl id="users-form">
+
+  <% permitted_to? :index, :users do %>
   <dt><%= label_tag 'login', "Username" %></dt>
   <dd>
     <%= f.text_field :login %>
     <span class="highlighted"><%= @user.errors[:login].join(" and ")%></span>
   </dd>
+  <% end %>
 
   <dt><%= label_tag 'email' %></dt>
   <dd>
@@ -31,6 +34,8 @@
     <span class="highlighted"><%= @user.errors[:password_confirmation].join(" and ")%></span>
   </dd>
 
+  <% permitted_to? :index, :users do %>
+
   <dt><%= label_tag 'role', 'Role'%></dt>
   <dd>
     <%= f.select(:role, user.valid_roles.collect {|r| [r.to_s.capitalize, r.to_s]}, :selected => (@user.role.blank? ? "admin" : @user.role)) %>
@@ -45,6 +50,8 @@
     <% end %>
     </ul>
   </dd>
+
+  <% end %>
 
   <dt>&nbsp;</dt>
   <dd><%= submit_tag "#{form_action.capitalize} user" %></dd>

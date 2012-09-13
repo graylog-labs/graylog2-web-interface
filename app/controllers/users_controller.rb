@@ -2,9 +2,7 @@ class UsersController < ApplicationController
   filter_access_to :index
   filter_access_to :show
   filter_access_to :new
-  filter_access_to :edit
   filter_access_to :create
-  filter_access_to :update
   filter_access_to :delete
 
   skip_before_filter :login_required, :only => [:first, :createfirst]
@@ -24,7 +22,11 @@ class UsersController < ApplicationController
   end
 
   def edit
-    @user = User.find params[:id]
+    if permitted_to? :index, :users then
+        @user = User.find params[:id]
+    else
+        @user = User.find current_user.id
+    end
   end
 
   def create
@@ -43,11 +45,24 @@ class UsersController < ApplicationController
     params[:user].delete :password if params[:user][:password].blank?
     params[:user].delete :password_confirmation if params[:user][:password_confirmation].blank?
 
-    @user = User.find(params[:id])
+    if permitted_to? :index, :users then
+        @user = User.find params[:id]
+    else
+        @user = User.find current_user.id
+
+        #disable saving of certain fields
+        params[:user].delete :login if not params[:user][:login].blank?
+        params[:user].delete :role if not params[:user][:role].blank?
+        params[:user].delete :stream_ids if not params[:user][:stream_ids].blank?
+    end
 
     if @user.update_attributes(params[:user]) then
       flash[:notice] = 'User has been updated'
-      redirect_to users_path
+      if permitted_to? :index, :users then
+        redirect_to users_path
+      else
+        render :action => :edit
+      end
     else
       flash[:error] = 'Could not update user'
       render :action => :edit
