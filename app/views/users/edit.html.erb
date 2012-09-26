@@ -1,8 +1,9 @@
+<% permitted_to? :index, :users do %>
 <div id="users-delete">
   <br />
   <%= awesome_link "Delete user", user_path(@user), :method => :delete, :confirm => "Really delete ths user?" %>
 </div>
-
+<% end %>
 
 <h1>Edit user <span class="highlighted"><%= @user.login %></span></h1>
 <% @user.password = @user.password_confirmation = nil %>
@@ -15,4 +16,4 @@
     Api Key: <%=@user.api_key%>
   <% end %>
   <%= awesome_link "Generate Api Key", key_user_path(@user), :method => :post, :confirm => "Really reset key?" %>
-<div/>  
+<div/>
