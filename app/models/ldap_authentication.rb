@@ -1,6 +1,10 @@
+require "net/ldap/dn"
 class LdapAuthentication
   def initialize(login, password)
     @login    = login
+    @login_dn = Net::LDAP::DN.new( ::Configuration.ldap_username_attribute, 
+                                   login,
+                                   ::Configuration.ldap_base )
     @password = password
   end
 
@@ -28,6 +32,7 @@ class LdapAuthentication
   def session
     Net::LDAP.new(:host       => ::Configuration.ldap_host,
                   :port       => ::Configuration.ldap_port,
-                  :auth => { method: :simple, username: @login, password: @password } )
+                  :base       => ::Configuration.ldap_base,
+                  :auth => { method: :simple, username: @login_dn, password: @password } )
   end
 end
