@@ -6,7 +6,7 @@
     </span>
   </h2>
 
-  <p class="messages-show-message"><%= @message.message %></p>
+  <p class="messages-show-message"><%= replace_invalid_chars(@message.message) %></p>
 
   <div id="messages-show-terms-modal" style="display: none;">
     <h2>Terms of message <span class="highlighted"><%= @message.id %></span></h2>
@@ -44,8 +44,9 @@
     <% end %>
   <% end %>
 
-  <% unless @message.full_message.blank? %>
-    <% escaped_fullmsg = h(@message.full_message) %>
+  <% full_message = replace_invalid_chars(@message.full_message)
+     unless full_message.blank? %>
+    <% escaped_fullmsg = h(full_message) %>
     <h3>Full message:</h3>
     <p class="messages-show-message messages-full-message">
       <%= raw(auto_link(escaped_fullmsg.gsub(/\n/, '<br />'), :html => { :target => "blank" }, :link => :urls)) %>
