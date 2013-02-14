@@ -29,3 +29,8 @@
     </div>
   <% end %>
 </div>
+
+<% if params[:filters].blank? %>
+<%= recent_index_switcher(params[:showall]) %>
+<br />
+<% end %>

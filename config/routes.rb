@@ -10,17 +10,16 @@ Graylog2WebInterface::Application.routes.draw do
       post :createfirst
       get :first
     end
+    member do
+      post :key
+    end
   end
 
   resources :messages do
     collection do
-      post :showrange
       get :showrange
-      post :deletebystream
-      post :deletebyquickfilter
-    end
-    member do
-      post :show
+      get :realtime
+      get :universalsearch
     end
   end
 
@@ -32,12 +31,11 @@ Graylog2WebInterface::Application.routes.draw do
     resources :messages
 
     member do
-      post :showrange
       get :showrange
     end
 
     collection do
-      post :quickjump
+      get :quickjump
     end
   end
 
@@ -47,12 +45,13 @@ Graylog2WebInterface::Application.routes.draw do
   resources :streams do
     resources :messages
     resources :streamrules
-    resources :forwarders
 
     resources :dashboard
 
     member do
       get :analytics
+      get :alarms
+      get :outputs
       post :favorite
       post :unfavorite
       post :alertable
@@ -61,24 +60,23 @@ Graylog2WebInterface::Application.routes.draw do
       get :showrange
       post :rules
       get :rules
-      post :forward
-      get :forward
       post :setalarmvalues
       post :togglealarmactive
       post :togglefavorited
       post :togglealarmforce
-      post :togglesubscription
       post :toggledisabled
+      post :togglecallbackactive
       post :rename
       post :clone
       get :settings
-      post :subscribe
-      post :unsubscribe
       post :categorize
       post :addcolumn
       delete :removecolumn
       post :shortname
       post :related
+      post :add_output
+      delete :delete_output
+      put :edit_output
     end
   end
 
@@ -88,21 +86,10 @@ Graylog2WebInterface::Application.routes.draw do
     end
   end
 
-  resources :subscribedstreams do
-    member do
-      post :toggle
-    end
-  end
-
   resources :streamcategories do
     member do
       get :rename
     end
-  end
-
-  resource :analytics do
-    get :index
-    post :shell
   end
 
   resources :versioncheck do
@@ -115,26 +102,43 @@ Graylog2WebInterface::Application.routes.draw do
 
   resources :visuals, :constraints => {:id => /[a-z]+/} do
     member do
-      post :fetch
+      get :fetch
     end
   end
 
   resources :health do
     collection do
-      post :currentthroughput
-      post :currentmqsize
+      get :currentthroughput
+      get :currentmqsize
     end
   end
 
-  resources :retentiontime
+  resources :additionalcolumns
 
   resources :settings do
     collection do
       post :store
     end
+    
+    member do
+      delete :removecolumn
+    end
   end
 
+  resources :systemsettings do
+    collection do
+      post :allow_usage_stats
+      post :toggle_alarmcallback_force
+    end
+  end
+
+  resources :amqp_settings
+
   match '/visuals/fetch/:id' => 'visuals#fetch',:as => "visuals"
+
+  # The contraints makes the typeclass parameter accept dots. Everything except slash is allowed.
+  match '/plugin_configuration/configure/:plugin_type/:typeclass' => "plugin_configuration#configure", :constraints => { :typeclass => /[^\/]+/ }, :via => :get
+  match '/plugin_configuration/configure/:plugin_type/:typeclass' => "plugin_configuration#store", :constraints => { :typeclass => /[^\/]+/ }, :via => :post
 
   root :to => 'messages#index'
 end

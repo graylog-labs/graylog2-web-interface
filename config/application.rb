@@ -10,13 +10,15 @@ require "action_controller/railtie"
 require "action_mailer/railtie"
 require "active_resource/railtie"
 require "rails/test_unit/railtie"
+require "sprockets/railtie"
+
 
 # If you have a Gemfile, require the gems listed there, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(:default, Rails.env) if defined?(Bundler)
 
-GRAYLOG2_VERSION = "0.9.6p1"
-GRAYLOG2_VERSION_TIMESTAMP = 1324660530
+GRAYLOG2_VERSION = "0.10.0"
+GRAYLOG2_VERSION_TIMESTAMP = 1360859502
 
 module Graylog2WebInterface
   class Application < Rails::Application
@@ -51,5 +53,11 @@ module Graylog2WebInterface
 
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
+
+    # Configure the asset pipeline
+    config.assets.enabled = true
+    config.assets.version = '1.0'
+    config.assets.prefix = '/assets'
+    config.assets.compile = true
   end
 end

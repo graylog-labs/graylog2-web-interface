@@ -7,3 +7,14 @@
 <% @user.password = @user.password_confirmation = nil %>
 
 <%= render :partial => "user_form", :locals => {:form_action => "update", :user => @user}%>
+
+<h3>API Key</h3>
+<div id="users-apikey">
+  <% if @user.api_key.blank? %>
+    No API key found
+  <% else %>
+    <code><%= @user.api_key %></code>
+  <% end %>
+  <br /><br />
+  <%= awesome_link "Generate new API Key", key_user_path(@user), :method => :post, :confirm => "Really reset key?" %>
+</div>  

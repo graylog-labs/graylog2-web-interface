@@ -3,7 +3,7 @@ Your current time: <%= gl_date(Time.zone.now) %>
 
 <div id="sidebar-graph" style="height: 100px;"></div>
 <div id="graph-rangeselector" class="graph-rangeselector-sidebar" style="display: none;">
-  <%= form_tag showrange_messages_path do %>
+  <%= form_tag(showrange_messages_path, :method => :get) do %>
     <%= hidden_field_tag :from, nil, :id => "graph-rangeselector-from" %>
     <%= hidden_field_tag :to, nil, :id => "graph-rangeselector-to" %>
     <%= awesome_submit_link "Show messages in range" %>
@@ -26,41 +26,9 @@ Your current time: <%= gl_date(Time.zone.now) %>
 <% end %>
 </ul>
 
-<h3>Jobs & Tasks <%= tooltip("Notifications") %></h3>
-<ul id="jobsandtasks">
-  <li>
-    Stream subscriptions:
-    <% job = Job["streamsubscription_check"] %>
-    <% if job and job.active? %>
-      <span class="status-okay-text">running</span>
-    <% else %>
-      <span class="status-alarm-text">not running</span>
-    <% end %>
-  </li>
-
-  <li>
-    Stream alerts:
-    <% if AlertedStream.job_active? %>
-      <span class="status-okay-text">running</span>
-    <% else %>
-      <span class="status-alarm-text">not running</span>
-    <% end %>
-  </li>
-</ul>
-
-<% if !MessageGateway.mapping_valid? %>
-  <div id="invalid-mapping-warning">
-    Your ElasticSearch mapping is invalid! Make sure it has been created by the graylog2-server.
-    <%= tooltip("Fixing-invalid-ElasticSearch-mappings") %>
-  </div>
-<% end %>
-
 <% if current_user.role == "admin" %>
-<br />
 
-<%= awesome_link "Open dashboard", dashboard_index_path, :style => "display: inline;", :target => "_blank" %>
-
-<br /><br />
-<%= awesome_link "Server health", health_index_path %>
+  <br /><br />
+  <%= awesome_link "Server health", health_index_path %>
 
 <% end %>

@@ -1,7 +1,7 @@
 class Configuration
-  @general_config = YAML::load File.read(Rails.root.to_s + "/config/general.yml")
-  @email_config = YAML::load File.read(Rails.root.to_s + "/config/email.yml")
-  @indexer_config = YAML::load File.read(Rails.root.to_s + "/config/indexer.yml")
+  @general_config = YAML::load File.read((ENV['GRAYLOG2_BASE'] || Rails.root.to_s) + "/config/general.yml")
+  @indexer_config = YAML::load File.read((ENV['GRAYLOG2_BASE'] || Rails.root.to_s) + "/config/indexer.yml")
+  @ldap_config = YAML::load File.read((ENV['GRAYLOG2_BASE'] || Rails.root.to_s) + "/config/ldap.yml")
 
   def self.config_value(root, nesting, key, default = nil)
     [root, root[nesting.to_s], root[nesting.to_s][key.to_s]].any?(&:blank?) ? default : root[nesting.to_s][key.to_s]
@@ -25,8 +25,8 @@ class Configuration
     general_config :allow_version_check, false
   end
 
-  def self.allow_deleting
-    general_config :allow_deleting, false
+  def self.is_demo_system?
+    general_config :is_demo_system, false
   end
 
   def self.custom_cookie_name
@@ -37,58 +37,6 @@ class Configuration
     general_config :date_format, "%d.%m.%Y - %H:%M:%S"
   end
 
-  def self.hoptoad_config(key, default = nil)
-    nested_general_config :hoptoad, key, default
-  end
-
-  def self.hoptoad_enabled?
-    hoptoad_config :enabled, false
-  end
-
-  def self.hoptoad_ssl?
-    hoptoad_config :ssl
-  end
-
-  def self.hoptoad_key
-    hoptoad_config :api_key
-  end
-
-  def self.hoptoad_host
-    hoptoad_config :host
-  end
-
-  def self.subscr_config(key, default)
-    nested_general_config :subscriptions, key, default
-  end
-
-  def self.subscription_from_address
-    subscr_config :from, 'graylog2@example.org'
-  end
-
-  def self.subscription_subject
-    subscr_config :subject, "[graylog2] Subscription"
-  end
-
-  def self.streamalarm_config(key, default)
-    nested_general_config :streamalarms, key, default
-  end
-
-  def self.streamalarm_from_address
-    streamalarm_config :from, "graylog2@example.org"
-  end
-
-  def self.streamalarm_subject
-    streamalarm_config :subject, "[graylog2] Stream alarm!"
-  end
-
-  def self.email_config(key = nil, default = nil)
-    if key
-      config_value @email_config, Rails.env, key, default
-    else
-      @email_config[Rails.env]
-    end
-  end
-  
   def self.indexer_config(key = nil, default = nil)
     if key
       config_value @indexer_config, Rails.env, key, default
@@ -97,28 +45,64 @@ class Configuration
     end
   end
 
-  def self.email_transport_type
-    default = :sendmail
-    email_config('via', default).to_sym.tap do |value|
-      value = default unless [:sendmail, :smtp].include?(value) # Only sendmail or SMTP allowed.
-    end
-  end
-
-  def self.email_smtp_settings
-    Hash.new.tap do |ret|
-      if email_transport_type == :smtp
-        email_config.each_pair do |key, value|
-          ret[key.to_sym] = value unless value.blank?
-        end
-      end
-    end
-  end
-
   def self.indexer_host
     indexer_config :url
   end
-  
-  def self.indexer_index_name
-    indexer_config :index_name
+
+  def self.indexer_index_prefix
+    indexer_config :index_prefix
   end
+
+  def self.indexer_recent_index_name
+    indexer_config :recent_index_name
+  end
+
+  def self.ldap_config(key, default = nil)
+    config_value @ldap_config, :ldap, key, default
+  end
+
+  def self.ldap_enabled?
+    ldap_config :enabled, false
+  end
+
+  def self.ldap_host
+    ldap_config :host
+  end
+
+  def self.ldap_port
+    ldap_config :port, 389
+  end
+
+  def self.ldap_tls_enabled?
+    ldap_config :tls_enabled, false
+  end
+
+  def self.ldap_displayname_attribute
+    ldap_config :displayname_attribute, 'cn'
+  end
+
+  def self.ldap_mail_attribute
+    ldap_config :mail_attribute, 'mail'
+  end
+
+  def self.ldap_user_dn_pattern
+    ldap_config :user_dn_pattern
+  end
+  
+  def self.ldap_search_base_dn
+    ldap_config :search_base_dn
+  end
+
+  def self.ldap_search_filter
+    ldap_config :search_filter
+  end
+
+  def self.ldap_search_bind_dn
+    ldap_config :search_bind_dn
+  end
+
+  def self.ldap_search_bind_password
+    ldap_config :search_bind_password
+  end
+
 end

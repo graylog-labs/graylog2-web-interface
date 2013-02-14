@@ -9,6 +9,8 @@ authorization do
       :showrange,
       :deletebyquickfilter,
       :deletebystream,
+      :realtime,
+      :universalsearch
     ]
 
     has_permission_on :streams, :to => [
@@ -22,12 +24,12 @@ authorization do
       :togglefavorited,
       :togglealarmactive,
       :togglealarmforce,
+      :togglecallbackactive,
       :rules,
-      :forward,
+      :alarms,
+      :outputs,
       :analytics,
       :settings,
-      :subscribe,
-      :togglesubscription,
       :rename,
       :categorize,
       :clone,
@@ -35,21 +37,22 @@ authorization do
       :addcolumn,
       :removecolumn,
       :shortname,
-      :related
+      :related,
+      :add_output,
+      :delete_output,
+      :edit_output
     ]
-    has_permission_on :streamrules, :to => [:create, :destroy]
+    has_permission_on :streamrules, :to => [:create, :destroy, :update]
     has_permission_on :streamcategories, :to => [:create, :destroy]
-
-    has_permission_on :forwarders, :to => [:create, :destroy]
-
-    has_permission_on :analytics, :to => [:index, :shell]
 
     has_permission_on :hosts, :to => [:index, :show, :destroy, :quickjump, :showrange]
 
     has_permission_on :blacklists, :to => [:index, :show, :create, :destroy]
     has_permission_on :blacklistedterms, :to => [:create, :destroy]
 
-    has_permission_on :settings, :to => [:index, :store]
+    has_permission_on :settings, :to => [:index, :store, :removecolumn]
+
+    has_permission_on :systemsettings, :to => [:index, :allow_usage_stats, :toggle_alarmcallback_force]
 
     has_permission_on :users, :to => [:new, :index, :show, :create, :edit, :delete, :update]
 
@@ -60,9 +63,16 @@ authorization do
     has_permission_on :health, :to => [:index]
 
     has_permission_on :retentiontime, :to => [:index]
+    
+    has_permission_on :additionalcolumns, :to => [:index]
+
+    has_permission_on :amqp_settings, :to => [:index, :create, :destroy]
+
+    has_permission_on :plugin_configuration, :to => [:configure, :store]
   end
 
   role :reader do
+    has_permission_on :dashboard, :to => [:index]
     has_permission_on :streams, :to => [:index, :show, :analytics, :showrange] do
       if_attribute :users => contains { user }
     end

@@ -2,19 +2,21 @@ class Message
 
   LIMIT = 100
   ADDITIONAL_FIELD_SEPARATOR = '_'
-  RESERVED_ADDITIONAL_FIELDS = %w(_type _index _version)
+  RESERVED_ADDITIONAL_FIELDS = %w( _type _index _version _score _explanation )
 
-  @fields = [ :id, :message, :full_message, :created_at, :facility, :level, :host, :file, :line, :deleted, :streams ]
-  @fields.each { |f| attr_accessor(f) }
+  STD_FIELDS = [ :id, :message, :full_message, :created_at, :facility, :level, :host, :file, :line, :deleted, :streams ]
+  STD_FIELDS.each { |f| attr_accessor(f) }
 
-  attr_accessor :plain, :total_result_count
+  attr_accessor :source_index, :plain, :total_result_count
 
   def self.parse_from_elastic(x)
     m = self.new
 
     m.plain = x
     m.total_result_count = x.total rescue nil
-    @fields.each do |f|
+    m.source_index = x[:_index]
+
+    STD_FIELDS.each do |f|
       # XXX ELASTIC: zomg workaround
       # - __send__ creates a Rake::FileTask instead of a string. not sure why yet
       if f != :file
@@ -33,7 +35,7 @@ class Message
 
     m.plain = x
     m.total_result_count = x.total rescue nil
-    @fields.each do |f|
+    STD_FIELDS.each do |f|
       m.__send__(:"#{f}=", x[f]) rescue nil
     end
 
@@ -123,10 +125,16 @@ class Message
   def uniform_date_string
     d = Time.at(self.created_at)
     "#{d.year}-#{d.month}-#{d.day}"
+  rescue
+    # for example range errors for too long timestamps
+    return "INVALID"
   end
 
   def to_param
     self.id.to_s
   end
 
+  def as_json(options={})
+    self.plain.as_json
+  end
 end

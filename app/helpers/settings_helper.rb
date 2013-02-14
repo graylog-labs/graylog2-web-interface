@@ -6,9 +6,11 @@ module SettingsHelper
 
     tabs = [
       ["General", settings_path],
-      ["Message retention time", retentiontime_index_path],
+      ["AMQP", amqp_settings_path],
+      ["Additional columns", additionalcolumns_path],
       ["Message comments", messagecomments_path],
       ["Filtered terms", filteredterms_path],
+      ["System", systemsettings_path],
     ]
 
     tabs << ["Version check", versioncheck_index_path] if Configuration.allow_version_check

@@ -1,9 +1,10 @@
 class StreamsController < ApplicationController
   filter_access_to :all
   before_filter :load_stream, :except => [ :index, :create ]
+  ignore_session_on_json :index
 
   def show
-    @stream = Stream.find_by_id(params[:id])
+    load_stream
     redirect_to stream_messages_path(@stream)
   end
 
@@ -25,6 +26,11 @@ class StreamsController < ApplicationController
         @streams_with_no_category << stream
       end
     end
+    respond_to do |format|
+        format.html
+        format.json { render :json => @all_streams }
+    end
+    
   end
 
   def showrange
@@ -48,15 +54,19 @@ class StreamsController < ApplicationController
     @new_rule = Streamrule.new
   end
 
-  def forward
-    @new_forwarder = Forwarder.new
-  end
-
   def analytics
     @load_flot = true
   end
 
   def settings
+  end
+
+  def alarms
+    @alarm_callbacks = AlarmCallback.all
+  end
+
+  def outputs
+    @outputs = MessageOutput.all_non_standard
   end
 
   def setdescription
@@ -120,12 +130,25 @@ class StreamsController < ApplicationController
     render :text => ""
   end
 
+  def togglecallbackactive
+    @stream = Stream.find_by_id(params[:id])
+    if params[:typeclass].blank?
+      render :status => 400, :text => "Missing parameter: typeclass"
+      return
+    end
+
+    @stream.set_alarm_callback_active(params[:typeclass], !@stream.alarm_callback_active?(params[:typeclass]))
+    @stream.save
+    render :status => 200, :text => ""
+  end
+
   def setalarmvalues
     @stream = Stream.find_by_id(params[:id])
 
-    unless params[:limit].blank? or params[:timespan].blank?
+    unless params[:limit].blank? or params[:timespan].blank? or params[:period].blank?
       @stream.alarm_limit = params[:limit]
       @stream.alarm_timespan = params[:timespan]
+      @stream.alarm_period = params[:period]
 
       if @stream.save
         flash[:notice] = "Alarm settings updated."
@@ -136,7 +159,7 @@ class StreamsController < ApplicationController
         flash[:error] = "Could not update alarm settings: Missing parameters."
     end
 
-    redirect_to settings_stream_path(@stream)
+    redirect_to alarms_stream_path(@stream)
   end
 
   def create
@@ -164,15 +187,19 @@ class StreamsController < ApplicationController
   end
 
   def addcolumn
-    @stream.additional_columns << params[:column]
-    duplicates = @stream.additional_columns.uniq!
-
-    if duplicates
-      flash[:error] = "Column '#{params[:column]}' already exists."
-    elsif @stream.save
-      flash[:notice] = "Added additional column."
+    if params[:column].empty?
+      flash[:error] = "Column can't be empty."
     else
-      flash[:error] = "Could not add additional column."
+      @stream.additional_columns << params[:column]
+      duplicates = @stream.additional_columns.uniq!
+
+      if duplicates
+        flash[:error] = "Column already exists."
+      elsif @stream.save
+        flash[:notice] = "Added additional column."
+      else
+        flash[:error] = "Could not add additional column."
+      end
     end
 
     redirect_to settings_stream_path(@stream)
@@ -182,11 +209,11 @@ class StreamsController < ApplicationController
     deleted_column = @stream.additional_columns.delete(params[:column])
 
     if deleted_column.nil?
-      flash[:error] = "Column '#{params[:column]}' doesn't exist."
+      flash[:error] = "Column doesn't exist."
     elsif @stream.save
-      flash[:notice] = "Removed additional column '#{params[:column]}'."
+      flash[:notice] = "Removed additional column."
     else
-      flash[:error] = "Could not remove column '#{params[:column]}'."
+      flash[:error] = "Could not remove column."
     end
 
     redirect_to settings_stream_path(@stream)
@@ -248,34 +275,10 @@ class StreamsController < ApplicationController
       flash[:error] = "Could not delete stream"
     end
 
+    # also delete stream alarms. (zomg this should be done in stream model)
+    AlertedStream.delete_all(:stream_id => @stream.id)
+
     redirect_to streams_path
-  end
-
-  def subscribe
-    current_user.subscribed_streams << @stream
-    render :json => {:status => :success}
-  end
-
-  def unsubscribe
-    # SHITSTORM BEGIN
-    user_ids = @stream.subscriber_ids
-    user_ids = Array.new if !user_ids.is_a?(Array)
-    user_ids.delete(current_user.id)
-    @stream.subscriber_ids = user_ids
-    @stream.save
-
-    stream_ids = current_user.subscribed_stream_ids
-    stream_ids = Array.new if !stream_ids.is_a?(Array)
-    stream_ids.delete(@stream.id)
-    current_user.subscribed_stream_ids = stream_ids
-    current_user.save
-    # SHITSTORM END
-
-    render :json => {:status => :success}
-  end
-
-  def togglesubscription
-    @stream.subscribed?(current_user) ? unsubscribe : subscribe
   end
 
   def shortname
@@ -314,9 +317,66 @@ class StreamsController < ApplicationController
     redirect_to settings_stream_path(@stream)
   end
 
+  def add_output
+    key = params[:typeclass].gsub(".", "_")
+    entry = params[:config][key]
+
+    if entry["description"].blank?
+      flash[:error] = "Description is missing!"
+      redirect_to outputs_stream_path(@stream) and return
+    end
+
+    entry[:id] = BSON::ObjectId.new
+    entry[:typeclass] = params[:typeclass]
+    @stream.outputs << entry
+
+    if @stream.save
+      flash[:notice] = "Output has been added."
+    else
+      flash[:error] = "Could not add output!"
+    end
+
+    redirect_to outputs_stream_path(@stream)
+  end
+
+  def delete_output
+    @stream.outputs.delete_if { |o| o["id"] == BSON::ObjectId.from_string(params["output_id"]) }
+
+    if @stream.save
+      flash[:notice] = "Output has been deleted."
+    else
+      flash[:error] = "Could not delete output!"
+    end
+
+    redirect_to outputs_stream_path(@stream)
+  end
+
+  def edit_output
+    if params["config"]["description"].blank?
+      flash[:error] = "Description is missing!"
+      redirect_to outputs_stream_path(@stream) and return
+    end
+
+    output = @stream.outputs.select { |o| o["id"] == BSON::ObjectId.from_string(params["output_id"]) }
+    output = params["config"]
+    output["id"] = BSON::ObjectId.from_string(params["output_id"])
+    output["typeclass"] = params["typeclass"]
+
+    @stream.outputs.delete_if { |o| o["id"] == BSON::ObjectId.from_string(params["output_id"]) }
+    @stream.outputs << output
+
+    if @stream.save
+      flash[:notice] = "Output has been updated."
+    else
+      flash[:error] = "Could not update output!"
+    end
+
+    redirect_to outputs_stream_path(@stream)
+  end
+
   protected
   def load_stream
-    @stream = Stream.find_by_id params["id"]
+    @stream = Stream.find_by_id_or_name(params["id"])
     render :text => "Not accessible for your user.", :status => :forbidden and return if !@stream.accessable_for_user?(current_user)
   end
 end

@@ -12,24 +12,15 @@
   <%= stylesheet_link_tag "sections" %>
   <%= stylesheet_link_tag "messages" %>
   <%= stylesheet_link_tag "shell" %>
-  <%= hoptoad_javascript_notifier if ::Configuration.hoptoad_enabled? %>
-  <%= javascript_include_tag "jquery-1.4.2.min" %>
-  <%= javascript_include_tag "jquery.autocomplete.min" %>
-  <%= javascript_include_tag "jquery.numeric" %>
-  <%= javascript_include_tag "jquery.mapkey.min" %>
-  <%= javascript_include_tag "jquery.simplemodal.min" %>
-  <%= javascript_include_tag "jquery.sparkline.min" %>
-  <%= javascript_include_tag "jquery.gritter.min" %>
+
+  <script src="/assets/application.js?body=1" type="text/javascript"></script>
+  
   <%= javascript_include_tag("jit") if @load_jit %>
   <% if @load_flot %>
-    <%= javascript_include_tag("jquery.flot.min") %>
-    <%= javascript_include_tag("jquery.flot.selection.min") %>
-    <%= javascript_include_tag("jquery.flot.resize.min") %>
+    <%= javascript_include_tag("flot") %>
   <% end %>
+
   <%= javascript_include_tag "backtotop" if @use_backtotop %>
-  <%= javascript_include_tag "application" %>
-  <%= javascript_include_tag "shell" if @has_shell %>
-  <%= javascript_include_tag "rails" %>
 </head>
 <body>
   <%= javascript_tag("var relative_url_root = '#{controller.config.relative_url_root}';") %>
@@ -40,8 +31,8 @@
   <div id="back-to-top">Back to top</div>
 
   <div id="current-throughputs">
-    <span class="health-throughput-current"><%= ServerValue.throughput[:current] %></span> /
-    <span class="health-mqsize-current"><%= ServerValue.message_queue_current_size %></span>
+    <span class="health-throughput-current"><%= Cluster.throughput %></span> msgs / sec
+    &nbsp; [ <%= Cluster.active_nodes.count %>n ]
   </div>
   <script type="text/javascript">
     $("#current-throughputs").bind("click", function() {
@@ -57,7 +48,6 @@
     <ul id="topmenu">
       <% current_user.role == "admin" and permitted_to? :index, :messages do %><%=raw menu_item("Messages", messages_path) %><% end %>
       <% permitted_to? :index, :streams do %><%=raw menu_item("Streams", streams_path) %><% end %>
-      <% permitted_to? :index, :analytics do %><%=raw menu_item("Analytics", analytics_path) %><% end %>
       <% permitted_to? :index, :hosts do %><%=raw menu_item("Hosts", hosts_path) %><% end %>
       <% permitted_to? :index, :blacklists do %><%=raw menu_item("Blacklists", blacklists_path) %><% end %>
       <% permitted_to? :index, :settings do %><%=raw menu_item("Settings", settings_path) %><% end %>
@@ -67,6 +57,10 @@
   </div>
 
   <br style="clear: both;" />
+
+  <% if @has_universalsearch and current_user.admin? %>
+    <%= render :partial => partial_for("universalsearch") %>
+  <% end %>
 
   <div id="content-top">
     <div id="content-tabs">
@@ -82,13 +76,17 @@
 
   <% if @has_shell %>
     <div id="shell-container">
-      <ul id="shell">
-        <li>
+      <div id="shell">
+        <div id="shell-oldinput-container">
+
+        </div>
+        <div>
           <span class="shell-prompt"><%= current_user.login %> #</span>
-          <input id="shell-command-input" class="shell-command" type="text" spellcheck="false"></input>
-        </li>
-      </ul>
+          <input id="shell-command-input" class="shell-command" type="text" spellcheck="false">
+        </div>
+      </div>
     </div>
+    <%= javascript_tag("$('#shell-container').shell();") %>
   <% end %>
  <% end %>
 
@@ -124,10 +122,22 @@
 
   <br style="clear: both;" /><br />
   
-  <% if ServerValue.ping < 65.seconds.ago %>
+  <% if Cluster.no_active_nodes? %>
     <div id="server-not-running" class="notification">
-      <span class="notification-title">Warning!</span> It seems like your Graylog2 server is not running.
+      <span class="notification-title">Warning!</span> It seems like you have no active Graylog2 node running.
     </div>
+  <% else %>
+    <% if Cluster.multiple_masters? %>
+      <div id="server-not-running" class="notification">
+        <span class="notification-title">Warning!</span> It seems like you have multiple Graylog2 master nodes running.
+      </div>
+    <% end %>
+    
+    <% if Cluster.no_masters? %>
+      <div id="server-not-running" class="notification">
+        <span class="notification-title">Warning!</span> It seems like you have no Graylog2 master nodes running. (all non-master)
+      </div>
+    <% end %>
   <% end %>
   
   <% unless flash[:notice].blank? %>

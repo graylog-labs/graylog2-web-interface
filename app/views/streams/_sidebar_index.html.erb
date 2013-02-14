@@ -17,7 +17,7 @@
 
 <div id="sidebar-graph" style="height: 100px;"></div>
 <div id="graph-rangeselector" class="graph-rangeselector-sidebar" style="display: none;">
-  <%= form_tag showrange_stream_path(@stream) do %>
+  <%= form_tag(showrange_stream_path(@stream), :method => :get) do %>
     <%= hidden_field_tag :from, nil, :id => "graph-rangeselector-from" %>
     <%= hidden_field_tag :to, nil, :id => "graph-rangeselector-to" %>
     <%= awesome_submit_link "Show messages in range" %>
@@ -78,37 +78,8 @@
 </ul>
 
 <br />
-<% unless @stream.subscribers.nil? %>
-<h3>
-  Last run of subscription check:
-  <span class="highlighted">
-    <% if @stream.last_subscription_check.blank? %>
-      Never
-    <% else %>
-      <%= time_ago_in_words(Time.at(@stream.last_subscription_check)) %> ago
-    <% end %>
-  </span>
-</h3>
-<% end %>
-
-<% if @stream.alarm_active %>
-<h3>
-  Last run of alarm check:
-  <span class="highlighted">
-    <% if @stream.last_alarm_check.blank? %>
-      Never
-    <% else %>
-      <%= time_ago_in_words(Time.at(@stream.last_alarm_check)) %> ago
-    <% end %>
-  </span>
-</h3>
-<% end %>
-
-<br />
 <h3>Created: <%= gl_date(@stream.created_at) %></h3>
 <h3>Last change: <%= gl_date(@stream.updated_at) %></h3>
 
-<% if current_user.role == "admin" %>
-  <br /><br />
-  <%= awesome_link "Open stream dashboard", stream_dashboard_index_path(@stream), :style => "display: inline;", :target => "_blank" %>
-<% end %>
+<br /><br />
+<%= awesome_link "Open stream dashboard", stream_dashboard_index_path(@stream), :style => "display: inline;", :target => "_blank" %>

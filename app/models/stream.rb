@@ -3,11 +3,9 @@ class Stream
   include Mongoid::Timestamps
 
   embeds_many :streamrules
-  embeds_many :forwarders
 
   has_and_belongs_to_many :users, :inverse_of => :streams
   has_and_belongs_to_many :favorited_streams, :class_name => "User", :inverse_of => :favorite_streams
-  has_and_belongs_to_many :subscribers,       :class_name => "User", :inverse_of => :subscribed_streams
 
   referenced_in :streamcategory
 
@@ -26,17 +24,33 @@ class Stream
   field :created_at, :type => DateTime
   field :updated_at, :type => DateTime
   field :alarm_force, :type => Boolean
-  field :last_subscription_check, :type => Integer
-  field :last_alarm_check, :type => Integer
   field :alarm_active, :type => Boolean
+  field :alarm_period, :type => Integer
   field :disabled, :type => Boolean
   field :additional_columns, :type => Array, :default => []
   field :shortname, :type => String
   field :related_streams_matcher, :type => String
+  field :alarm_callbacks, :type => Array, :default => []
+  field :outputs, :type => Array, :default => []
+
+  RESERVED_OUTPUT_FIELDS = %w( id typeclass description )
 
   def self.find_by_id(_id)
     _id = $1 if /^([0-9a-f]+)-/ =~ _id
     first(:conditions => { :_id => BSON::ObjectId(_id)})
+  end
+  
+  def self.find_by_shortname(shortname)
+    first(:conditions => { :shortname => shortname})
+  end
+
+  def self.find_by_id_or_name(id_or_name)
+    begin
+      return self.find_by_id id_or_name
+    rescue 
+      return self.find_by_shortname id_or_name
+    end
+    return nil
   end
 
   def title_possibly_disabled
@@ -47,10 +61,6 @@ class Stream
     AlertedStream.alerted?(self.id, user.id)
   end
 
-  def subscribed?(user)
-    !subscribers.nil? and subscribers.include?(user)
-  end
-
   def favorited?(user_id)
     !favorited_streams.nil? and favorited_streams.include? user_id
   end
@@ -59,7 +69,6 @@ class Stream
     title.blank? ? id.to_s : "#{id}-#{title.parameterize}"
   end
 
-  # giving back IDs because all_with_subscribers does too
   def self.all_with_enabled_alerts
     all.where({:alarm_active => true}).collect &:id
   end
@@ -123,6 +132,28 @@ class Stream
 
     stream_count = self.message_count_since(self.alarm_timespan.minutes.ago.to_f)
     return stream_count > self.alarm_limit ? :alarm : :no_alarm
+  end
+
+  def alarm_callback_active?(typeclass)
+    if !alarm_callbacks.blank? and alarm_callbacks.is_a?(Array)
+      return true if alarm_callbacks.include?(typeclass)
+    end
+
+    return false
+  end
+
+  def set_alarm_callback_active(typeclass, what)
+    actives = alarm_callbacks
+    if what == true
+      # Add to list.
+      actives << typeclass
+    else
+      # Remove from list.
+      actives.delete(typeclass)
+    end
+
+    # Update
+    alarm_callbacks = actives
   end
 
   private
