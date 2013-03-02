@@ -55,4 +55,8 @@ module MessagesHelper
     return result
   end
 
+  def replace_invalid_chars(str)
+    str.encode('UTF-16le', :invalid => :replace, :replace => '?').encode('UTF-8')
+  end
+
 end
