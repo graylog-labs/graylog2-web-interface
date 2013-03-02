@@ -1,0 +1,13 @@
+<HTML>
+<HEAD>
+<title><%= @sets["title"] %></title>
+</HEAD>
+<BODY>
+<h1><%= @sets["title"] %></h1>
+<table border=1><% @lines.each do |l| %>
+<tr><td align="right"><%= "%5.2f" % (l['count'].to_f/@allcount*100) %>%</td><td align="right"><%= l["count"] %></td><td><%= l["distinct"] %></td></tr><% end %>
+</table>
+<br>
+Anzahl: <%= @allcount %>
+</BODY>
+</HTML>

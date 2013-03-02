@@ -1,0 +1,13 @@
+<% require 'cgi' %>
+<HTML>
+<HEAD>
+<title><%= @sets["title"] %></title>
+</HEAD>
+<BODY>
+<h1><%= @sets["title"] %></h1>
+<table border=1>
+<tr><th>Date</th><th>Host</th><th>Facility</th><th>Message</th></tr><% @lines.each do |l| %>
+<tr><td><%= Time.at(l["created_at"]) %></td><td><%= l["host"] %></td><td><%= l["facility"] %></td><td><%= CGI.escapeHTML(l["message"]) %></td></tr><% end %>
+</table>
+</BODY>
+</HTML>

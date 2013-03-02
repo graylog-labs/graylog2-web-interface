@@ -1,0 +1,5 @@
+<%= @sets["title"] %>
+<%= "="*@sets["title"].length %>
+<% @lines.each do |l| %>
+[<%= Time.at(l["created_at"]) %>] - <%= l["message"] %><% end %>
+
