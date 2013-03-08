@@ -54,7 +54,7 @@ additional_columns ||= []
           <td><%= message.additional_fields[col].blank? ? "-" : message.additional_fields[col] %></td>
         <% end %>
         <td colspan="2">
-          <%= message.message[0..message_length] %>
+          <%= message.message.slice(0, message_length) %>
           <%=raw (message.message.length > message_length) && !defined?(dont_show_links) ? "<span class='light'>...</span>" : nil %>
         </td>
       </tr>
