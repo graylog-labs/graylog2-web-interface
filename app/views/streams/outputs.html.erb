@@ -44,11 +44,10 @@ ElasticSearch output is always enabled.</div>
 	<strong>You have no output plugins installed.</strong>
 <% else %>
 	<%= form_tag(add_output_stream_path(@stream)) do %>
+		<% outputs = @outputs.reject { |o| o.requested_stream_config.nil?} %>
+		<%= select_tag :typeclass, options_for_select(outputs.map { |o| [o.name, o.typeclass] }), :id => "stream-outputs-chooser" %>
 
-		<%= select_tag :typeclass, options_for_select(@outputs.map { |o| [o.name, o.typeclass] }), :id => "stream-outputs-chooser" %>
-
-		<% @outputs.each_with_index do |output, i| %>
-			<% next if output.requested_stream_config.blank? %>
+		<% outputs.each_with_index do |output, i| %>
 			<dl class="stream-output-fields" id="stream-output-fields-<%= output.typeclass.gsub!('.', '_') %>"
 				<% if i == 0 %>
 					style="display: block;"
