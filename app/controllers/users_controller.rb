@@ -12,7 +12,7 @@ class UsersController < ApplicationController
   layout :choose_layout
 
   def index
-    @users = User.find :all
+    @users = User.all
   end
 
   def show
@@ -24,7 +24,7 @@ class UsersController < ApplicationController
   end
 
   def edit
-    @user = User.find params[:id]
+    @user = User.find(params[:id])
   end
 
   def create
@@ -110,7 +110,7 @@ class UsersController < ApplicationController
     success = @user && @user.save
     if success && @user.errors.empty?
       redirect_to messages_path
-      flash[:notice] = "Your first user has been created. Welcome to Graylog2!"
+      flash[:notice] = 'Your first user has been created. Welcome to Graylog2!'
     else
       render :action => 'first'
     end
@@ -118,12 +118,12 @@ class UsersController < ApplicationController
 
   private
   def block_access
-    render :text => "not authorized", :status => 401
+    render text: 'not authorized', status: 401
     return
   end
 
   def choose_layout
-    action_name == "first" || action_name == "createfirst" ? "login" : "application"
+    action_name == 'first' || action_name == 'createfirst' ? 'login' : 'application'
   end
 
   def transport_hash(p)

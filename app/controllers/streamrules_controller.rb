@@ -17,7 +17,7 @@ class StreamrulesController < ApplicationController
   end
 
   def update
-    rule = @stream.streamrules.find(:first, :conditions => {:_id => BSON::ObjectId(params[:id])})
+    rule = @stream.streamrules.where(:_id => BSON::ObjectId(params[:id])).first
     rule.value = params[:streamrule][:value]
     if rule.save
       flash[:notice] = "Rule has been updated."
@@ -28,7 +28,7 @@ class StreamrulesController < ApplicationController
   end
 
   def destroy
-    rule = @stream.streamrules.find(:first, :conditions => {:_id => BSON::ObjectId(params[:id])})
+    rule = @stream.streamrules.where(:_id => BSON::ObjectId(params[:id])).first
     if rule.destroy
       flash[:notice] = "Rule has been removed from stream."
     else

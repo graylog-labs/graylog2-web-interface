@@ -1,6 +1,6 @@
 log/*
 tmp/*
-
+config/ey.yml
 nbproject/*
 
 # Idea project files
@@ -11,11 +11,6 @@ nbproject/*
 /.generators
 /.rakeTasks
 
-config/mongoid.yml
-config/general.yml
-config/email.yml
-config/indexer.yml
-config/ldap.yml
 
 Capfile
 config/deploy.rb
@@ -25,6 +20,12 @@ build/logs/*
 
 public/images/dashboard_logo.png
 public/images/graphs/*
+
+config/mongoid.yml
+config/general.yml
+config/email.yml
+config/indexer.yml
+config/ldap.yml
 
 .bundle/
 vendor/bundle/
@@ -36,3 +37,21 @@ test/reports/
 
 *.swp
 *.swo
+*.gem
+*.rbc
+.bundle
+.config
+coverage
+InstalledFiles
+lib/bundler/man
+pkg
+rdoc
+spec/reports
+test/tmp
+test/version_tmp
+tmp
+
+# YARD artifacts
+.yardoc
+_yardoc
+doc/

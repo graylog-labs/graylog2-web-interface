@@ -13,7 +13,7 @@
       @scoping = :host
       block_access_for_non_admins
 
-      @host = Host.find(:first, :conditions => {:host=> params[:host_id]})
+      @host = Host.where(:host=> params[:host_id]).first
       
       @total_count = MessageGateway.host_count(@host.host)
 
@@ -128,7 +128,7 @@
 
   def universalsearch
     @stream = Stream.find(params[:stream_id]) if !params[:stream_id].blank?
-    @host = Host.find(:first, :conditions => {:host=> params[:host]}) if !params[:host].blank?
+    @host = Host.where(:host=> params[:host]).first if !params[:host].blank?
 
     block_access_for_non_admins if @stream and !@stream.accessable_for_user?(current_user)
     block_access_for_non_admins if @host and !current_user.admin?

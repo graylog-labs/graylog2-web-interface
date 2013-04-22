@@ -10,10 +10,12 @@ class Authenticator
     end
 
     def to_hash
-      { :login     => login,
-        :email     => email,
-        :name      => name,
-        :from_ldap => from_ldap }
+      {
+          login: login,
+          email: email,
+          name: name,
+          from_ldap: from_ldap
+      }
     end
   end
 

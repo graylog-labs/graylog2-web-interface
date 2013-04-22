@@ -3,7 +3,7 @@ class BlacklistedTerm
 
   embedded_in :blacklist
 
-  field :term, :type => String
+  field :term, type: String
 
   validates_presence_of :term
   validate :valid_regex
@@ -18,7 +18,7 @@ class BlacklistedTerm
     begin
       String.new =~ /#{term}/
     rescue RegexpError
-      errors.add(:term, "invalid regular expression")
+      errors.add(:term, 'invalid regular expression')
     end
   end
 end

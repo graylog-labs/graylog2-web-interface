@@ -31,7 +31,7 @@ class VisualsController < ApplicationController
             )
           elsif params[:query]
             stream = Stream.find(params[:stream_id]) if !params[:stream_id].blank?
-            host = Host.find(:first, :conditions => {:host=> params[:hostname]}) if !params[:hostname].blank?
+            host = Host.where(:host=> params[:hostname]).first if !params[:hostname].blank?
 
             if stream and !stream.accessable_for_user?(current_user)
               render :text => "you are not allowed to access this stream", :status => :not_authorized

@@ -2,7 +2,7 @@ require 'digest/sha1'
 require 'erb'
 
 def site_keys_file
-  File.join("config", "initializers", "site_keys.rb")
+  File.join('config', 'initializers', 'site_keys.rb')
 end
 
 def secure_digest(*args)
@@ -24,10 +24,10 @@ end
 
 namespace :auth do
   namespace :gen do
-    desc "Generates config/initializers/site_keys.rb"
+    desc 'Generates config/initializers/site_keys.rb'
     task :site_key do
       file = ENV['file'] || site_keys_file
-      File.open(file, "w"){|f| f.write(make_site_keys_rb)}
+      File.open(file, 'w'){|f| f.write(make_site_keys_rb)}
     end
   end
 end

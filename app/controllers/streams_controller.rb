@@ -22,7 +22,7 @@ class StreamsController < ApplicationController
     # Sort streams in own array if they have no category. Done here to avoid confusion
     # in reader/admin rights decision above
     @all_streams.each do |stream|
-      if (stream.streamcategory_id.blank? or stream.streamcategory_id == 0 or !Streamcategory.exists?(:conditions => {"_id" => stream.streamcategory_id}))
+      if (stream.streamcategory_id.blank? or stream.streamcategory_id == 0 or !Streamcategory.where("_id" => stream.streamcategory_id)).exists?
         @streams_with_no_category << stream
       end
     end
@@ -377,6 +377,6 @@ class StreamsController < ApplicationController
   protected
   def load_stream
     @stream = Stream.find_by_id_or_name(params["id"])
-    render :text => "Not accessible for your user.", :status => :forbidden and return if !@stream.accessable_for_user?(current_user)
+    render :text => 'Not accessible for your user.', :status => :forbidden and return if !@stream.accessable_for_user?(current_user)
   end
 end

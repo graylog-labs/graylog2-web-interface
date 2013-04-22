@@ -1,9 +1,9 @@
 class Initializer
   include Mongoid::Document
 
-  field :name, :type => String
-  field :typeclass, :type => String
-  field :requested_config, :type => Hash
+  field :name, type: String
+  field :typeclass, type: String
+  field :requested_config, type: Hash
 
   STANDARD_INITIALIZERS = %w(
     org.graylog2.initializers.DeflectorThreadsInitializer

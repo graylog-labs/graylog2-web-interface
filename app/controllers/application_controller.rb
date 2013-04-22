@@ -63,7 +63,7 @@ class ApplicationController < ActionController::Base
       return true if logged_in? and not should_ignore_session?(action_name)
       @current_user = api_login() || false
       if !logged_in?
-        render :json => {"error" => "unauthorized"}, :status=>401
+        render :json => {'error' => 'unauthorized'}, :status=>401
         return false
       end
     end
@@ -92,7 +92,7 @@ class ApplicationController < ActionController::Base
   def block_demo_access
     # current_user check because login POST must still work.
     if ::Configuration.is_demo_system? and current_user and !request.get?
-      flash[:error] = "Sorry, this demo is not allowing any changes."
+      flash[:error] = 'Sorry, this demo is not allowing any changes.'
       redirect_to :controller => :messages, :action => :index
     end
   end

@@ -1,7 +1,7 @@
 class Streamcategory
   include Mongoid::Document
 
-  references_many :streams
+  has_many :streams
 
   validates_presence_of :title
 

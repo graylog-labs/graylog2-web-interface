@@ -4,7 +4,6 @@ ldap:
 
   # Server hostname
   host: ldap.mycompany.com
-
   # Server port
   port: 389
 

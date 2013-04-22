@@ -1,15 +1,15 @@
 class Job
   include Mongoid::Document
 
-  field :title, :type => String
-  field :last_run, :type => Integer
+  field :title, type: String
+  field :last_run, type: Integer
 
   def self.find_by_title(name)
-    first(:conditions => {:title => name})
+    where(title: name).first
   end
 
   def self.done(title)
-    where(:title => title).delete_all
+    where(title: title).delete_all
 
     job = Job.new
     job.title = title

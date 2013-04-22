@@ -2,7 +2,7 @@ class Messagecomment
   include Mongoid::Document
   include Mongoid::Timestamps
 
-  references_one :user
+  has_one :user
 
   field :title, :type => String
   field :comment, :type => String

@@ -4,17 +4,17 @@ class Stream
 
   embeds_many :streamrules
 
-  has_and_belongs_to_many :users, :inverse_of => :streams
-  has_and_belongs_to_many :favorited_streams, :class_name => "User", :inverse_of => :favorite_streams
+  has_and_belongs_to_many :users, inverse_of: :streams
+  has_and_belongs_to_many :favorited_streams, class_name: 'User', inverse_of: :favorite_streams
 
-  referenced_in :streamcategory
+  belongs_to :streamcategory
 
   validates_presence_of :title
-  validates_numericality_of :alarm_limit, :allow_nil => true
-  validates_numericality_of :alarm_timespan, :allow_nil => true, :greater_than => 0
-  validates_length_of :shortname, :maximum => 23
-  validates_uniqueness_of :shortname, :allow_nil => true
-  validates_format_of :shortname, :with => /^[A-Za-z0-9_]+$/, :allow_nil => true
+  validates_numericality_of :alarm_limit, allow_nil: true
+  validates_numericality_of :alarm_timespan, allow_nil: true, greater_than: 0
+  validates_length_of :shortname, maximum: 23
+  validates_uniqueness_of :shortname, allow_nil: true
+  validates_format_of :shortname, with: /^[A-Za-z0-9_]+$/, allow_nil: true
   validate :valid_regexes
 
   field :title, :type => String
@@ -33,28 +33,28 @@ class Stream
   field :alarm_callbacks, :type => Array, :default => []
   field :outputs, :type => Array, :default => []
 
-  RESERVED_OUTPUT_FIELDS = %w( id typeclass description )
+  RESERVED_OUTPUT_FIELDS = %w(id typeclass description)
 
   def self.find_by_id(_id)
     _id = $1 if /^([0-9a-f]+)-/ =~ _id
-    first(:conditions => { :_id => BSON::ObjectId(_id)})
+    where(_id: BSON::ObjectId(_id)).first
   end
   
   def self.find_by_shortname(shortname)
-    first(:conditions => { :shortname => shortname})
+    where(shortname: shortname).first
   end
 
   def self.find_by_id_or_name(id_or_name)
     begin
-      return self.find_by_id id_or_name
+      return self.find_by_id(id_or_name)
     rescue 
-      return self.find_by_shortname id_or_name
+      return self.find_by_shortname(id_or_name)
     end
     return nil
   end
 
   def title_possibly_disabled
-    disabled ? title + " (disabled)" : title if title
+    disabled ? title + ' (disabled)' : title if title
   end
 
   def alerted?(user)
@@ -74,7 +74,7 @@ class Stream
   end
 
   def message_count_since(since)
-    return Stream.message_count_since(id, since)
+    Stream.message_count_since(id, since)
   end
 
   def rule_hash
@@ -83,7 +83,7 @@ class Stream
       hashme += rule.rule_type.to_s + rule.value
     end
 
-    return Digest::MD5.hexdigest(hashme)
+    Digest::MD5.hexdigest(hashme)
   end
 
   def self.message_count_since(stream_id, since)
@@ -99,7 +99,7 @@ class Stream
   def self.get_count_by_host(stream_id, host)
     conditions = Message.by_stream(stream_id).criteria
     conditions[:host] = host
-    return Message.count(:conditions => conditions).to_s
+    return Message.where(conditions).count.to_s
   end
 
   def all_users_with_favorite
@@ -131,15 +131,14 @@ class Stream
     end
 
     stream_count = self.message_count_since(self.alarm_timespan.minutes.ago.to_f)
-    return stream_count > self.alarm_limit ? :alarm : :no_alarm
+    stream_count > self.alarm_limit ? :alarm : :no_alarm
   end
 
   def alarm_callback_active?(typeclass)
     if !alarm_callbacks.blank? and alarm_callbacks.is_a?(Array)
-      return true if alarm_callbacks.include?(typeclass)
+      alarm_callbacks.include?(typeclass)
     end
-
-    return false
+    false
   end
 
   def set_alarm_callback_active(typeclass, what)
@@ -162,7 +161,7 @@ class Stream
       begin
         Regexp.new(/#{self.related_streams_matcher}/)
       rescue RegexpError
-        errors.add(:related_streams_matcher, "Invalid regular expression")
+        errors.add(:related_streams_matcher, 'Invalid regular expression')
       end
     end
   end

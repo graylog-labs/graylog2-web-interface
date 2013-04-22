@@ -6,20 +6,20 @@ class ForwardersController < ApplicationController
   def create
     fwd = @stream.forwarders.new(params[:forwarder])
     if fwd.save
-      flash[:notice] = "Forwarder has been added."
+      flash[:notice] = 'Forwarder has been added.'
     else
-      flash[:error] = "Could not add forwarder."
+      flash[:error] = 'Could not add forwarder.'
     end
 
     redirect_to forward_stream_path(@stream)
   end
 
   def destroy
-    fwd = @stream.forwarders.find(:first, :conditions => {:_id => BSON::ObjectId(params[:id])})
+    fwd = @stream.forwarders.where(:_id => BSON::ObjectId(params[:id])).first
     if fwd.destroy
-      flash[:notice] = "Forwarder has been removed from stream."
+      flash[:notice] = 'Forwarder has been removed from stream.'
     else
-      flash[:error] = "Could not remove forwarder from stream."
+      flash[:error] = 'Could not remove forwarder from stream.'
     end
     redirect_to forward_stream_path(@stream)
   end

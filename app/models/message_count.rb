@@ -29,8 +29,8 @@ class MessageCount
 
     conditions = { :timestamp => { "$gte" => x.minutes.ago.to_i, "$lt" => to+1 }}
 
-    all(:conditions => conditions).distinct(:server_id).each do |node|
-      all(:conditions => conditions.merge(:server_id => node)).each do |c|
+    where(conditions).all.distinct(:server_id).each do |node|
+      where(conditions.merge(:server_id => node)).all.each do |c|
         tsc = 0
         case(count_type(opts))
           when :stream then

@@ -1,7 +1,7 @@
 class Cluster
   include Mongoid::Document
 
-  self.collection_name = 'server_values'
+  self.store_in collection: 'server_values'
 
   field :type, :type => String
   field :value, :type => Object
@@ -23,7 +23,9 @@ class Cluster
   end
 
   def self.active_nodes
-    all(:conditions => {:type => "ping", :value => { "$gte" => PING_TIMEOUT.seconds.ago.to_i } }).map { |s| ServerNode.new(s.server_id) }
+    where(type: 'ping', :value => {'$gte' => PING_TIMEOUT.seconds.ago.to_i}).map do |s|
+      ServerNode.new(s.server_id)
+    end
   rescue
     []
   end
