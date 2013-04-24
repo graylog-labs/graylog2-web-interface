@@ -59,6 +59,7 @@ class MessageGateway
       query { all }
       sort { by :created_at, 'desc' }
     end
+  end
 
   def self.all_paginated(page = 1)
     r = search(pagination_options(page).merge(@default_query_options)) do
