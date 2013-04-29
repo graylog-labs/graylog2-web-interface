@@ -28,13 +28,13 @@ class MessageGateway
   include Mongoid::Document
 
   # used if not set in config
-  DEFAULT_INDEX_PREFIX = "graylog2"
-  DEFAULT_RECENT_INDEX_NAME = "graylog2_recent"
+  DEFAULT_INDEX_PREFIX = 'graylog2'
+  DEFAULT_RECENT_INDEX_NAME = 'graylog2_recent'
 
   # XXX ELASTIC: sucks.
-  if Rails.env == "test"
-    ALL_INDICES_ALIAS = "graylog2_test"
-    RECENT_INDEX_NAME = "graylog2_recent_test"
+  if Rails.env == 'test'
+    ALL_INDICES_ALIAS = 'graylog2_test'
+    RECENT_INDEX_NAME = 'graylog2_recent_test'
   else
     @indices_prefix = Configuration.indexer_index_prefix.blank? ? DEFAULT_INDEX_PREFIX : Configuration.indexer_index_prefix
     config_recent_index = Configuration.indexer_recent_index_name
@@ -45,7 +45,7 @@ class MessageGateway
     ALL_INDICES_ALIAS = "#{@indices_prefix}_*,-#{RECENT_INDEX_NAME}"
   end
 
-  TYPE_NAME = "message"
+  TYPE_NAME = 'message'
 
   index_name(ALL_INDICES_ALIAS)
   document_type(TYPE_NAME)
@@ -58,13 +58,6 @@ class MessageGateway
     r = search(pagination_options(page)) do
       query { all }
       sort { by :created_at, 'desc' }
-    end
-
-  def self.all_paginated(page = 1)
-    r = search(pagination_options(page).merge(@default_query_options)) do
-      query do
-        all
-      end
     end
 
     wrap(r)
@@ -355,7 +348,7 @@ class MessageGateway
 
   def self.all_in_range(page, from, to, opts = {})
     raise "You can only pass stream_id OR hostname" if !opts[:stream_id].blank? and !opts[:hostname].blank?
-  
+
     used_indices = use_timerange_specific_indices!(from)
     options = pagination_options(page)
 

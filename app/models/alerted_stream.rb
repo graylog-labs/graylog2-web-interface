@@ -1,13 +1,13 @@
 class AlertedStream
   include Mongoid::Document
 
-  referenced_in :user
-  referenced_in :stream
+  belongs_to :user
+  belongs_to :stream
 
   JOB_TITLE = "streamalarm_check"
 
   def self.alerted?(stream_id, user_id)
-    self.count(:conditions => { :user_id => user_id, :stream_id => stream_id }) > 0
+    self.where(user_id: user_id, stream_id: stream_id).count > 0
   end
 
   def self.all_subscribers(stream)

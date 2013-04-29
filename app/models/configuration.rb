@@ -1,7 +1,7 @@
 class Configuration
-  @general_config = YAML::load File.read((ENV['GRAYLOG2_BASE'] || Rails.root.to_s) + "/config/general.yml")
-  @indexer_config = YAML::load File.read((ENV['GRAYLOG2_BASE'] || Rails.root.to_s) + "/config/indexer.yml")
-  @ldap_config = YAML::load File.read((ENV['GRAYLOG2_BASE'] || Rails.root.to_s) + "/config/ldap.yml")
+  @general_config = YAML::load File.read((ENV['GRAYLOG2_BASE'] || Rails.root.to_s) + '/config/general.yml')
+  @indexer_config = YAML::load File.read((ENV['GRAYLOG2_BASE'] || Rails.root.to_s) + '/config/indexer.yml')
+  @ldap_config = YAML::load File.read((ENV['GRAYLOG2_BASE'] || Rails.root.to_s) + '/config/ldap.yml')
 
   def self.config_value(root, nesting, key, default = nil)
     [root, root[nesting.to_s], root[nesting.to_s][key.to_s]].any?(&:blank?) ? default : root[nesting.to_s][key.to_s]
@@ -34,7 +34,7 @@ class Configuration
   end
 
   def self.date_format
-    general_config :date_format, "%d.%m.%Y - %H:%M:%S"
+    general_config :date_format, '%d.%m.%Y - %H:%M:%S'
   end
 
   def self.indexer_config(key = nil, default = nil)

@@ -2,7 +2,7 @@
 class FilteredTerm
   include Mongoid::Document
 
-  field :term, :type => String
+  field :term, type: String
 
   validates_presence_of :term
 
@@ -31,7 +31,7 @@ class FilteredTerm
     return str if str.blank? || term.blank?
 
     begin
-      str[/#{term}/] = "[FILTERED]"
+      str[/#{term}/] = '[FILTERED]'
     rescue => e
       Rails.logger.warn "Skipping filtered term: #{e}"
     end

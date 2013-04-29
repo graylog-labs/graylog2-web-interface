@@ -14,7 +14,7 @@ class AmqpConfiguration
 
 
   def queue_name
-  	return "gl2-#{input_type.downcase}-#{exchange}-#{id}"
+    "gl2-#{input_type.downcase}-#{exchange}-#{id}"
   end
 
 end

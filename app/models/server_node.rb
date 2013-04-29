@@ -7,11 +7,11 @@ class ServerNode
   end
 
   def is_master?
-    ServerValue.get("is_master", @server_id, 0)
+    ServerValue.get('is_master', @server_id, 0)
   end
 
   def local_hostname
-    ServerValue.get("local_hostname", @server_id)
+    ServerValue.get('local_hostname', @server_id)
   end
 
   def current_throughput
@@ -31,38 +31,38 @@ class ServerNode
   end
 
   def mastercache_size(cache)
-    ServerValue.get("mastercache_sizes", @server_id, -1, cache)
+    ServerValue.get('mastercache_sizes', @server_id, -1, cache)
   end
 
   def startup_time
-    ServerValue.get("startup_time", @server_id, 0)
+    ServerValue.get('startup_time', @server_id, 0)
   end
 
   def available_processors
-    ServerValue.get("available_processors", @server_id)
+    ServerValue.get('available_processors', @server_id)
   end
 
   def jre
-    ServerValue.get("jre", @server_id)
+    ServerValue.get('jre', @server_id)
   end
   
   def pid
-    ServerValue.get("pid", @server_id)
+    ServerValue.get('pid', @server_id)
   end
   
   def graylog2_version
-    ServerValue.get("graylog2_version", @server_id)
+    ServerValue.get('graylog2_version', @server_id)
   end
 
   def message_retention_last_performed
-    v = ServerValue.get("message_retention_last_performed", @server_id, nil)
+    v = ServerValue.get('message_retention_last_performed', @server_id, nil)
 
     v.blank? ? nil : v.value
   end
 
   private
   def get_throughput(which)
-    ServerValue.get("total_throughput", @server_id, -1, which)
+    ServerValue.get('total_throughput', @server_id, -1, which)
   rescue
     -1
   end
@@ -72,10 +72,10 @@ class ServerNode
       when :number
         key = buffer
       when :percentage
-        key = buffer + "_percent"
+        key = buffer + '_percent'
     end
 
-    ServerValue.get("buffer_watermarks", @server_id, -1, key)
+    ServerValue.get('buffer_watermarks', @server_id, -1, key)
   rescue
     -1
   end

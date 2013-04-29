@@ -1,6 +1,6 @@
 # Settings for the elasticsearch indexer.
 production:
-  url: http://localhost:9200/
+  url: http://ec2-107-20-84-36.compute-1.amazonaws.com:9200/
   index_prefix: graylog2
 
   # Be careful with the index_prefix if you want to use several Graylog2 instances in the same

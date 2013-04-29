@@ -9,8 +9,8 @@ class DeflectorInformation
   TIMEOUT = 7
 
   def self.get_nodes
-    self.first['indices'].map { |name,info| info["shards"] }.flatten.collect do |s|
-      { :name => s["node_name"], :hostname => s["node_hostname"], :id => s["node_id"] }
+    self.first['indices'].map { |name,info| info['shards'] }.flatten.collect do |s|
+      { :name => s['node_name'], :hostname => s['node_hostname'], :id => s['node_id'] }
     end.uniq
   end
 
