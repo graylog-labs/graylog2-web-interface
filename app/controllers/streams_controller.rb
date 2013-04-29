@@ -22,7 +22,7 @@ class StreamsController < ApplicationController
     # Sort streams in own array if they have no category. Done here to avoid confusion
     # in reader/admin rights decision above
     @all_streams.each do |stream|
-      if (stream.streamcategory_id.blank? or stream.streamcategory_id == 0 or !Streamcategory.where("_id" => stream.streamcategory_id)).exists?
+      if (stream.streamcategory_id.blank? or stream.streamcategory_id == 0) or !Streamcategory.where('_id' => stream.streamcategory_id).exists?
         @streams_with_no_category << stream
       end
     end
@@ -43,7 +43,7 @@ class StreamsController < ApplicationController
       @from = Time.at(params[:from].to_i-Time.now.utc_offset)
       @to = Time.at(params[:to].to_i-Time.now.utc_offset)
     rescue
-      flash[:error] = "Missing or invalid range parameters."
+      flash[:error] = 'Missing or invalid range parameters.'
     end
 
     @messages = MessageGateway.all_in_range(params[:page], @from.to_i, @to.to_i, :stream_id => @stream.id.to_s)
@@ -73,15 +73,15 @@ class StreamsController < ApplicationController
     @stream.description = params[:description]
 
     if @stream.save
-      flash[:notice] = "Description has been saved."
+      flash[:notice] = 'Description has been saved.'
     else
-      flash[:error] = "Could not save description."
+      flash[:error] = 'Could not save description.'
     end
     redirect_to stream_messages_path(params[:id])
   end
 
   def togglefavorited
-    if !@stream.favorited?(current_user)
+    unless @stream.favorited?(current_user)
       current_user.favorite_streams << @stream
     else
       # SHITSTORM BEGIN
@@ -100,7 +100,7 @@ class StreamsController < ApplicationController
     end
 
     # Intended to be called via AJAX only.
-    render :text => ""
+    render text: ''
   end
 
   def togglealarmactive
@@ -113,7 +113,7 @@ class StreamsController < ApplicationController
     @stream.save
 
     # Intended to be called via AJAX only.
-    render :text => ""
+    render text: ''
   end
 
   def togglealarmforce
@@ -127,36 +127,36 @@ class StreamsController < ApplicationController
     @stream.save
 
     # Intended to be called via AJAX only.
-    render :text => ""
+    render text: ''
   end
 
   def togglecallbackactive
     @stream = Stream.find_by_id(params[:id])
     if params[:typeclass].blank?
-      render :status => 400, :text => "Missing parameter: typeclass"
+      render :status => 400, :text => 'Missing parameter: typeclass'
       return
     end
 
     @stream.set_alarm_callback_active(params[:typeclass], !@stream.alarm_callback_active?(params[:typeclass]))
     @stream.save
-    render :status => 200, :text => ""
+    render status: 200, text: ''
   end
 
   def setalarmvalues
     @stream = Stream.find_by_id(params[:id])
 
-    unless params[:limit].blank? or params[:timespan].blank? or params[:period].blank?
+    if params[:limit].blank? or params[:timespan].blank? or params[:period].blank?
+      flash[:error] = 'Could not update alarm settings: Missing parameters.'
+    else
       @stream.alarm_limit = params[:limit]
       @stream.alarm_timespan = params[:timespan]
       @stream.alarm_period = params[:period]
 
       if @stream.save
-        flash[:notice] = "Alarm settings updated."
+        flash[:notice] = 'Alarm settings updated.'
       else
-        flash[:error] = "Could not update alarm settings."
+        flash[:error] = 'Could not update alarm settings.'
       end
-    else
-        flash[:error] = "Could not update alarm settings: Missing parameters."
     end
 
     redirect_to alarms_stream_path(@stream)
@@ -166,10 +166,10 @@ class StreamsController < ApplicationController
     @new_stream = Stream.new params[:stream]
     @new_stream.disabled = true
     if @new_stream.save
-      flash[:notice] = "Stream has been created"
+      flash[:notice] = 'Stream has been created'
       redirect_to rules_stream_path(@new_stream)
     else
-      flash[:error] = "Could not create stream"
+      flash[:error] = 'Could not create stream'
       redirect_to streams_path
     end
   end
@@ -352,23 +352,23 @@ class StreamsController < ApplicationController
   end
 
   def edit_output
-    if params["config"]["description"].blank?
-      flash[:error] = "Description is missing!"
+    if params['config']['description'].blank?
+      flash[:error] = 'Description is missing!'
       redirect_to outputs_stream_path(@stream) and return
     end
 
-    output = @stream.outputs.select { |o| o["id"] == BSON::ObjectId.from_string(params["output_id"]) }
-    output = params["config"]
-    output["id"] = BSON::ObjectId.from_string(params["output_id"])
-    output["typeclass"] = params["typeclass"]
+    output = @stream.outputs.select { |o| o['id'] == BSON::ObjectId.from_string(params['output_id']) }
+    output = params['config']
+    output['id'] = BSON::ObjectId.from_string(params['output_id'])
+    output['typeclass'] = params['typeclass']
 
-    @stream.outputs.delete_if { |o| o["id"] == BSON::ObjectId.from_string(params["output_id"]) }
+    @stream.outputs.delete_if { |o| o['id'] == BSON::ObjectId.from_string(params['output_id']) }
     @stream.outputs << output
 
     if @stream.save
-      flash[:notice] = "Output has been updated."
+      flash[:notice] = 'Output has been updated.'
     else
-      flash[:error] = "Could not update output!"
+      flash[:error] = 'Could not update output!'
     end
 
     redirect_to outputs_stream_path(@stream)
