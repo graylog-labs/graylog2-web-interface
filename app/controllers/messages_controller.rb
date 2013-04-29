@@ -7,30 +7,30 @@
 
   # XXX ELASTIC clean up triple-duplicated quickfilter shit
   def do_scoping
-    (!params[:showall].blank? and params[:showall] == "true") ? showall = true : showall = false
+    (!params[:showall].blank? and params[:showall] == 'true') ? showall = true : showall = false
     
     if params[:host_id]
       @scoping = :host
       block_access_for_non_admins
 
-      @host = Host.where(:host=> params[:host_id]).first
+      @host = Host.where(host: params[:host_id]).first
       
       @total_count = MessageGateway.host_count(@host.host)
 
       if params[:filters].blank?
-        @messages = MessageGateway.all_of_host_paginated(@host.host, params[:page], :all => showall)
+        @messages = MessageGateway.all_of_host_paginated(@host.host, params[:page], all: showall)
       else
         @additional_filters = Quickfilter.extract_additional_fields_from_request(params[:filters])
-        @messages = MessageGateway.all_by_quickfilter(params[:filters], params[:page], :hostname => @host.host, :distribution => params[:distribution_field])
+        @messages = MessageGateway.all_by_quickfilter(params[:filters], params[:page], hostname: @host.host, distribution: params[:distribution_field])
         @quickfilter_result_count = @messages.total_result_count
       end
     elsif params[:stream_id]
       @scoping = :stream
-      @stream = Stream.find_by_id_or_name(params[:stream_id])
+      @stream = Stream.where(name: params[:stream_id])
       @is_favorited = current_user.favorite_streams.include?(params[:stream_id])
 
       # Check streams for reader.
-      block_access_for_non_admins if !@stream.accessable_for_user?(current_user)
+      block_access_for_non_admins unless @stream.accessable_for_user?(current_user)
         
       @total_count = MessageGateway.stream_count(@stream.id.to_s)
       
@@ -43,7 +43,7 @@
       end
     else
       @scoping = :messages
-      unless (params[:action] == "show")
+      unless params[:action] == 'show'
         block_access_for_non_admins
       end
         
