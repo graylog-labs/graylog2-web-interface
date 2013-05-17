@@ -19,6 +19,13 @@ class StreamrulesController < ApplicationController
   def update
     rule = @stream.streamrules.find(:first, :conditions => {:_id => BSON::ObjectId(params[:id])})
     rule.value = params[:streamrule][:value]
+
+    if params[:streamrule][:inverted].blank?
+      rule.inverted = false
+    else
+      rule.inverted = (params[:streamrule][:inverted] == "1" ? true : false)
+    end
+
     if rule.save
       flash[:notice] = "Rule has been updated."
     else

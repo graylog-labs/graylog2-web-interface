@@ -9,6 +9,7 @@ class Streamrule
 
   field :rule_type, :type => Integer
   field :value, :type => String
+  field :inverted, :type => Boolean
 
   TYPE_MESSAGE = 1
   TYPE_HOST = 2
