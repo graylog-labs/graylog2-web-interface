@@ -17,6 +17,8 @@ config/email.yml
 config/indexer.yml
 config/ldap.yml
 
+config/initializers/secret_token.rb
+
 Capfile
 config/deploy.rb
 
