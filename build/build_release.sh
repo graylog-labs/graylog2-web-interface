@@ -45,6 +45,8 @@ mv config/mongoid.yml.example config/mongoid.yml
 mv config/indexer.yml.example config/indexer.yml
 mv config/ldap.yml.example config/ldap.yml
 
+mv config/initializers/secret_token.rb.example config/initializers/secret_token.rb
+
 RAILS_ENV=production
 export RAILS_ENV
 
