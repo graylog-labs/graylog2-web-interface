@@ -1,4 +1,10 @@
 # Settings for the elasticsearch indexer.
+development:
+  url: http://localhost:9200/
+  index_prefix: graylog2_development
+test:
+  url: http://localhost:9200/
+  index_prefix: graylog2_test
 production:
   url: http://localhost:9200/
   index_prefix: graylog2
