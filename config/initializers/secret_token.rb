@@ -6,6 +6,9 @@
 # no regular words or you'll be exposed to dictionary attacks.
 
 Graylog2WebInterface::Application.config.secret_token = 'CHANGE ME'
+
+
+# No need to change anything here.
 if Graylog2WebInterface::Application.config.secret_token == 'CHANGE ME'
   raise "Generate a new secret token with `rake secret` and paste it into config/initializers/secret_token.rb"
 end
