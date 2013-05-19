@@ -347,6 +347,12 @@ $(document).ready(function() {
     //$.mapKey("s", function() { $("#modal-stream-chooser").modal(standardMapKeyOptions); });
     //$.mapKey("h", function() { $("#modal-host-chooser").modal(standardMapKeyOptions); });
   
+    $("#users-stream-selector-all").on("click", function() {
+      $(".users-stream-selector-box").prop('checked', true);
+      $(this).hide();
+      return false;
+    });
+
     var count;
 
     setInterval(function(){

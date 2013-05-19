@@ -38,11 +38,11 @@
     <span class="highlighted"><%= @user.errors[:role].join(" and ")%></span>
   </dd>
 
-  <dt class="users-streams" style="display: <%= show_streams?(@user) %>;"><%= label_tag 'streams', 'Grant access to following streams' %></dt>
+  <dt class="users-streams" style="display: <%= show_streams?(@user) %>;"><%= label_tag 'streams', 'Grant access to following streams' %> <span id="users-stream-selector-all">(<a href="#">Mark all</a>)</span></dt>
   <dd class="users-streams" style="display: <%= show_streams?(@user) %>">
     <ul id="users-streams-selector">
     <% Stream.all.each do |stream| %>
-      <li><%= check_box_tag "user[stream_ids][]", stream.id, user.streams.include?(stream) -%><%= stream.title -%></li>
+      <li><%= check_box_tag "user[stream_ids][]", stream.id, user.streams.include?(stream), :class => "users-stream-selector-box" -%><%= stream.title -%></li>
     <% end %>
     </ul>
   </dd>
