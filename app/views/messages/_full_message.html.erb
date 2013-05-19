@@ -6,7 +6,7 @@
     </span>
   </h2>
 
-  <p class="messages-show-message"><%= @message.message %></p>
+  <p class="messages-show-message"><%= h(@message.message).gsub("\n", "<br/>").html_safe %></p>
 
   <div id="messages-show-terms-modal" style="display: none;">
     <h2>Terms of message <span class="highlighted"><%= @message.id %></span></h2>
