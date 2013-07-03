@@ -1,5 +1,5 @@
 GEM
-  remote: http://rubygems.org/
+  remote: https://rubygems.org/
   specs:
     SystemTimer (1.2.3)
     actionmailer (3.2.12)
