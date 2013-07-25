@@ -4,7 +4,7 @@
 	<strong>Plugin did not request any configuration.</strong>
 	<br />
 <% else %>
-	<%= form_tag "/plugin_configuration/configure/#{params[:plugin_type]}/#{params[:typeclass]}" do %>
+	<%= form_tag "plugin_configuration/configure/#{params[:plugin_type]}/#{params[:typeclass]}" do %>
 
 		<dl class="plugin-configuration">
 			<% @requested_fields.each do |field, title| %>

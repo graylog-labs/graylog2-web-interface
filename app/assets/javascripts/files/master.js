@@ -357,7 +357,7 @@ $(document).ready(function() {
 
     setInterval(function(){
       // Update current throughput every 5 seconds
-      $.get("/health/currentthroughput", function(json) {
+      $.get(relative_url_root + "/health/currentthroughput", function(json) {
         count = $(".health-throughput-current");
         count.html(parseInt(json.count));
         count.fadeOut(200, function() {

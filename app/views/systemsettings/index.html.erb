@@ -46,7 +46,7 @@ All currently installed alarm callback plugins are listed here. You can enable/d
 				toggle_alarmcallback_force_systemsettings_path(:typeclass => callback.typeclass),
 				SystemSetting.alarm_callback_forced?(callback.typeclass)) %>
 			<br />
-			<%= link_to "Configure", "/plugin_configuration/configure/alarm_callback/#{callback.typeclass}" %>
+			<%= link_to "Configure", "plugin_configuration/configure/alarm_callback/#{callback.typeclass}" %>
 		</div>
 	<% end %>
 <% end %>
@@ -65,7 +65,7 @@ All currently installed message output plugins are listed here. You can configur
 		<div class="lines-line">
 			<h3><%= output.name %></h3>
 			<strong>Type:</strong> <%= output.typeclass %><br />
-			<%= link_to "Configure", "/plugin_configuration/configure/message_output/#{output.typeclass}" %>
+			<%= link_to "Configure", "plugin_configuration/configure/message_output/#{output.typeclass}" %>
 		</div>
 	<% end %>
 <% end %>
@@ -79,7 +79,7 @@ All currently installed message output plugins are listed here. You can configur
 		<div class="lines-line">
 			<h3><%= input.name %></h3>
 			<strong>Type:</strong> <%= input.typeclass %><br />
-			<%= link_to "Configure", "/plugin_configuration/configure/message_input/#{input.typeclass}" %>
+			<%= link_to "Configure", "plugin_configuration/configure/message_input/#{input.typeclass}" %>
 		</div>
 	<% end %>
 <% end %>
@@ -93,7 +93,7 @@ All currently installed message output plugins are listed here. You can configur
 		<div class="lines-line">
 			<h3><%= transport.name %></h3>
 			<strong>Type:</strong> <%= transport.typeclass %><br />
-			<%= link_to "Configure", "/plugin_configuration/configure/transport/#{transport.typeclass}" %>
+			<%= link_to "Configure", "plugin_configuration/configure/transport/#{transport.typeclass}" %>
 		</div>
 	<% end %>
 <% end %>
@@ -107,7 +107,7 @@ All currently installed message output plugins are listed here. You can configur
 		<div class="lines-line">
 			<h3><%= init.name %></h3>
 			<strong>Type:</strong> <%= init.typeclass %><br />
-			<%= link_to "Configure", "/plugin_configuration/configure/initializer/#{init.typeclass}" %>
+			<%= link_to "Configure", "plugin_configuration/configure/initializer/#{init.typeclass}" %>
 		</div>
 	<% end %>
 <% end %>
