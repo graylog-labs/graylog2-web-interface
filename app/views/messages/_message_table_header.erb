@@ -4,7 +4,7 @@
   <%= render :partial => "version_check" %>
 <% end %>
 
-Currently containing <span class="highlighted"><%= number_with_delimiter(@total_count, :delimiter => '.') %></span> messages.
+Currently containing <span class="highlighted"><%= number_with_delimiter(@total_count) %></span> messages.
 
 <% if params[:filters].blank? %>
 <%= recent_index_switcher(params[:showall]) %>

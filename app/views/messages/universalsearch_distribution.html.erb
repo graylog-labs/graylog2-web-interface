@@ -10,7 +10,7 @@
 </h1>
 
 <% unless @messages.total_result_count.blank? %>
-  Search hit <span class="highlighted"><%= number_with_delimiter(@messages.total_result_count, :delimiter => '.')  %></span> messages.
+  Search hit <span class="highlighted"><%= number_with_delimiter(@messages.total_result_count)  %></span> messages.
 <% end %>
 
 <%= render :partial => "result_graph" %>
