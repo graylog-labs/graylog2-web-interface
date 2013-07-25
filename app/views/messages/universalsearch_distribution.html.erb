@@ -16,7 +16,7 @@
 <%= render :partial => "result_graph" %>
 <br />
 
-<%= form_tag "/messages/universalsearch", :method => :get do %>
+<%= form_tag universalsearch_messages_path, :method => :get do %>
 	<%= hidden_field_tag "timespan", params[:timespan] %>
 	<%= hidden_field_tag "query", params[:query] %>
 
@@ -35,7 +35,7 @@
 </script>
 <br  />
 
-<%= awesome_link "Back to search results", "/messages/universalsearch?timespan=#{params[:timespan]}&query=#{params[:query]}" %>
+<%= awesome_link "Back to search results", "#{universalsearch_messages_path}?timespan=#{params[:timespan]}&query=#{params[:query]}" %>
 <br /><br />
 
 <%= render :partial => "result_distribution", :locals => { :distribution_result => @messages } %>

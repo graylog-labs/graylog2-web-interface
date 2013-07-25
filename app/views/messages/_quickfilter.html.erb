@@ -72,7 +72,7 @@
   <%= render :partial => "result_graph" %>
   <br />
 
-  <%= form_tag "/messages", :method => :get do %>
+  <%= form_tag messages_path, :method => :get do %>
 
     <% params[:filters].each do |k,v| %>
       <% next if v.blank? or k == "additional" %>

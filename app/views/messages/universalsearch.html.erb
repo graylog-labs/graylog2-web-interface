@@ -17,7 +17,7 @@
 <%= render :partial => "result_graph" %>
 <br />
 
-<%= form_tag "/messages/universalsearch", :method => :get do %>
+<%= form_tag universalsearch_messages_path, :method => :get do %>
 	<%= hidden_field_tag "timespan", params[:timespan] %>
 	<%= hidden_field_tag "query", params[:query] %>
 
