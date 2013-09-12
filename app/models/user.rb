@@ -15,8 +15,6 @@ class User
   validates_format_of       :name,     :with => Authentication.name_regex,  :message => Authentication.bad_name_message, :allow_nil => true
   validates_length_of       :name,     :maximum => 100
 
-  STANDARD_ROLE = :admin
-
   # HACK HACK HACK -- how to do attr_accessible from here?
   # prevents a user from submitting a crafted form that bypasses activation
   # anything else you want your user to change should be added here.
@@ -70,7 +68,7 @@ class User
   def self.find_by_login(login)
     find(:first, :conditions => {:login => login})
   end
-  
+
   def self.find_by_key(key)
     find(:first, :conditions => {:api_key => key})
   end
@@ -79,7 +77,7 @@ class User
     user   = find_by_login(credentials.login)
     params = credentials.to_hash.reverse_merge({ :password              => 'Not needed for auth strategy.',
                                                  :password_confirmation => 'Not needed for auth strategy.',
-                                                 :role                  => User::STANDARD_ROLE })
+                                                 :role                  => ::Configuration.standard_role })
 
     user || create(params)
   end
@@ -95,9 +93,9 @@ class User
   def email=(value)
     write_attribute :email, value
   end
-  
+
   def generate_api_key
-    key = Digest::SHA1.hexdigest(self.login + rand(1000000).to_s + ":" + Time.now.to_s)  
+    key = Digest::SHA1.hexdigest(self.login + rand(1000000).to_s + ":" + Time.now.to_s)
     write_attribute :api_key, key
     return key
   end
@@ -121,7 +119,7 @@ class User
   end
 
   def role_symbols
-    [(role.blank? ? STANDARD_ROLE : role.to_sym)]
+    [(role.blank? ? ::Configuration.standard_role : role.to_sym)]
   end
 
   def valid_roles

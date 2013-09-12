@@ -37,6 +37,10 @@ class Configuration
     general_config :date_format, "%d.%m.%Y - %H:%M:%S"
   end
 
+  def self.standard_role
+    general_config :standard_role, "admin"
+  end
+
   def self.indexer_config(key = nil, default = nil)
     if key
       config_value @indexer_config, Rails.env, key, default
