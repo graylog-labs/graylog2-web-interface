@@ -94,7 +94,7 @@ $(document).ready(function() {
         $(this).text("Testing connection...").removeClass().addClass("btn").prop("disabled", true);
         $.ajax({
             type: "POST",
-            url: "/a/system/ldap/testconnect",
+            url: getBaseUrl() + "/a/system/ldap/testconnect",
 
             data: {
                 url: $("#ldap-uri").val(),
@@ -129,7 +129,7 @@ $(document).ready(function() {
         $("#attr-well").addClass("hidden");
         $.ajax({
             type: "POST",
-            url: "/a/system/ldap/testlogin",
+            url: getBaseUrl() + "/a/system/ldap/testlogin",
             data: {
                 url: $("#ldap-uri").val(),
                 systemUsername: $("#systemUsername").val(),

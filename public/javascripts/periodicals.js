@@ -29,7 +29,7 @@ $(document).ready(function() {
             }
 
             $.ajax({
-                url: '/a/messagecounts/total',
+                url: getBaseUrl() + '/a/messagecounts/total',
                 headers: { "X-Graylog2-No-Session-Extension" : "true"},
                 success: function(data) {
                     $(".total-events").animatedIntChange(data.events, 500)
@@ -55,7 +55,7 @@ $(document).ready(function() {
             }
 
             $.ajax({
-                url: '/a/system/throughput',
+                url: getBaseUrl() + '/a/system/throughput',
                 headers: { "X-Graylog2-No-Session-Extension" : "true"},
                 success: function(data) {
                     $(".total-throughput").text(data.throughput);
@@ -91,11 +91,11 @@ $(document).ready(function() {
                 var nodeType = $(this).attr("data-node-type");
                 var url;
                 if (!!nodeType && $(this).attr("data-node-type") == "radio") {
-                    url = "/a/system/throughput/radio/" + $(this).attr("data-radio-id");
+                    url = getBaseUrl() + "/a/system/throughput/radio/" + $(this).attr("data-radio-id");
                 } else if (!!nodeType && $(this).attr("data-node-type") == "stream") {
-                    url = "/a/system/throughput/stream/" + $(this).attr("data-stream-id");
+                    url = getBaseUrl() + "/a/system/throughput/stream/" + $(this).attr("data-stream-id");
                 } else {
-                    url = "/a/system/throughput/node/" + $(this).attr("data-node-id");
+                    url = getBaseUrl() + "/a/system/throughput/node/" + $(this).attr("data-node-id");
                 }
 
                 var thisNodeT = $(this);
@@ -133,9 +133,9 @@ $(document).ready(function() {
                 var nodeType = $(this).attr("data-node-type");
                 var url;
                 if (!!nodeType && $(this).attr("data-node-type") == "radio") {
-                    url = "/a/system/radio/" + $(this).attr("data-radio-id") + "/heap"
+                    url = getBaseUrl() + "/a/system/radio/" + $(this).attr("data-radio-id") + "/heap"
                 } else {
-                    url = "/a/system/node/" + $(this).attr("data-node-id") + "/heap"
+                    url = getBaseUrl() + "/a/system/node/" + $(this).attr("data-node-id") + "/heap"
                 }
 
                 var thisHeap = $(this);
@@ -180,7 +180,7 @@ $(document).ready(function() {
             var io = $(this);
 
             $.ajax({
-                url: '/a/system/inputs/' + encodeURIComponent(nodeId) + '/' + encodeURIComponent(inputId) + '/io',
+                url: getBaseUrl() + '/a/system/inputs/' + encodeURIComponent(nodeId) + '/' + encodeURIComponent(inputId) + '/io',
                 headers: { "X-Graylog2-No-Session-Extension" : "true"},
                 success: function(data) {
                     $(".persec .rx", io).text(data.rx);
@@ -302,7 +302,7 @@ $(document).ready(function() {
             var connections = $(this);
 
             $.ajax({
-                url: '/a/system/inputs/' + encodeURIComponent(nodeId) + '/' + encodeURIComponent(inputId) + '/connections',
+                url: getBaseUrl() + '/a/system/inputs/' + encodeURIComponent(nodeId) + '/' + encodeURIComponent(inputId) + '/connections',
                 headers: { "X-Graylog2-No-Session-Extension" : "true"},
                 success: function(data) {
                     $(".total", connections).text(data.total);
@@ -356,7 +356,7 @@ $(document).ready(function() {
         }
 
         $.ajax({
-            url: '/a/system/notifications',
+            url: getBaseUrl() + '/a/system/notifications',
             headers: { "X-Graylog2-No-Session-Extension" : "true"},
             success: function(data) {
                 var count = data.length;
@@ -410,7 +410,7 @@ $(document).ready(function() {
 
                 var logs = $(this);
                 $.ajax({
-                    url: '/a/system/internallogs/' + encodeURIComponent(nodeId),
+                    url: getBaseUrl() + '/a/system/internallogs/' + encodeURIComponent(nodeId),
                     headers: { "X-Graylog2-No-Session-Extension" : "true"},
                     success: function(data) {
                         logs.animatedIntChange(data.total, 500);
@@ -436,7 +436,7 @@ $(document).ready(function() {
 
                 var theseMetrics = $(this);
                 $.ajax({
-                    url: '/a/system/internallogs/' + encodeURIComponent(nodeId) + '/metrics',
+                    url: getBaseUrl() + '/a/system/internallogs/' + encodeURIComponent(nodeId) + '/metrics',
                     headers: { "X-Graylog2-No-Session-Extension" : "true"},
                     success: function(data) {
                         for (var level in data) {

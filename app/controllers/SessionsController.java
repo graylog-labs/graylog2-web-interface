@@ -127,7 +127,7 @@ public class SessionsController extends BaseController {
         }
         SecurityUtils.getSubject().logout();
 		session().clear();
-		return redirect("/login");
+		return redirect(controllers.routes.SessionsController.index());
 	}
 
     private class SessionResponse {

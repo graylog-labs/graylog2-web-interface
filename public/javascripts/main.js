@@ -35,7 +35,7 @@ $(document).ready(function() {
                 list_link = $("#terms-msg-" + messageId + "-as-list");
 
                 if ($(this).attr("data-loaded") != "true") {
-                    $.get("/a/analyze/" + index + "/" + messageId + "/message", function(data) {
+                    $.get(getBaseUrl() + "/a/analyze/" + index + "/" + messageId + "/message", function(data) {
                         if (data.length > 0) {
                             for(var i = 0; i < data.length; i++) {
                                 list.append("<li>" + data[i] + "</li>");
@@ -116,7 +116,7 @@ $(document).ready(function() {
         var notificationContainer = $(this).parent();
 
         $.ajax({
-            url: "/a/system/notifications/" + $(this).attr("data-notificationtype"),
+            url: getBaseUrl() + "/a/system/notifications/" + $(this).attr("data-notificationtype"),
             type: "DELETE",
             success: function(data) {
                 notificationContainer.hide();
@@ -129,7 +129,7 @@ $(document).ready(function() {
 
     // Typeahead for message fields.
     $.ajax({
-        url: '/a/system/fields',
+        url: getBaseUrl() + '/a/system/fields',
         success: function(data) {
             $(".typeahead-fields").typeahead({ source: data.fields, items: 6 });
         }
@@ -139,7 +139,7 @@ $(document).ready(function() {
     if ($(".systemjob-progress").size() > 0) {
         (function updateSystemJobProgress() {
             $.ajax({
-                url: '/a/system/jobs',
+                url: getBaseUrl() + '/a/system/jobs',
                 success: function(data) {
                     // Check if there is an element that is not in the response anymore.
                     // That would mean it's job has finished or was stopped.
@@ -189,7 +189,7 @@ $(document).ready(function() {
         }
 
         $.ajax({
-            url: "/a/system/processing/" + action,
+            url: getBaseUrl() + "/a/system/processing/" + action,
             type: "PUT",
             data: { node_id: $(this).attr("data-node-id") },
             success: function(data) {
@@ -278,7 +278,7 @@ $(document).ready(function() {
         delayedAjaxCallOnKeyup( domElement, function() {
             var username =  createUsernameField.val();
             $.ajax({
-                url: "/a/system/users/" + encodeURIComponent(username),
+                url: getBaseUrl() + "/a/system/users/" + encodeURIComponent(username),
                 type: "GET",
                 cache: false,
                 global: false,
@@ -343,7 +343,7 @@ $(document).ready(function() {
         var dropdown = $(this).closest("ul.dropdown-menu");
 
         $.ajax({
-            url: '/system/logging/node/' + encodeURIComponent(nodeId) + '/subsystem/' + encodeURIComponent(subsystem) + '/' + encodeURIComponent(newLevel) + '',
+            url: getBaseUrl() + '/system/logging/node/' + encodeURIComponent(nodeId) + '/subsystem/' + encodeURIComponent(subsystem) + '/' + encodeURIComponent(newLevel) + '',
             type: "PUT",
             success: function(data) {
                 $("li", dropdown).removeClass("active");
@@ -863,6 +863,16 @@ function originalUniversalSearchSettings() {
     }
 
     return result;
+}
+
+function getBaseUrl(){
+    var url = $("link[rel='search'][title='Graylog2']").attr('href');
+    if (url === undefined) {
+        return '';
+    }
+    else {
+        return url.replace('/opensearch.xml','');
+    }
 }
 
 function isNumber(n) {
