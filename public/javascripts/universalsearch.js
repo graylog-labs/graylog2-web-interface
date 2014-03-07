@@ -50,7 +50,7 @@ $(document).ready(function() {
             }
 
             $.ajax({
-                url: '/a/tools/natural_date_test',
+                url: getBaseUrl() + '/a/tools/natural_date_test',
                 data: {
                     "string": string
                 },
@@ -101,7 +101,7 @@ $(document).ready(function() {
         params.title = title
 
         $.ajax({
-            url: '/savedsearches/create',
+            url: getBaseUrl() + '/savedsearches/create',
             type: 'POST',
             data: {
                 "params": JSON.stringify(params)
@@ -134,9 +134,9 @@ $(document).ready(function() {
 
         var container = $(this).closest(".saved-searches-selector-container");
         if(!!container.attr("data-stream-id")) {
-            var url = "/savedsearches/" + encodeURI(searchId) + "/execute?" + "streamId=" + container.attr("data-stream-id");
+            var url = getBaseUrl() + "/savedsearches/" + encodeURI(searchId) + "/execute?" + "streamId=" + container.attr("data-stream-id");
         } else {
-            var url = "/savedsearches/" + encodeURI(searchId) + "/execute";
+            var url = getBaseUrl() + "/savedsearches/" + encodeURI(searchId) + "/execute";
         }
 
         window.location = url;
@@ -145,7 +145,7 @@ $(document).ready(function() {
     // Fill saved searches selector.
     if ($("#saved-searches-selector").size() > 0) {
         $.ajax({
-            url: '/savedsearches',
+            url: getBaseUrl() + '/savedsearches',
             type: 'GET',
             success: function(data) {
                 // Convert to array for sorting.

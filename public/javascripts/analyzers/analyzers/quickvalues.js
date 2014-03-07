@@ -136,7 +136,7 @@ $(document).ready(function() {
         }
 
         $.ajax({
-            url: '/a/search/fieldterms',
+            url: getBaseUrl() + '/a/search/fieldterms',
             data: params,
             success: function(data) {
                 $(".terms-total", quickvalues).text(data.total);

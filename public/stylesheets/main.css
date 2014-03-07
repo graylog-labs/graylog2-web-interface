@@ -40,7 +40,7 @@ h4 {
 
 #top {
 	height: 40px;
-	background-image: url(/assets/images/topbg.png);
+	background-image: url(../images/topbg.png);
 	background-repeat: repeat-x;
 	color: #fff !important;
 }
