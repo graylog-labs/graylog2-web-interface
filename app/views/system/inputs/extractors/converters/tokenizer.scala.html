@@ -3,4 +3,12 @@
         <input type="checkbox" value="enabled" name="converter_tokenizer">
         Add Key=Value pairs as fields
     </label>
+    <div class="xtrc-converter-subfield">
+        <label for="converter_tokenizer_delimiter">
+            Separator character:
+            @views.html.partials.support.bubble("graylog2-web-interface/tokenizer-converter")
+        </label>
+        <input name="delimiter" id="converter_tokenizer_delimiter" type="text" value="=" maxlength="1" class="input-mini" />
+        <span class="help-block">Key value delimiter will be set to this value. Defaults to '='.</span>
+    </div>
 </div>
