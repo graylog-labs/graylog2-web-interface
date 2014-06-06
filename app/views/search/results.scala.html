@@ -4,6 +4,7 @@
 @import lib.security.RestPermissions
 @import views.helpers.DateHistogramResolutionSelector
 @import views.helpers.Permissions
+@import views.helpers.Permissions.isPermitted
 @import lib.DateTools
 @import controllers.routes;
 
@@ -279,7 +280,11 @@
                             data-widget-type="field_chart"
                         >
                             <li>
-                                <a href="@routes.DashboardsController.newDashboard()">No dashboards. Create one?</a>
+                                @if(isPermitted(RestPermissions.DASHBOARDS_CREATE)) {
+                                    <a href="@routes.DashboardsController.newDashboard()">No dashboards. Create one?</a>
+                                } else {
+                                    <a><i>No dashboards exist and you are not allowed to create one.</i></a>
+                                }
                             </li>
                         </ul>
                     </li>
