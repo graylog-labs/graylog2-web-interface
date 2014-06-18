@@ -22,15 +22,11 @@ package controllers;
 import com.google.inject.Inject;
 import lib.APIException;
 import lib.ApiClient;
-import models.User;
-import models.UserService;
+import models.*;
 import models.alerts.Alert;
 import models.alerts.AlertCondition;
 import models.alerts.AlertConditionService;
-import models.Stream;
-import models.StreamService;
 import models.api.requests.alerts.CreateAlertConditionRequest;
-import play.Logger;
 import play.mvc.Result;
 
 import java.io.IOException;
@@ -50,6 +46,9 @@ public class AlertsController extends AuthenticatedController {
 
     @Inject
     private AlertConditionService alertConditionService;
+
+    @Inject
+    private NodeService nodeService;
 
     public Result index(String streamId) {
         try {
@@ -78,7 +77,8 @@ public class AlertsController extends AuthenticatedController {
                     alertConditions,
                     totalAlerts,
                     alerts,
-                    users.toString()
+                    users.toString(),
+                    nodeService.loadMasterNode()
             ));
         } catch (IOException e) {
             return status(504, views.html.errors.error.render(ApiClient.ERROR_MSG_IO, e, request()));
