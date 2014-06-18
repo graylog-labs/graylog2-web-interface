@@ -50,16 +50,19 @@ public class ClusterService {
     private final SystemJob.Factory systemJobFactory;
     private final ServerNodes serverNodes;
     private final NodeService nodeService;
+    private final StreamService streamService;
 
     @Inject
     private ClusterService(ApiClient api,
                            SystemJob.Factory systemJobFactory,
                            ServerNodes serverNodes,
-                           NodeService nodeService) {
+                           NodeService nodeService,
+                           StreamService streamService) {
         this.api = api;
         this.systemJobFactory = systemJobFactory;
         this.serverNodes = serverNodes;
         this.nodeService = nodeService;
+        this.streamService = streamService;
     }
 
     public void triggerSystemJob(SystemJob.Type type, User user) throws IOException, APIException {
@@ -76,7 +79,7 @@ public class ClusterService {
         List<Notification> notifications = Lists.newArrayList();
         for (NotificationSummaryResponse notification : r.notifications) {
             try {
-                notifications.add(new Notification(notification));
+                notifications.add(new Notification(notification, streamService, nodeService));
             } catch(IllegalArgumentException e) {
                 play.Logger.warn("There is a notification type we can't handle: [" + notification.type + "]");
                 continue;

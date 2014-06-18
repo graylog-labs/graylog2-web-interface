@@ -16,9 +16,9 @@ public class InputFailedToStartNotification implements NotificationType {
     private final String DESCRIPTION;
 
     public InputFailedToStartNotification(Notification notification) {
-        DESCRIPTION = "Input " + (String)notification.getDetail("input_id") + " has failed to start on node " +
+        DESCRIPTION = "Input " + notification.getDetail("input_id") + " has failed to start on node " +
                 notification.getNodeId() + " for this reason: \"" +
-                (String)notification.getDetail("reason") + "\". " +
+                notification.getDetail("reason") + "\". " +
                 "This means that you are unable to receive any messages from this input. This is mostly " +
                 "an indication for a misconfiguration or an error. " + "" +
                 "You can click <a href='" + routes.InputsController.index() + "'>here</a> to solve this";

@@ -18,11 +18,12 @@
  */
 package models;
 
-import com.google.inject.Inject;
+import lib.APIException;
 import lib.notifications.*;
 import models.api.responses.system.NotificationSummaryResponse;
 import org.joda.time.DateTime;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -30,8 +31,8 @@ import java.util.Map;
  */
 public class Notification {
 
-    @Inject
-    private NodeService nodeService;
+    private transient final NodeService nodeService;
+    private transient final StreamService streamService;
 
     public enum Type {
         DEFLECTOR_EXISTS_AS_INDEX,
@@ -41,7 +42,8 @@ public class Notification {
         NO_INPUT_RUNNING,
         INPUT_FAILED_TO_START,
         CHECK_SERVER_CLOCKS,
-        OUTDATED_VERSION;
+        OUTDATED_VERSION,
+        STREAM_PROCESSING_DISABLED;
 
         public static Type fromString(String name) {
             return valueOf(name.toUpperCase());
@@ -58,7 +60,9 @@ public class Notification {
     private final String node_id;
     private final Map<String, Object> details;
 
-    public Notification(NotificationSummaryResponse x) {
+    public Notification(NotificationSummaryResponse x, StreamService streamService, NodeService nodeService) {
+        this.streamService = streamService;
+        this.nodeService = nodeService;
         this.type = Type.valueOf(x.type.toUpperCase());
         this.timestamp = DateTime.parse(x.timestamp);
         this.severity = Severity.valueOf(x.severity.toUpperCase());
@@ -66,7 +70,7 @@ public class Notification {
         this.details = x.details;
     }
 
-    public NotificationType get() {
+    public NotificationType get() throws IOException, APIException {
         switch (type) {
             case DEFLECTOR_EXISTS_AS_INDEX:
                 return new DeflectorExistsAsIndexNotification();
@@ -84,6 +88,10 @@ public class Notification {
                 return new CheckServerClocksNotification();
             case OUTDATED_VERSION:
                 return new OutdatedVersionNotification(this);
+            case STREAM_PROCESSING_DISABLED:
+                Stream stream = streamService.get(details.get("stream_id").toString());
+                long faultCount = Math.round((double)details.get("fault_count"));
+                return new StreamProcessingDisabled(stream.getTitle(), faultCount);
         }
 
         throw new RuntimeException("No notification registered for " + type);

@@ -21,12 +21,14 @@ package controllers.api;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 import controllers.AuthenticatedController;
 import lib.APIException;
 import lib.metrics.Meter;
 import models.*;
 import play.libs.F;
+import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 
@@ -83,6 +85,7 @@ public class SystemApiController extends AuthenticatedController {
             /*Map<String, Object> result = Maps.newHashMap();
             result.put("count", clusterService.allNotifications().size());*/
             List<Notification> notifications = clusterService.allNotifications();
+
 
             return ok(new Gson().toJson(notifications)).as("application/json");
         } catch (IOException e) {
