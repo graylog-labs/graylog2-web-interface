@@ -23,7 +23,6 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
 import models.FieldMapper;
 import models.api.responses.HighlightRange;
 import org.joda.time.DateTime;
@@ -184,7 +183,11 @@ public class MessageResult {
         return highlightRanges;
     }
 
-    public String getHighlightRangesAsJson() {
-        return new Gson().toJson(getHighlightRanges());
+    public boolean hasHighlightedFields() {
+        return highlightRanges != null;
+    }
+
+    public HighlightedField getHighlightedField(String field) {
+        return new HighlightedField(this, field);
     }
 }

@@ -21,4 +21,12 @@ package models.api.responses;
 public class HighlightRange {
     int start;
     int length;
+
+    public int getStart() {
+        return start;
+    }
+
+    public int getLength() {
+        return length;
+    }
 }
