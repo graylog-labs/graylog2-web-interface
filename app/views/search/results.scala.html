@@ -377,9 +377,9 @@
                 class="result-td-36cd38f49b9afa08222c0dc9ebfe35eb">@r.getFields.get("source")</td>
 			<td @if(!(selectedFields.contains("message") || search.getOrder.getField.equals("message"))) { style="display: none;" }
                 class="messages-message result-td-78e731027d8fd50ed642340b7c9a63b3">
-                @if(r.hasHighlightedFields) {
+                @if(r.hasHighlightedField("message")) {
                     @* Need to use map{} here because a for() loop would produce unwanted newlines and thus extra spaces in the message. *@
-                    @{r.getHighlightedField("message").getChunks.map {x => if(x.avoidHtmlEscape) { Html(x.getString) } else { x.getString }}}
+                    @{r.getHighlightedField("message").getChunks(r.getFields).map {x => if(x.avoidHtmlEscape) { Html(x.getString) } else { x.getString }}}
                 } else {
                     @r.getFields.get("message")
                 }
@@ -389,7 +389,14 @@
                 @if(!f.isStandardSelected) {
 					<td class="result-td-@f.getHash()"
                         @if(!(selectedFields.contains(f.getName) || search.getOrder.getField.equals(f.getName))) { style="display: none;" }
-                    >@r.getFormattedFields.get(f.getName)</td>
+                    >
+                    @if(r.hasHighlightedField(f.getName)) {
+                        @* Need to use map{} here because a for() loop would produce unwanted newlines and thus extra spaces in the message. *@
+                        @{r.getHighlightedField(f.getName).getChunks(r.getFormattedFields).map {x => if(x.avoidHtmlEscape) { Html(x.getString) } else { x.getString }}}
+                    } else {
+                      @r.getFormattedFields.get(f.getName)
+                    }
+                    </td>
 				}
 			}
 		</tr>

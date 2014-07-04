@@ -183,8 +183,8 @@ public class MessageResult {
         return highlightRanges;
     }
 
-    public boolean hasHighlightedFields() {
-        return highlightRanges != null;
+    public boolean hasHighlightedField(String field) {
+        return highlightRanges != null && highlightRanges.containsKey(field);
     }
 
     public HighlightedField getHighlightedField(String field) {
