@@ -89,7 +89,7 @@ $(document).ready(function() {
             $(".terms-distribution", quickvalues).hide();
         }
 
-        var button = $(".analyze-field .show-quickvalues[data-field=" + field + "]");
+        var button = $(".analyze-field .show-quickvalues[data-field='" + field + "']");
         updatePosition(button, quickvalues, direction);
 
         switch(direction)  {
