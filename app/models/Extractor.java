@@ -253,6 +253,11 @@ public class Extractor {
                     config.put("split_by", form.get("converter_split_and_count_by")[0]);
                 }
                 break;
+            case TOKENIZER:
+                if (formFieldSet(form, "delimiter")) {
+                    config.put("delimiter", form.get("delimiter")[0]);
+                }
+                break;
             case CSV:
                 if (formFieldSet(form, "csv_column_header")) {
                     config.put("column_header", form.get("csv_column_header")[0]);
@@ -290,6 +295,8 @@ public class Extractor {
                 if (formFieldSet(form, "csv_trim_leading_whitespace")) {
                     config.put("trim_leading_whitespace", Boolean.valueOf(form.get("csv_trim_leading_whitespace")[0]));
                 }
+                break;
+            default:
                 break;
         }
 
