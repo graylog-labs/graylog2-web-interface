@@ -89,9 +89,15 @@ public class Notification {
             case OUTDATED_VERSION:
                 return new OutdatedVersionNotification(this);
             case STREAM_PROCESSING_DISABLED:
-                Stream stream = streamService.get(details.get("stream_id").toString());
+                String streamTitle;
+                try {
+                    final Stream stream = streamService.get(details.get("stream_id").toString());
+                    streamTitle = stream.getTitle();
+                } catch (APIException | IOException e) {
+                    streamTitle = "(Stream title unavailable)";
+                }
                 long faultCount = Math.round((double)details.get("fault_count"));
-                return new StreamProcessingDisabled(stream.getTitle(), faultCount);
+                return new StreamProcessingDisabled(streamTitle, faultCount);
         }
 
         throw new RuntimeException("No notification registered for " + type);
