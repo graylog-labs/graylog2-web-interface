@@ -348,7 +348,7 @@
                 class="result-td-36cd38f49b9afa08222c0dc9ebfe35eb">@r.getFields.get("source")</td>
 			<td @if(!(selectedFields.contains("message") || search.getOrder.getField.equals("message"))) { style="display: none;" }
                 class="messages-message result-td-78e731027d8fd50ed642340b7c9a63b3">
-                @renderMessageResultField("message", r.getFields, r)
+                <div>@renderMessageResultField("message", r.getFields, r)</div>
             </td>
 			
 			@for(f <- searchResult.getPageFields()) {
