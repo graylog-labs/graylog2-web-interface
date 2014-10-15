@@ -41,9 +41,6 @@ object ApplicationBuild extends Build {
     ("Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots")
   )
 
-  // Submodule
-  lazy val restClient = Project("graylog2-rest-client", file("modules/graylog2-rest-client"))
-
   // Helper
   val isSnapshot: Boolean = appVersion.endsWith("SNAPSHOT")
   val timestamp: String = {
@@ -82,5 +79,5 @@ object ApplicationBuild extends Build {
         originalName
       }
     }
-  ).dependsOn(restClient)
+  )
 }
