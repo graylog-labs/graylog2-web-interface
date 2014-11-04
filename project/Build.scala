@@ -8,7 +8,7 @@ import com.typesafe.sbt.packager.universal.Keys.packageZipTarball
 
 object ApplicationBuild extends Build {
   val appName         = "graylog2-web-interface"
-  val appVersion      = "0.90.1"
+  val appVersion      = "0.90.3"
   val appDependencies = Seq(
     cache,
     javaCore,
