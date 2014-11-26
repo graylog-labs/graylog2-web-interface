@@ -20,11 +20,12 @@ var HistogramDataStore = require('../../stores/sources/HistogramDataStore');
 var UniversalSearch = require('../search/UniversalSearch');
 
 var daysToSeconds = (days) => moment.duration(days, 'days').as('seconds');
+var hoursToSeconds = (hours) => moment.duration(hours, 'hours').as('seconds');
 
 var othersThreshold = 5;
 var othersName = "Others";
-var DEFAULT_RANGE_IN_SECS = daysToSeconds(1);
-var SUPPORTED_RANGES_IN_SECS = [daysToSeconds(1), daysToSeconds(7), daysToSeconds(31), daysToSeconds(365), 0];
+var DEFAULT_RANGE_IN_SECS = hoursToSeconds(1);
+var SUPPORTED_RANGES_IN_SECS = [hoursToSeconds(1), daysToSeconds(1), daysToSeconds(7), daysToSeconds(31), daysToSeconds(365), 0];
 
 var SCREEN_RESOLUTION = $(window).width();
 
@@ -462,6 +463,7 @@ var SourceOverview = React.createClass({
                 <div className="row-fluid">
                     <div>
                         <select ref="rangeSelector" className="sources-range pull-right" value={this.state.range} onChange={this._onRangeChanged}>
+                            <option value={hoursToSeconds(1)}>Last Hour</option>
                             <option value={daysToSeconds(1)}>Last Day</option>
                             <option value={daysToSeconds(7)}>Last Week</option>
                             <option value={daysToSeconds(31)}>Last Month</option>
