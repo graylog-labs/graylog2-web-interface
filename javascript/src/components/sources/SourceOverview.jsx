@@ -154,6 +154,7 @@ var SourceOverview = React.createClass({
             // FIXME: causes those nasty exceptions when rendering data (one per x axis tick)
             .elasticX(true)
             .elasticY(true)
+            .transitionDuration(30)
             .on("filtered", (chart) => {
                 dc.events.trigger(() => {
                     var filter = chart.filter();
