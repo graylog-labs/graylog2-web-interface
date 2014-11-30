@@ -10,7 +10,7 @@ var ConfigurationBundlePreview = React.createClass({
        return window.confirm("You are about to delete this content pack, are you sure?");
     },
     render() {
-        var preview = "Select an element from the left list to see its preview.";
+        var preview = "Select a content pack from the list to see its preview.";
         var apply_action = "";
         var delete_action = "";
 
@@ -29,7 +29,7 @@ var ConfigurationBundlePreview = React.createClass({
         return (
             <div className="bundle-preview">
                 {delete_action}
-                <h2>Preview:</h2>
+                <h2>Content pack description:</h2>
                 <div dangerouslySetInnerHTML={{__html: markdownPreview}} />
                 <div className="preview-actions">
                     {apply_action}
