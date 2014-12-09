@@ -9,7 +9,7 @@ $(document).ready(function() {
                 url: appPrefixed('/a/messagecounts/total'),
                 headers: { "X-Graylog2-No-Session-Extension" : "true"},
                 success: function(data) {
-                    $(".total-events").animatedIntChange(data.events, 500)
+                    $(".total-events").intChange(data.events)
                 },
                 error: function() {
                     $(".total-events").text("?");
@@ -373,7 +373,7 @@ $(document).ready(function() {
                     url: appPrefixed('/a/system/internallogs/' + encodeURIComponent(nodeId)),
                     headers: { "X-Graylog2-No-Session-Extension" : "true"},
                     success: function(data) {
-                        logs.animatedIntChange(data.total, 500);
+                        logs.intChange(data.total);
                     }
                 });
 
@@ -398,9 +398,9 @@ $(document).ready(function() {
                         for (var level in data) {
                             var metrics = data[level];
                             var list = $("dl.loglevel-metrics-list[data-level=" + level + "]", theseMetrics);
-                            $(".loglevel-metric-total", list).animatedIntChange(metrics.total, 500);
-                            $(".loglevel-metric-mean", list).animatedIntChange(metrics.mean_rate, 500);
-                            $(".loglevel-metric-1min", list).animatedIntChange(metrics.one_min_rate, 500);
+                            $(".loglevel-metric-total", list).intChange(metrics.total);
+                            $(".loglevel-metric-mean", list).intChange(metrics.mean_rate);
+                            $(".loglevel-metric-1min", list).intChange(metrics.one_min_rate);
                         }
                     }
                 });
