@@ -23,7 +23,7 @@
     ]
   },
   "dependencies": {
-    "dc": "dc-js/dc.js",
+    "dc": "Graylog2/dc.js",
     "crossfilter": "1.x",
     "d3": "3.x",
     "joi": "^4.6.2",
