@@ -47,7 +47,8 @@ gulp.task('test', function () {
             moduleFileExtensions: [
                 "js",
                 "jsx"
-            ]
+            ],
+            setupTestFrameworkScriptFile: "<rootDir>/jest-shim-globals.js"
         }));
 });
 

@@ -2,6 +2,8 @@
 
 'use strict';
 
+/* global appPrefixed */
+
 var mergeInto = require('../../lib/util').mergeInto;
 var AbstractEventSendingStore = require('../AbstractEventSendingStore');
 var $ = require('jquery'); // excluded and shimed
@@ -16,7 +18,7 @@ var processSourcesData = (sources) => {
 };
 
 var SourcesStore = {
-    SOURCES_URL: '/a/sources',
+    SOURCES_URL: appPrefixed('/a/sources'),
 
     setSources(sources) {
         this._sources = sources;

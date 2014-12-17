@@ -2,6 +2,8 @@
 
 'use strict';
 
+/* global appPrefixed */
+
 var mergeInto = require('../../lib/util').mergeInto;
 var AbstractEventSendingStore = require('../AbstractEventSendingStore');
 var $ = require('jquery'); // excluded and shimed
@@ -21,7 +23,7 @@ var HistogramDataStore = {
     },
 
     loadHistogramData(range, sourceNames, maxDataPoints) {
-        var url = HISTOGRAM_URL;
+        var url = appPrefixed(HISTOGRAM_URL);
         if (typeof maxDataPoints === 'undefined') {
             maxDataPoints = DEFAULT_MAX_DATA_POINTS;
         }

@@ -2,6 +2,8 @@
 
 'use strict';
 
+/* global appPrefixed */
+
 var React = require('react');
 var BootstrapAccordion = require('../bootstrap/BootstrapAccordion');
 var BootstrapAccordionGroup = require('../bootstrap/BootstrapAccordionGroup');
@@ -21,7 +23,7 @@ var ConfigurationBundles = React.createClass({
         this.setState({sourceTypeId: sourceTypeId, sourceTypeDescription: sourceTypeDescription});
     },
     componentDidMount() {
-        $.get('/a/system/contentpacks', (result) => {
+        $.get(appPrefixed('/a/system/contentpacks'), (result) => {
             if (this.isMounted()) {
                 this.setState({
                     bundles: result

@@ -1,11 +1,13 @@
 'use strict';
 
+/* global appPrefixed */
+
 var mergeInto = require('../../lib/util').mergeInto;
 var AbstractEventSendingStore = require('../AbstractEventSendingStore');
 var $ = require('jquery'); // excluded and shimed
 
 var PreferencesStore = {
-    URL: '/a/system/user/',
+    URL: appPrefixed('/a/system/user/'),
     DATA_SAVED_EVENT: 'DATA_SAVED_EVENT',
     DATA_LOADED_EVENT: 'DATA_LOADED_EVENT',
 
