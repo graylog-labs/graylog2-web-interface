@@ -490,22 +490,27 @@ $(document).ready(function() {
         var domElement = createUsernameField[0];
         delayedAjaxCallOnKeyup( domElement, function() {
             var username =  createUsernameField.val();
-            $.ajax({
-                url: appPrefixed("/a/system/users/" + encodeURIComponent(username)),
-                type: "GET",
-                cache: false,
-                global: false,
-                statusCode: {
-                    204: function() {
-                        validationFailure( createUsernameField, "Username is already taken.");
-                        domElement.setCustomValidity('The entered user name is already taken.');
-                    },
-                    404: function() {
-                        createUsernameField.popover("destroy");
-                        domElement.setCustomValidity('');
-                    }
-                }
-            });
+            if (username.indexOf("'") > -1 ) {
+              validationFailure( createUsernameField, "Username can't have quotes.");
+              domElement.setCustomValidity('Username cannot have quotes.');
+            } else {
+              $.ajax({
+                  url: appPrefixed("/a/system/users/" + encodeURIComponent(username)),
+                  type: "GET",
+                  cache: false,
+                  global: false,
+                  statusCode: {
+                      204: function() {
+                          validationFailure( createUsernameField, "Username is already taken.");
+                          domElement.setCustomValidity('The entered user name is already taken.');
+                      },
+                      404: function() {
+                          createUsernameField.popover("destroy");
+                          domElement.setCustomValidity('');
+                      }
+                  }
+              });
+            }
         }, 150 );
     }
 
