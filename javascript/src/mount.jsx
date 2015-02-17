@@ -11,6 +11,7 @@ $(document).ready(() => {
     require('./components/sources/mount');
     require('./components/dashboard/mount');
     require('./components/grok-patterns/mount');
+    require('./components/widgets/mount');
     if (userPreferences.enableSmartSearch) {
         require('./components/search/mount');
     }
