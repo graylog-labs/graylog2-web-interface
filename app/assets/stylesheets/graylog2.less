@@ -1502,15 +1502,30 @@ table#users-list td.limited {
     margin-left: 5px;
 }
 
-#map-container path {
+#map-container svg path {
     stroke: #333333;
     stroke-width: 0.25px;
     fill: #e3e5e5;
 }
 
-#map-container rect.overlay {
+#map-container svg rect.overlay {
     fill: none;
     pointer-events: all;
+}
+
+#map-container svg .city {
+    fill: #333333;
+}
+
+#map-container svg .city-label {
+    fill: #333333;
+    fill-opacity: 0.8;
+}
+
+#map-container svg .country-label {
+    fill: #777777;
+    fill-opacity: 0.8;
+    font-size: 14px;
 }
 
 /* End new widgets */
