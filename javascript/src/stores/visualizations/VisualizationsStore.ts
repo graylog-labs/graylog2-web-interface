@@ -23,15 +23,6 @@ var VisualizationsStore = {
                 "Could not load cities");
         });
         return promise;
-    },
-    loadData(): JQueryPromise<string[]> {
-        var url = URLUtils.appPrefixed('/assets/javascripts/geo/locations.json');
-        var promise = $.getJSON(url);
-        promise.fail((jqXHR, textStatus, errorThrown) => {
-            UserNotification.error("Loading location information failed with status: " + errorThrown,
-                "Could not load location information");
-        });
-        return promise;
     }
 };
 

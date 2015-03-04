@@ -10,18 +10,25 @@ var MapVisualization = React.createClass({
     ZOOM_IN_FACTOR: 0.5,
     ZOOM_OUT_FACTOR: -0.5,
     MAX_ZOOM: 100,
+    MAX_DATA_VALUE: 1000,
     getInitialState() {
         this.mapData = crossfilter();
         this.dimension = this.mapData.dimension((d) => d.country);
         this.group = this.dimension.group().reduceSum((d) => d.messages);
 
-        return {};
+        return {
+            initialized: false,
+            processedData: []
+        };
     },
     componentDidMount() {
         var mapPromise = VisualizationsStore.loadWorldMap();
         mapPromise.done((d) => this.renderMap(d));
         var citiesPromise = VisualizationsStore.loadCities();
         citiesPromise.done((d) => this._setCities(d));
+    },
+    componentWillReceiveProps(nextProps) {
+        this.processData(nextProps.data);
     },
     _setCities(cities) {
         this.cities = cities;
@@ -67,6 +74,8 @@ var MapVisualization = React.createClass({
 
         this.map.call(this.zoom)
             .call(this.zoom.event);
+
+        this.setState({initialized: true}, this.drawData);
     },
     _updateProjection(scale, translation) {
         var tx = this.initialTranslation[0] * scale + translation[0];
@@ -185,12 +194,67 @@ var MapVisualization = React.createClass({
             .text((d) => d.properties.name)
             .attr("transform", (d) => "translate(" + this.projection(d.geometry.coordinates) + ")");
     },
+    _updateDataPoints(scale, selection) {
+        if (typeof selection === 'undefined' || selection === null) {
+            selection = this.dataGroup.selectAll(".data path");
+        }
+        var radius = d3.scale.sqrt().domain([0, this.MAX_DATA_VALUE]).range([1 + (scale/10), 15 + (scale/10)]);
+        selection.attr("d", this.path.pointRadius((d) => radius(d.properties.count)));
+    },
+    processData(data) {
+        var processedData = { type: "FeatureCollection" };
+        var features = [];
+
+        Object.keys(data.terms).forEach((coordinates) => {
+            var arrayCoordinates = coordinates.split(",");
+            var longitude = arrayCoordinates[1];
+            var latitude = arrayCoordinates[0];
+            var feature = {
+                type: "Feature",
+                geometry: {
+                    type: "Point",
+                    coordinates: [
+                        longitude,
+                        latitude
+                    ]
+                },
+                properties: {
+                    count: data.terms[coordinates]
+                }
+            };
+
+            features.push(feature);
+        });
+
+        processedData['features'] = features;
+
+        this.setState({processedData: processedData}, this.drawData);
+    },
+    drawData() {
+        if (!this.state.initialized) {
+            console.log("Map is not yet initialized, couldn't draw points");
+            return;
+        }
+
+        var dataSelection = this.dataGroup.selectAll(".data path")
+            .data(this.state.processedData.features);
+
+        dataSelection.enter().append("svg:path").attr("class", "data-point");
+
+        dataSelection.exit().remove();
+
+        dataSelection.append("title").text((d) => d.properties.count);
+
+        this._updateDataPoints(this.zoom.scale(), dataSelection);
+    },
     render() {
         return (
-            <div>
-                <button className="btn btn-mini" onClick={this.zoomIn}>+</button>
-                <button className="btn btn-mini" onClick={this.zoomOut}>-</button>
-                <div id="map-visualization"/>
+            <div id={"visualization-" + this.props.id} className="map-container">
+                <div className="btn-group btn-group-vertical zoom-controls">
+                    <button className="btn btn-mini" onClick={this.zoomIn}><i className="icon icon-plus"></i></button>
+                    <button className="btn btn-mini" onClick={this.zoomOut}><i className="icon icon-minus"></i></button>
+                </div>
+                <div className="map-visualization"/>
             </div>
         );
     }

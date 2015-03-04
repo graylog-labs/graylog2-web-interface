@@ -9,6 +9,7 @@ var URLUtils = require("../../util/URLUtils");
 var WidgetHeader = require('./WidgetHeader');
 var CountVisualization = require('../visualizations/CountVisualization');
 var HistogramVisualization = require('../visualizations/HistogramVisualization');
+var MapVisualization = require('../visualizations/MapVisualization');
 
 var WidgetsStore = require('../../stores/widgets/WidgetsStore');
 
@@ -79,6 +80,10 @@ var Widget = React.createClass({
                 visualization = <HistogramVisualization id={this.props.widgetId}
                                                         data={this.state.result}
                                                         interval={this.state.interval}/>;
+                break;
+            case 'MAP':
+                visualization = <MapVisualization id={this.props.widgetId}
+                                                  data={this.state.result}/>;
                 break;
             default:
                 throw("Error: Widget type '" + this.state.type + "' not supported");

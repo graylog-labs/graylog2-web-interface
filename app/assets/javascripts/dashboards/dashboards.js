@@ -24,7 +24,7 @@ $(document).ready(function() {
 
                     var payload = {
                         positions: positions
-                    }
+                    };
 
                     $.ajax({
                         url: appPrefixed('/a/dashboards/' + dashboardId + '/positions'),
@@ -134,7 +134,7 @@ $(document).ready(function() {
             url: appPrefixed('/a/dashboards/' + widget.attr("data-dashboard-id") + '/widgets/' + widget.attr("data-widget-id") + '/delete'),
             type: 'POST',
             success: function() {
-                showSuccess("Widget has been removed from dashboard!")
+                showSuccess("Widget has been removed from dashboard!");
                 widget.parent().remove();
                 location.reload();
             },
@@ -186,8 +186,12 @@ $(document).ready(function() {
                     type: 'GET',
                     success: function(data) {
                         // Pass to widget specific function to display actual value(s).
-                        var funcName = "updateWidget_" + widget.attr("data-widget-type");
-                        window[funcName](widget, data);
+
+                        var widgetType = widget.attr("data-widget-type");
+                        if (widgetType !== "map") {
+                            var funcName = "updateWidget_" + widgetType;
+                            window[funcName](widget, data);
+                        }
 
                         $(".calculated-at", widget).attr("title", data.calculated_at);
                         $(".calculated-at", widget).text(moment(data.calculated_at).fromNow());
