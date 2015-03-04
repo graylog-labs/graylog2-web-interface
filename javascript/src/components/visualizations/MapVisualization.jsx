@@ -1,8 +1,8 @@
 'use strict';
 
 var React = require('react');
-var crossfilter = require('crossfilter');
 var d3 = require('d3');
+var $ = require('jquery');
 
 var VisualizationsStore = require('../../stores/visualizations/VisualizationsStore');
 
@@ -12,10 +12,6 @@ var MapVisualization = React.createClass({
     MAX_ZOOM: 100,
     MAX_DATA_VALUE: 1000,
     getInitialState() {
-        this.mapData = crossfilter();
-        this.dimension = this.mapData.dimension((d) => d.country);
-        this.group = this.dimension.group().reduceSum((d) => d.messages);
-
         return {
             initialized: false,
             processedData: []
@@ -35,10 +31,13 @@ var MapVisualization = React.createClass({
     },
     renderMap(countries) {
         this.countries = countries;
-        var width = 1000;
-        var height = 500;
 
-        this.map = d3.select("div#map-visualization").append("svg")
+        var mapSelector = "#visualization-" + this.props.id + " .map-visualization";
+        var mapContainer = $(mapSelector);
+        var width = mapContainer.width();
+        var height = (width / 2);
+
+        this.map = d3.select(mapSelector).append("svg")
             .attr("width", width)
             .attr("height", height);
 
@@ -56,12 +55,12 @@ var MapVisualization = React.createClass({
             .projection(this.projection)
             .pointRadius(2);
 
-        this.group = this.map.append("g");
-        this.countryNamesGroup = this.map.append("g");
-        this.citiesGroup = this.map.append("g");
-        this.dataGroup = this.map.append("g");
+        this.countriesGroup = this.map.append("g").attr("class", "countries");
+        this.citiesGroup = this.map.append("g").attr("class", "cities");
+        this.dataGroup = this.map.append("g").attr("class", "data");
 
-        this.group.selectAll("path").data(countries.features).enter().append("svg:path").attr("d", this.path);
+        this.countriesGroup.selectAll(".countries path").data(countries.features)
+            .enter().append("svg:path").attr("d", this.path);
 
         this.initialTranslation = this.projection.translate();
         this.scale = this.projection.scale();
@@ -85,11 +84,9 @@ var MapVisualization = React.createClass({
             .translate([tx, ty])
             .scale(this.scale * scale);
 
-        this._updateCountryLabels(scale);
+        this._updateCountries(scale);
         this._updateCities(scale);
-
-        this.group.selectAll("path").attr("d", this.path);
-        this.dataGroup.selectAll("path").attr("d", this.path);
+        this._updateDataPoints(scale);
     },
     _zoom(zoomFactor) {
         var currentZoomScale = this.zoom.scale();
@@ -132,15 +129,17 @@ var MapVisualization = React.createClass({
     zoomOut() {
         this._zoom(this.ZOOM_OUT_FACTOR);
     },
-    _updateCountryLabels(scale) {
-        var selection = this.countryNamesGroup.selectAll(".country-label")
-            .data(this.countries.features.filter((f) => f.properties.labelrank < scale - 3));
+    _updateCountries(scale) {
+        this.countriesGroup.selectAll(".countries path").attr("d", this.path);
+
+        var selection = this.countriesGroup.selectAll(".country-label")
+            .data(this.countries.features.filter((f) => f.properties.labelrank < scale - 2));
 
         selection
             .enter().append("text")
             .attr("class", (d) => "country-label " + d.id)
             .attr("transform", (d) => this._getCountryLabelTranslation(d))
-            .attr("dy", "-0.35em")
+            .attr("dy", "-0.50em")
             .style("text-anchor", "middle")
             .text((d) => d.properties.name);
 
@@ -161,22 +160,19 @@ var MapVisualization = React.createClass({
         return "translate(" + centroid + ")";
     },
     _updateCities(scale) {
-        var cityLocationSelection = this.citiesGroup.selectAll("path")
-            .data(this.cities.features.filter((f) => f.properties.labelrank < scale - 3));
+        var cityLocationSelection = this.citiesGroup.selectAll(".cities path")
+            .data(this.cities.features.filter((f) => f.properties.labelrank < scale - 4));
 
         cityLocationSelection
             .enter().append("svg:path")
-            .attr("d", this.path)
             .attr("class", "city");
 
-        cityLocationSelection
-            .exit().remove();
+        cityLocationSelection.exit().remove();
 
-        cityLocationSelection
-            .attr("d", this.path);
+        cityLocationSelection.attr("d", this.path.pointRadius(2));
 
         var cityLabelSelection = this.citiesGroup.selectAll(".city-label")
-            .data(this.cities.features.filter((f) => f.properties.labelrank < scale - 3));
+            .data(this.cities.features.filter((f) => f.properties.labelrank < scale - 4));
 
         cityLabelSelection
             .enter().append("text")
@@ -187,8 +183,7 @@ var MapVisualization = React.createClass({
             .style("text-anchor", (d) => d.geometry.coordinates[0] > -1 ? "end" : "start")
             .text((d) => d.properties.name);
 
-        cityLabelSelection
-            .exit().remove();
+        cityLabelSelection.exit().remove();
 
         cityLabelSelection
             .text((d) => d.properties.name)

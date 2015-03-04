@@ -1502,30 +1502,50 @@ table#users-list td.limited {
     margin-left: 5px;
 }
 
-#map-container svg path {
+.map-container .zoom-controls {
+    position: absolute;
+    margin-top: 10px;
+    margin-left: 10px;
+
+}
+
+.map-visualization svg path {
     stroke: #333333;
     stroke-width: 0.25px;
-    fill: #e3e5e5;
+    fill: #E3E5E5;
+    z-index: 2;
 }
 
-#map-container svg rect.overlay {
-    fill: none;
+.map-visualization svg rect.overlay {
+    fill: #6DCFF6;
     pointer-events: all;
+    z-index: 3;
 }
 
-#map-container svg .city {
-    fill: #333333;
+.map-visualization svg .city {
+    fill-opacity: 0;
+    stroke: #333333;
+    stroke-width: 1px;
 }
 
-#map-container svg .city-label {
+.map-visualization svg .city-label {
     fill: #333333;
     fill-opacity: 0.8;
+    z-index: 1;
 }
 
-#map-container svg .country-label {
+.map-visualization svg .country-label {
     fill: #777777;
-    fill-opacity: 0.8;
+    fill-opacity: 0.6;
     font-size: 14px;
+    z-index: 1;
+}
+
+.map-visualization svg .data-point {
+    stroke: #9E1F63;
+    fill: #9E1F63;
+    fill-opacity: 0.8;
+    z-index: 0;
 }
 
 /* End new widgets */
