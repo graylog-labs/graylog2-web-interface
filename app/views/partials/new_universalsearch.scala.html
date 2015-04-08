@@ -1,0 +1,18 @@
+@(searchQuery: String)(implicit stream: org.graylog2.restclient.models.Stream = null)
+
+<div class="row no-bm">
+    <div class="col-md-12" id="universalsearch-container">
+        <div id="universalsearch-controls">
+            <button class="btn btn-success" type="submit" id="universalsearch-button">
+                <i class="fa fa-search"></i>
+            </button>
+
+            <button class="btn btn-default" type="submit" id="universalsearch-range">
+                Last 60 minutes &nbsp;<i class="fa fa-caret-down"></i>
+            </button>
+        </div>
+        <div id="universalsearch-input-container">
+            <textarea id="universalsearch-input" placeholder='Type your search query here and press enter. ("not found" AND http) OR http_response_code:[400 TO 404]'></textarea>
+        </div>
+    </div>
+</div>
