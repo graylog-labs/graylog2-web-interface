@@ -912,6 +912,19 @@ $(document).ready(function() {
         $("table.messages tbody[data-message-id=" + messageId + "]").toggleClass("message-group-toggled");
     });
 
+    $("#universalsearch-range").on("click", function(event) {
+        $("#universalsearch-range-selector").toggle();
+
+        var indicator = $("#universalsearch-range-selector-indicator");
+        if (indicator.hasClass("fa-caret-down")) {
+            indicator.removeClass("fa-caret-down");
+            indicator.addClass("fa-caret-up");
+        } else {
+            indicator.removeClass("fa-caret-up");
+            indicator.addClass("fa-caret-down");
+        }
+    });
+
 });
 
 function showError(message) {
