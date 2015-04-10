@@ -2956,12 +2956,74 @@ table.messages tr.message-detail-row dl.message-details dd div.message-field-act
 
 div#universalsearch-range-selector {
   display: none;
-  height: 300px;
-  width: 100%;
+  height: 255px;
+  width: 900px;
   background-color: #fff;
   border: 1px solid #e3e5e5;
   position: relative;
-  top: 296px;
-  margin-top: -300px;
-  z-index: 1005;
+  top: -4px;
+  margin-bottom: -300px;
+  z-index: 1999;
+  clear: both;
+  padding: 15px;
+}
+
+div#universalsearch-range-selector div.tab-pane {
+  margin-top: 15px;
+}
+
+div#universalsearch-range-selector-inner {
+  height: 190px;
+}
+
+div#universalsearch-range-selector ul.relative-timeline {
+  margin: 0;
+  margin-top: 25px;
+  padding: 0;
+  width: 100%;
+  list-style: none;
+}
+
+div#universalsearch-range-selector ul.relative-timeline li {
+  float: left;
+  width: 8.33%;
+  text-align: center;
+}
+
+div#universalsearch-range-selector ul.relative-timeline li a {
+  color: #8c8e86;
+}
+
+div#universalsearch-range-selector ul.relative-timeline li a:hover {
+  text-decoration: none;
+  color: #16ace3;
+}
+
+div#universalsearch-range-selector ul.relative-timeline li .fa-circle {
+  font-size: 16px;
+  padding-bottom: 10px;
+}
+
+div#universalsearch-range-selector ul.relative-timeline li .relative-active {
+  position: relative;
+  top: -4px;
+  font-size: 24px;
+  color: #16ace3;
+  padding-bottom: 2px;
+}
+
+div#universalsearch-range-selector span.universalsearch-range-selector-help {
+  position: relative;
+  top: 7px;
+  left: -15px;
+}
+
+div#universalsearch-range-selector div.relative-timeline-line {
+  position: relative;
+  top: -53px;
+  left: 40px;
+  width: 785px;
+  height: 2px;
+  z-index: -200;
+  background-color: #8c8e86;
 }

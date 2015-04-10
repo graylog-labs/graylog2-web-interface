@@ -8,7 +8,7 @@
             </button>
 
             <button class="btn btn-default" type="submit" id="universalsearch-range">
-                Last 60 minutes &nbsp;<i class="fa fa-caret-down" id="universalsearch-range-selector-indicator"></i>
+                Last 30 minutes &nbsp;<i class="fa fa-caret-down" id="universalsearch-range-selector-indicator"></i>
             </button>
         </div>
         <div id="universalsearch-input-container">
@@ -16,7 +16,54 @@
         </div>
 
         <div id="universalsearch-range-selector">
-            date range selector
+
+            <div id="universalsearch-range-selector-inner" role="tabpanel">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active"><a href="#relative" aria-controls="relative" role="tab" data-toggle="tab">Relative</a></li>
+                    <li role="presentation"><a href="#absolute" aria-controls="absolute" role="tab" data-toggle="tab">Absolute</a></li>
+                    <li role="presentation"><a href="#keyword" aria-controls="keyword" role="tab" data-toggle="tab">Keyword</a></li>
+                    <li role="presentation"><a href="#savedsearches" aria-controls="savedsearches" role="tab" data-toggle="tab">Saved Searches</a></li>
+                </ul>
+
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="relative">
+                        Show results for the last:
+
+                        <ul class="relative-timeline">
+                            <li><a href="#"><i class="fa fa-circle"></i><br />5<br />min</a></li>
+                            <li><a href="#"><i class="fa fa-circle"></i><br />15<br />min</a></li>
+                            <li><a href="#"><i class="fa fa-circle relative-active"></i><br />30<br />min</a></li>
+                            <li><a href="#"><i class="fa fa-circle"></i><br />1<br />hr</a></li>
+                            <li><a href="#"><i class="fa fa-circle"></i><br />2<br />hrs</a></li>
+                            <li><a href="#"><i class="fa fa-circle"></i><br />8<br />hrs</a></li>
+                            <li><a href="#"><i class="fa fa-circle"></i><br />1<br />day</a></li>
+                            <li><a href="#"><i class="fa fa-circle"></i><br />2<br />days</a></li>
+                            <li><a href="#"><i class="fa fa-circle"></i><br />5<br />days</a></li>
+                            <li><a href="#"><i class="fa fa-circle"></i><br />7<br />days</a></li>
+                            <li><a href="#"><i class="fa fa-circle"></i><br />14<br />days</a></li>
+                            <li><a href="#"><i class="fa fa-circle"></i><br />30<br />days</a></li>
+                        </ul>
+
+                        <br style="clear: both;" />
+
+                        <div class="relative-timeline-line"></div>
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane" id="absolute">123</div>
+                    <div role="tabpanel" class="tab-pane" id="keyword">456</div>
+                    <div role="tabpanel" class="tab-pane" id="savedsearches">789</div>
+                </div>
+            </div>
+
+            <span class="pull-right">
+                <span class="universalsearch-range-selector-help">
+                    <i class="fa fa-lightbulb-o"></i>&nbsp;
+                    <a href="http://docs.graylog.org/en/latest/pages/queries.html">Learn more about the query language in the documentation</a>
+                </span>
+
+                &nbsp;&nbsp;
+                <a href="#" class="btn btn-success pull-right">&nbsp; Search &nbsp;</a>
+            </span>
         </div>
     </div>
 </div>
