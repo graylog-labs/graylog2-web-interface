@@ -1,6 +1,6 @@
 {
   "name": "graylog-web-interface",
-  "version": "1.0.0-rc.4-SNAPSHOT",
+  "version": "1.0.2",
   "dependencies": {
     "browserify": {
       "version": "7.0.2",
