@@ -1,26 +1,9 @@
 $(document).ready(function() {
 
-    $(".timerange-chooser .dropdown-menu a").on("click", function() {
-        var selectorName = $(this).attr("data-selector-name");
-        var link = $(this);
-
-        activateTimerangeChooser(selectorName, link);
-    });
-
-    $("#universalsearch .timerange-selector-container .absolute .date-select").datepicker({
-        format: "yyyy-mm-dd",
-        weekStart: 1
-    }).on("changeDate", function(ev) {
-        var dateString = $(this).val() + " 00:00:00";
-        var date = momentHelper.parseUserLocalFromString(dateString);
-        $(this).val(date.format(momentHelper.DATE_FORMAT_TZ));
-    });
-
-    $("#universalsearch .timerange-selector-container .absolute .set-to-now").on("click", function() {
-        var input = $("input", $(this).parent());
-
-        var date = momentHelper.toUserTimeZone(null);
-        input.val(date.format(momentHelper.DATE_FORMAT_TZ));
+    $("div#universalsearch-range-selector div.absolute-start").datepicker({
+        weekStart: 1,
+        todayBtn: "linked",
+        todayHighlight: true
     });
 
     // on submit create the iso8601 timestamps for absolute searches
@@ -33,16 +16,6 @@ $(document).ready(function() {
                 $("input[type='hidden']", $(this).parent()).val(date.toISOString());
             }
         });
-    });
-
-    // on submit fill the 'fields' field with the current viewstate
-    $(".universalsearch-form").on("submit", function(){
-        $("#universalsearch-fields", $(this)).val(searchViewState.getFieldsString());
-    });
-
-    $(".universalsearch-form").on("submit", function() {
-        var width = $(document).width();
-        $("input[name='width']", $(this)).val(width);
     });
 
     $(".added-width-search-link").on("click", function() {
