@@ -26,23 +26,23 @@
     @if(isPermitted(STREAMS_EDIT, stream.getId)) {
         <div class="row content input-new">
             <div class="col-md-12">
-                <form class="form-inline">
-                    <div class="form-group">
-                        <select class="add-alert-type form-control">
-                            <option value="message-count">Message count condition</option>
-                            <option value="field-value">Field value condition</option>
-                        </select>
 
-                        <button class="btn btn-success form-control add-alert">Configure new alert condition</button>
-                    </div>
-                </form>
+                <div class="form-group" style="width: 50%;">
+                    <select class="add-alert-type form-control">
+                        <option value="message-count">Message count condition</option>
+                        <option value="field-value">Field value condition</option>
+                        <option value="field-string-value">Field string value condition</option>
+                    </select>
+
+                    <button class="btn btn-success form-control add-alert">Configure new alert condition</button>
+                </div>
 
                 @views.helpers.MessageCountAlertConditionDecorator.loadTemplate(stream, null)
                 @views.helpers.FieldValueAlertConditionDecorator.loadTemplate(stream, null)
-            }
+                @views.helpers.FieldStringValueAlertConditionDecorator.loadTemplate(stream, null)
+            </div>
         </div>
-    </div>
-
+    }
     <div class="row content">
         <div class="col-md-12">
             <h2 style="margin-bottom: 5px;"><i class="fa fa-tasks"></i> Configured alert conditions</h2>

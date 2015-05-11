@@ -1,0 +1,19 @@
+@(stream: org.graylog2.restclient.models.Stream, conditionDecorator: views.helpers.FieldStringValueAlertConditionDecorator)
+
+<form action="@conditionDecorator.getFormAction(stream.getId)" method="POST" class="alert-type-form alert-type-form-field-string-value" id="@conditionDecorator.getFormId">
+    <div class="well well-small">
+        <h2 style="margin-bottom: 10px;">
+            <i class="fa fa-bell-alt"></i>
+            @conditionDecorator.getFormTitle
+        </h2>
+
+        Trigger alert when a message arrives that has the field
+        <input name="field" type="text" class="input-large typeahead-fields" autocomplete="off" required />
+
+        <br />
+        set to
+        <input name="value" type="text" class="input-small validatable" required />
+
+        @views.html.partials.alerts.form_common.render(conditionDecorator)
+    </div>
+</form>
