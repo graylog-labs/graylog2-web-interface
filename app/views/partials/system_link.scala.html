@@ -16,6 +16,10 @@ System
     / Outputs
 }
 
+@if(request.path().startsWith("/system/collectors")) {
+    / Collectors
+}
+
 @if(request.path().startsWith("/system/indices")) {
     / Indices
 }

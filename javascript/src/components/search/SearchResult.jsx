@@ -6,20 +6,26 @@ var React = require('react');
 var SearchSidebar = require('./SearchSidebar');
 var ResultTable = require('./ResultTable');
 var LegacyHistogram = require('./LegacyHistogram');
+var FieldGraphs = require('./FieldGraphs');
+var FieldQuickValues = require('./FieldQuickValues');
+var FieldStatistics = require('./FieldStatistics');
 var Immutable = require('immutable');
 
 var DashboardStore = require('../../stores/dashboard/DashboardStore');
+var SearchStore = require('../../stores/search/SearchStore');
 
 var resizeMutex;
 
 var SearchResult = React.createClass({
     getInitialState() {
+        var initialFields = SearchStore.fields;
         return {
-            selectedFields: Immutable.Set(['message', 'source']),
+            selectedFields: initialFields,
             showAllFields: false,
             currentSidebarWidth: null,
             dashboards: Immutable.Map(),
-            shouldHighlight: true
+            shouldHighlight: true,
+            currentPage: SearchStore.page
         };
     },
 
@@ -34,9 +40,10 @@ var SearchResult = React.createClass({
     },
 
     updateSelectedFields(fieldSelection) {
-        this.setState({selectedFields: this.sortFields(fieldSelection)});
+        var selectedFields = this.sortFields(fieldSelection);
+        SearchStore.fields = selectedFields;
+        this.setState({selectedFields: selectedFields});
     },
-
     _fields() {
         return this.props.result[this.state.showAllFields ? 'all_fields' : 'page_fields'];
     },
@@ -49,7 +56,7 @@ var SearchResult = React.createClass({
         } else {
             newFieldSet = currentFields.add(fieldName);
         }
-        this.setState({selectedFields: this.sortFields(newFieldSet)});
+        this.updateSelectedFields(newFieldSet);
     },
     togglePageFields() {
         this.setState({showAllFields: !this.state.showAllFields});
@@ -63,6 +70,16 @@ var SearchResult = React.createClass({
         fieldSet = fieldSet.delete('source');
         var remainingFieldsSorted = fieldSet.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
         return sortedFields.concat(remainingFieldsSorted);
+    },
+
+    addFieldGraph(field) {
+        this.refs.fieldGraphsComponent.addFieldGraph(field);
+    },
+    addFieldQuickValues(field) {
+        this.refs.fieldQuickValuesComponent.addFieldQuickValues(field);
+    },
+    addFieldStatistics(field) {
+        this.refs.fieldStatisticsComponent.addFieldStatistics(field);
     },
 
     componentDidMount() {
@@ -104,20 +121,38 @@ var SearchResult = React.createClass({
                                        showAllFields={this.state.showAllFields}
                                        togglePageFields={this.togglePageFields}
                                        onFieldToggled={this.onFieldToggled}
+                                       onFieldSelectedForGraph={this.addFieldGraph}
+                                       onFieldSelectedForQuickValues={this.addFieldQuickValues}
+                                       onFieldSelectedForStats={this.addFieldStatistics}
                                        predefinedFieldSelection={this.predefinedFieldSelection}
                                        showHighlightToggle={anyHighlightRanges}
                                        shouldHighlight={this.state.shouldHighlight}
                                        toggleShouldHighlight={(event) => this.setState({shouldHighlight: !this.state.shouldHighlight})}
-                                       dashboards={this.state.dashboards}/>
+                                       currentSavedSearch={SearchStore.savedSearch}
+                                       dashboards={this.state.dashboards}
+                                       searchInStreamId={this.props.searchInStreamId}
+                            />
                     </div>
                 </div>
                 <div className="col-md-9" id="main-content-sidebar">
+                    <FieldStatistics ref='fieldStatisticsComponent'
+                                     dashboards={this.state.dashboards}/>
+
+                    <FieldQuickValues ref='fieldQuickValuesComponent'
+                                      dashboards={this.state.dashboards}/>
+
                     <LegacyHistogram formattedHistogram={this.props.formattedHistogram}
                                      histogram={this.props.histogram}
                                      dashboards={this.state.dashboards}/>
 
+                    <FieldGraphs ref='fieldGraphsComponent'
+                                 resolution={this.props.histogram['interval']}
+                                 from={this.props.histogram['histogram_boundaries'].from}
+                                 to={this.props.histogram['histogram_boundaries'].to}
+                                 dashboards={this.state.dashboards}/>
+
                     <ResultTable messages={this.props.result.messages}
-                                 page={this.props.currentPage}
+                                 page={this.state.currentPage}
                                  selectedFields={this.state.selectedFields}
                                  resultCount={this.props.result['total_result_count']}
                                  inputs={this.props.inputs}

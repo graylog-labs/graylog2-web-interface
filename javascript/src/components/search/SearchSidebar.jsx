@@ -8,6 +8,8 @@ var Button = require('react-bootstrap').Button;
 var Input = require('react-bootstrap').Input;
 
 var Widget = require('../widgets/Widget');
+var SearchStore = require('../../stores/search/SearchStore');
+var SavedSearchControls = require('./SavedSearchControls');
 var AddToDashboardMenu = require('../dashboard/AddToDashboardMenu');
 
 var numeral = require('numeral');
@@ -32,15 +34,23 @@ var MessageField = React.createClass({
                        onClick={this._toggleShowActions}></i>
                 </div>
                 <div style={{marginLeft: 25}}>
-                    <Input type="checkbox" label={this.props.field.name}
+                    <Input type="checkbox"
+                           label={this.props.field.name}
+                           checked={this.props.selected}
                            onChange={() => this.props.onToggled(this.props.field.name)}/>
 
                     {this.state.showActions &&
                     <div className="analyze-field">
                         <ButtonGroup bsSize='xsmall'>
-                            <Button>Statistics</Button>
-                            <Button>Quick values</Button>
-                            <Button>Generate chart</Button>
+                            <Button onClick={() => this.props.onFieldSelectedForStats(this.props.field.name)}>
+                                Statistics
+                            </Button>
+                            <Button onClick={() => this.props.onFieldSelectedForQuickValues(this.props.field.name)}>
+                                Quick values
+                            </Button>
+                            <Button onClick={() => this.props.onFieldSelectedForGraph(this.props.field.name)}>
+                                Generate chart
+                            </Button>
                         </ButtonGroup>
                     </div>}
                 </div>
@@ -88,6 +98,9 @@ var SearchSidebar = React.createClass({
                     <MessageField key={field.name}
                                   field={field}
                                   onToggled={this.props.onFieldToggled}
+                                  onFieldSelectedForGraph={this.props.onFieldSelectedForGraph}
+                                  onFieldSelectedForQuickValues={this.props.onFieldSelectedForQuickValues}
+                                  onFieldSelectedForStats={this.props.onFieldSelectedForStats}
                                   selected={this.props.selectedFields.contains(field.name)}/>
                 );
             });
@@ -103,12 +116,12 @@ var SearchSidebar = React.createClass({
                 </p>
 
                 <div style={{marginTop: 10}}>
-                    <span>TODO Missing stream thingie</span><br/>
                     <AddToDashboardMenu title="Add count to dashboard"
-                                        widgetType={Widget.Type.SEARCH_RESULT_COUNT}
+                                        widgetType={this.props.searchInStreamId ? Widget.Type.STREAM_SEARCH_RESULT_COUNT : Widget.Type.SEARCH_RESULT_COUNT}
                                         dashboards={this.props.dashboards}/>
                     &nbsp;
-                    <a href="#" className="btn btn-success btn-sm">Save search criteria</a>
+                    <SavedSearchControls currentSavedSearch={this.props.currentSavedSearch}/>
+                    <a href={SearchStore.getCsvExportURL()} className="btn btn-default btn-sm">Export as CSV</a>
                 </div>
 
                 <hr />

@@ -63,17 +63,19 @@ import org.joda.time.Minutes;
 import play.Logger;
 import play.libs.Json;
 import play.mvc.Result;
-import views.helpers.Permissions;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static views.helpers.Permissions.isPermitted;
 
 // TODO none of this makes sense, it's just a start.
 public class SearchControllerV2 extends AuthenticatedController {
@@ -106,9 +108,9 @@ public class SearchControllerV2 extends AuthenticatedController {
                         String sortField, String sortOrder,
                         String fields,
                         int displayWidth) {
-        if (Permissions.isPermitted(RestPermissions.SEARCHES_ABSOLUTE)
-                || Permissions.isPermitted(RestPermissions.SEARCHES_RELATIVE)
-                || Permissions.isPermitted(RestPermissions.SEARCHES_KEYWORD)) {
+        if (isPermitted(RestPermissions.SEARCHES_ABSOLUTE)
+                || isPermitted(RestPermissions.SEARCHES_RELATIVE)
+                || isPermitted(RestPermissions.SEARCHES_KEYWORD)) {
             SearchSort sort = buildSearchSort(sortField, sortOrder);
 
             return renderSearch(q,
@@ -298,11 +300,6 @@ public class SearchControllerV2 extends AuthenticatedController {
                                                    }),
                                                    stream));
 
-//        if (searchResult.getTotalResultCount() > 0) {
-//            return ok(views.html.search.results.render(currentUser(), search, searchResult, histogramResult, formattedHistogramResults, q, page, savedSearch, selectedFields, serverNodes.asMap(), stream));
-//        } else {
-//            return ok(views.html.search.noresults.render(currentUser(), q, searchResult, savedSearch, selectedFields, stream));
-//        }
     }
 
     protected String determineHistogramResolution(final SearchResult searchResult) {
@@ -422,10 +419,10 @@ public class SearchControllerV2 extends AuthenticatedController {
             return status(400, views.html.errors.error.render("Invalid range type provided.", e1, request()));
         }
 
-        final String s;
+        final InputStream stream;
         try {
             Set<String> selectedFields = getSelectedFields(fields);
-            s = search.searchAsCsv(selectedFields);
+            stream = search.searchAsCsv(selectedFields);
         } catch (IOException e) {
             return status(504, views.html.errors.error.render(ApiClient.ERROR_MSG_IO, e, request()));
         } catch (APIException e) {
@@ -433,10 +430,9 @@ public class SearchControllerV2 extends AuthenticatedController {
             return status(504, views.html.errors.error.render(message, e, request()));
         }
 
-        // TODO streaming the result
         response().setContentType(MediaType.CSV_UTF_8.toString());
         response().setHeader("Content-Disposition", "attachment; filename=graylog-searchresult.csv");
-        return ok(s);
+        return ok(stream);
     }
 
     protected List<Field> getAllFields() {
@@ -645,5 +641,115 @@ public class SearchControllerV2 extends AuthenticatedController {
         public int hashCode() {
             return entity.hashCode();
         }
+    }
+
+    public Result showMessage(String index, String id) {
+        final Set<InputDescription> inputs = Sets.newHashSet();
+        final Set<StreamDescription> streams = Sets.newHashSet();
+        final Set<NodeDescription> nodes = Sets.newHashSet();
+
+        try {
+            final MessageResult message = messagesService.getMessage(index, id);
+            final Node sourceNode = getSourceNode(message);
+            final Radio sourceRadio = getSourceRadio(message);
+            final Input sourceInput = getSourceInput(sourceNode, message);
+            final Input sourceRadioInput = getSourceInput(sourceRadio, message);
+
+            nodes.add(new NodeDescription(sourceNode));
+            if (sourceRadio != null) {
+                nodes.add(new NodeDescription(sourceRadio));
+            }
+            inputs.add(new InputDescription(sourceInput));
+            if (sourceRadioInput != null) {
+                inputs.add(new InputDescription(sourceRadioInput));
+            }
+
+            for (String streamId : message.getStreamIds()) {
+                if (isPermitted(RestPermissions.STREAMS_READ, streamId)) {
+                    try {
+                        final Stream stream = streamService.get(streamId);
+                        streams.add(new StreamDescription(stream));
+                    } catch (APIException e) {
+                        //  We get a 404 if the stream no longer exists.
+                        Logger.debug("Skipping stream of message", e);
+                    }
+                }
+            }
+
+            return ok(views.html.searchv2.show_message.render(currentUser(),
+                    message,
+                    Maps.uniqueIndex(nodes, new Function<NodeDescription, String>() {
+                        @Nullable
+                        @Override
+                        public String apply(@Nullable NodeDescription node) {
+                            return node == null ? null : node.getNodeId();
+                        }
+                    }),
+                    Maps.uniqueIndex(streams, new Function<StreamDescription, String>() {
+                        @Nullable
+                        @Override
+                        public String apply(@Nullable StreamDescription stream) {
+                            return stream == null ? null : stream.getId();
+                        }
+                    }),
+                    Maps.uniqueIndex(inputs, new Function<InputDescription, String>() {
+                        @Nullable
+                        @Override
+                        public String apply(@Nullable InputDescription input) {
+                            return input == null ? null : input.getId();
+                        }
+                    })));
+        } catch (IOException e) {
+            return status(500, views.html.errors.error.render(ApiClient.ERROR_MSG_IO, e, request()));
+        } catch (APIException e) {
+            String message = "Could not get message. We expected HTTP 200, but got a HTTP " + e.getHttpCode() + ".";
+            return status(500, views.html.errors.error.render(message, e, request()));
+        }
+    }
+
+    private Node getSourceNode(MessageResult m) {
+        try {
+            return nodeService.loadNode(m.getSourceNodeId());
+        } catch (Exception e) {
+            Logger.warn("Could not derive source node from message <" + m.getId() + ">.", e);
+        }
+
+        return null;
+    }
+
+    private Radio getSourceRadio(MessageResult m) {
+        if (m.viaRadio()) {
+            try {
+                return nodeService.loadRadio(m.getSourceRadioId());
+            } catch (Exception e) {
+                Logger.warn("Could not derive source radio from message <" + m.getId() + ">.", e);
+            }
+        }
+
+        return null;
+    }
+
+    private static Input getSourceInput(Node node, MessageResult m) {
+        if (node != null && isPermitted(RestPermissions.INPUTS_READ, m.getSourceInputId())) {
+            try {
+                return node.getInput(m.getSourceInputId());
+            } catch (Exception e) {
+                Logger.warn("Could not derive source input from message <" + m.getId() + ">.", e);
+            }
+        }
+
+        return null;
+    }
+
+    private static Input getSourceInput(Radio radio, MessageResult m) {
+        if (radio != null) {
+            try {
+                return radio.getInput(m.getSourceRadioInputId());
+            } catch (Exception e) {
+                Logger.warn("Could not derive source radio input from message <" + m.getId() + ">.", e);
+            }
+        }
+
+        return null;
     }
 }

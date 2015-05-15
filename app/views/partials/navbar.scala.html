@@ -27,21 +27,27 @@ gl2UserSessionId = "@Http.Context.current().session().get("sessionid")";
     routes.javascript.InputsController.index,
     routes.javascript.LoggingController.index,
     routes.javascript.MessagesController.analyze,
-    routes.javascript.MessagesController.show,
     routes.javascript.MetricsController.ofNode,
     routes.javascript.NodesController.node,
     routes.javascript.NodesController.nodes,
     routes.javascript.OutputsController.index,
+    routes.javascript.SavedSearchesController.execute,
+    routes.javascript.SavedSearchesController.delete,
     routes.javascript.SearchController.globalSearch,
     routes.javascript.SearchControllerV2.index,
+    routes.javascript.SearchControllerV2.showMessage,
+    routes.javascript.SearchControllerV2.exportAsCsv,
     routes.javascript.SessionsController.destroy,
     routes.javascript.StreamsController.index,
+    routes.javascript.StreamSearchController.index,
+    routes.javascript.StreamSearchController.exportAsCsv,
     routes.javascript.StreamRulesController.index,
     routes.javascript.SourcesController.list,
     routes.javascript.SystemController.index,
     routes.javascript.UsersController.editUserForm,
     routes.javascript.UsersController.index,
     routes.javascript.UsersController.show,
+    routes.javascript.CollectorsController.index,
     api.routes.javascript.AlarmCallbacksApiController.available,
     api.routes.javascript.AlarmCallbacksApiController.create,
     api.routes.javascript.AlarmCallbacksApiController.delete,
@@ -58,6 +64,11 @@ gl2UserSessionId = "@Http.Context.current().session().get("sessionid")";
     api.routes.javascript.OutputsApiController.create,
     api.routes.javascript.OutputsApiController.index,
     api.routes.javascript.OutputsApiController.update,
+    api.routes.javascript.SavedSearchesApiController.create,
+    api.routes.javascript.SavedSearchesApiController.list,
+    api.routes.javascript.SavedSearchesApiController.update,
+    api.routes.javascript.SearchApiController.fieldStats,
+    api.routes.javascript.SearchApiController.fieldTerms,
     api.routes.javascript.StreamsApiController.listStreams,
     api.routes.javascript.StreamOutputsApiController.add,
     api.routes.javascript.StreamOutputsApiController.delete,
@@ -66,7 +77,7 @@ gl2UserSessionId = "@Http.Context.current().session().get("sessionid")";
 )
 
 <div id="navigation-bar"
-    data-permissions='@Permissions.asJson(SEARCHES_ABSOLUTE, SEARCHES_RELATIVE, SEARCHES_KEYWORD, SOURCES_READ, INPUTS_READ, INPUTS_CREATE, INPUTS_EDIT, OUTPUTS_READ, INDICES_READ, LOGGERS_READ, DASHBOARDS_CREATE, USERS_EDIT, STREAMS_CREATE)'
+    data-permissions='@Permissions.asJson(SEARCHES_ABSOLUTE, SEARCHES_RELATIVE, SEARCHES_KEYWORD, SOURCES_READ, INPUTS_READ, INPUTS_CREATE, INPUTS_EDIT, OUTPUTS_READ, INDICES_READ, LOGGERS_READ, DASHBOARDS_CREATE, USERS_EDIT, STREAMS_CREATE, COLLECTORS_READ)'
     data-request-path="@request.path"
     data-login-name="@currentUser.getName"
     data-full-name="@currentUser.getFullName">

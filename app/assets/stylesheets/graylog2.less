@@ -279,6 +279,7 @@ label {
 
 #sidebar .affix {
   top: 45px;
+  z-index: 1000;
 }
 
 #main-content-sidebar {
@@ -742,11 +743,6 @@ s
   padding-bottom: 3px;
 }
 
-#add-converter-fields button {
-  position: relative;
-  top: -5px;
-}
-
 #create-extractor {
   margin-top: 10px;
 }
@@ -787,11 +783,6 @@ s
 
 .xtrc-wizard form {
   margin-bottom: 0px;
-}
-
-.xtrc-wizard .btn {
-  position: relative;
-  top: -5px;
 }
 
 .node-row .xtrc-converters {
@@ -1251,7 +1242,6 @@ s
 }
 
 .detail_swatch {
-  float: right;
   display: inline-block;
   width: 10px;
   height: 10px;
@@ -1287,37 +1277,19 @@ s
   font-weight: bold;
 }
 
-.field-graph-container .graph-settings,
-.field-graph-container .pin,
-.field-graph-container .unpin {
-  font-size: 12px;
-}
-
-.field-graph-container .pin,
-.field-graph-container .unpin {
-  position: relative;
-  top: 1px;
-}
-
-.field-graph-container .unpin {
-  color: #b94a48;
-}
-
-.field-graph-container .graph-settings a:hover {
-  text-decoration: none;
-}
-
-.field-graph-container h3 .type-description {
+.field-graph-container .type-description {
   color: #bbb;
   font-size: 11px;
 }
 
 .field-graph-container .field-graph-components {
+  margin-top: 10px;
   margin-right: 12px;
 }
 
 .field-graph-container .field-graph {
   margin-left: 40px;
+  margin-bottom: 25px;
 }
 
 .field-graph-container .field-graph-y-axis {
@@ -1327,7 +1299,7 @@ s
 }
 
 #field-graphs .spinner {
-  margin-top: 60px;
+  margin-bottom: 10px;
   text-align: center;
 }
 
@@ -2126,7 +2098,7 @@ form.edit-dashboard-form {
 
 .field-graph-query-container {
   position: relative;
-  top: -5px;
+  padding-left: 10px;
 }
 
 .field-graph-query {
@@ -2205,14 +2177,14 @@ form.edit-dashboard-form {
   margin-top: 15px;
 }
 
-.alert-type-form input {
-  margin: 0px 5px;
-  padding: 2px;
+.alert-type-form input[type=number], .alert-type-form input[type=text], .alert-type-form select {
+  padding: 0 0 0 5px;
+  height: 25px;
+  width: 50px;
 }
 
-.alert-type-form select {
-  position: relative;
-  top: 5px;
+.alert-type-form input[type=text] {
+  width: 200px;
 }
 
 .add-alert-destination-type {
@@ -2233,21 +2205,8 @@ form.edit-dashboard-form {
   vertical-align: middle;
 }
 
-#add-alert-receivers input {
-  display: inline-block;
-  margin-bottom: 0;
-  vertical-align: middle;
-}
-
 .threshold-type {
-  position: relative;
-  top: -5px;
   margin-left: 5px;
-}
-
-.threshold-type input {
-  position: relative;
-  top: 3px;
 }
 
 .alerts {
@@ -2459,8 +2418,6 @@ textarea.textarea-xlarge {
 }
 
 .extractor-json {
-  width: 90%;
-  height: 700px;
   font-family: monospace;
   font-size: 13px;
 }
@@ -2899,30 +2856,30 @@ table.messages tr.message-detail-row td {
   border-top: 0;
 }
 
-table.messages tr.message-detail-row dl.message-details {
+dl.message-details {
   margin-top: 10px;
   margin-bottom: 0px;
 }
 
-table.messages tr.message-detail-row dl.message-details dt {
+dl.message-details dt {
   font-weight: bold;
 }
 
-table.messages tr.message-detail-row dl.message-details dd {
+dl.message-details dd {
   margin-bottom: 5px;
   padding-bottom: 5px;
 }
 
-table.messages tr.message-detail-row dl.message-details-fields dd {
+dl.message-details-fields dd {
   border-bottom: 1px solid #ececec;
 }
 
-table.messages tr.message-detail-row dl.message-details dd.stream-list ul {
+dl.message-details dd.stream-list ul {
   list-style-type: disc;
   padding-left: 25px;
 }
 
-table.messages tr.message-detail-row dl.message-details dd.stream-list ul li {
+dl.message-details dd.stream-list ul li {
   margin-top: 3px;
 }
 
@@ -2940,10 +2897,16 @@ table.messages tr {
   border: 0 !important;
 }
 
-table.messages tr.message-detail-row dl.message-details dd div.message-field-actions {
+dl.message-details dd div.message-field-actions {
   padding-left: 10px;
   position: relative;
   top: -10px;
+}
+.greyed-out {
+  filter:alpha(opacity=50); /* IE */
+  opacity: 0.5; /* Safari, Opera */
+  -moz-opacity:0.50; /* FireFox */
+  z-index: 20;
 }
 
 // this overrides the .table-responsive overflow-x to be able to show the blue message-group-toggled bar
@@ -3009,7 +2972,6 @@ dl.system-system, dl.system-rest {
 .table-sm {
   margin-bottom: 0px;
 }
-
 .graylog-input {
   margin-top: 15px;
   border-bottom: 1px
@@ -3073,4 +3035,8 @@ dl.system-system, dl.system-rest {
 .input-io .channel-direction-up {
   position: relative;
   top: -1px;
+}
+
+#field-statistics th {
+  cursor: pointer;
 }

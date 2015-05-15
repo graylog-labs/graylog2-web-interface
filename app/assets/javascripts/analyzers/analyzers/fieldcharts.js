@@ -1,74 +1,54 @@
-$(document).ready(function() {
+$(document).ready(function () {
+    var GRAPH_HEIGHT = 120;
 
-    var position = initBottomPosition();
-    function initBottomPosition() {
-        position = 0;
-        var charts = getPinnedCharts();
-        Object.keys(charts).forEach(function(chartId) {
-            var chart = charts[chartId];
-            position = Math.max(chart.position, position);
-        });
-        return position;
+    function insertSpinner($graphContainer) {
+        var spinnerElement = $('<div class="spinner" style="height: ' + GRAPH_HEIGHT + 'px; line-height: ' + GRAPH_HEIGHT + 'px;"><i class="fa fa-spin fa-refresh fa-3x spinner"></i></div>');
+        $graphContainer.append(spinnerElement);
     }
 
-    function getBottomPosition() {
-        return ++position;
+    function deleteSpinner($graphContainer) {
+        $(".spinner", $graphContainer).remove();
     }
 
-    function findPreviousGraph(position, positionAttributeName) {
-        for (var beforePos = position - 1; beforePos > 0; beforePos--) {
-            var beforeGraph = $('[' + positionAttributeName + '="' + beforePos + '"]');
-            if (beforeGraph.length > 0) {
-                return beforeGraph;
-            }
-        }
-        return null;
-    }
+    var palette = new Rickshaw.Color.Palette({scheme: 'colorwheel'});
 
-    function findElementBeforePosition(position, positionAttributeName) {
-        var previousGraph = findPreviousGraph(position, positionAttributeName);
-        var defaultElement = $("#field-graph-template");
-        return previousGraph !== null ? previousGraph : defaultElement;
-    }
-
-    function insertSpinner(position) {
-        var defaultElement = $("#field-graph-template");
-        var spinnerElement = $('<div class="spinner" style="height: 200px;"><i class="fa fa-spin fa-refresh fa-3x spinner"></i></div>');
-        spinnerElement.attr("data-position", position);
-        var previousElement = findPreviousGraph(position, "data-position");
-        if (previousElement === null) {
-            previousElement = findPreviousGraph(position, "data-chart-position");
-            if (previousElement === null) {
-                previousElement = defaultElement;
-            }
-        }
-        previousElement.after(spinnerElement);
-    }
-
-    function deleteSpinner(position) {
-        $("[data-position=" + position + "].spinner").remove();
-    }
-
-    var palette = new Rickshaw.Color.Palette({ scheme: 'colorwheel' });
-
-    $(".analyze-field .line-chart").on("click", function(e) {
-        e.preventDefault();
-
-        opts = {};
-        opts.field = $(this).attr("data-field");
-        var container = $(this).closest(".analyze-field");
-        if (!!container.attr("data-stream-id")) {
-            opts.streamid = container.attr("data-stream-id");
-        }
-
-        renderFieldChart(opts, container);
-        askBeforeUnload();
+    $(document).on('create.graylog.fieldgraph', function (event, data) {
+        "use strict";
+        var graphOptions = createFieldChart(data['options'], data['container']);
+        $(document).trigger('created.graylog.fieldgraph', {graphOptions: graphOptions});
     });
 
-    function renderFieldChart(opts, menuContainer) {
-        var field = opts.field;
-        var fieldCharts = $(".field-charts", menuContainer);
-        fieldCharts.hide();
+    function sendUpdateGraphEvent(opts) {
+        "use strict";
+        $(document).trigger('updated.graylog.fieldgraph', {graphOptions: opts});
+    }
+
+    function sendFailureEvent(graphId, errorMessage) {
+        $(document).trigger('failed.graylog.fieldgraph', {graphId: graphId, errorMessage: errorMessage});
+    }
+
+    function createFieldChart(options, graphContainer) {
+        "use strict";
+
+        //var container = $(this).closest(".analyze-field");
+        //if (!!container.attr("data-stream-id")) {
+        //    opts.streamid = container.attr("data-stream-id");
+        //}
+        //
+        //renderFieldChart(opts, container);
+
+        renderFieldChart(options, graphContainer);
+
+        return options;
+    }
+
+    function getDefaultOptions(opts) {
+        var searchParams = {};
+        $(document).trigger("get-original-search.graylog.search", {
+            callback: function (params) {
+                searchParams = params.toJS()
+            }
+        });
 
         // Options.
         if (opts.chartid == undefined) {
@@ -76,7 +56,7 @@ $(document).ready(function() {
         }
 
         if (opts.interval == undefined) {
-            opts.interval = $("#universalsearch-interval-permanent").text().trim();
+            opts.interval = searchParams['interval'] || 'minute';
         }
 
         if (opts.interpolation == undefined) {
@@ -95,133 +75,132 @@ $(document).ready(function() {
             opts.streamid = "";
         }
 
-        if (opts.pinned == undefined) {
-            opts.pinned = false;
-        }
-
         if (opts.query == undefined) {
-            opts.query = $("#universalsearch-query-permanent").text().trim();
+            opts.query = searchParams['query'];
         }
 
         if (opts.rangetype == undefined) {
-            opts.rangetype = $("#universalsearch-rangetype-permanent").text().trim();
+            opts.rangetype = searchParams['range_type'];
         }
 
         if (opts.range == undefined) {
             opts.range = {};
         }
 
-        if (opts.position === undefined) {
-            opts.position = getBottomPosition();
+        if (opts.createdAt === undefined) {
+            opts.createdAt = moment().valueOf();
         }
 
+        switch (opts.rangetype) {
+            case "relative":
+                if (opts.range.relative == undefined) {
+                    opts.range.relative = searchParams['relative'];
+                }
+                break;
+            case "absolute":
+                if (opts.range.from == undefined) {
+                    opts.range.from = searchParams['from'];
+                }
+
+                if (opts.range.to == undefined) {
+                    opts.range.to = searchParams['to'];
+                }
+                break;
+            case "keyword":
+                if (opts.range.keyword == undefined) {
+                    opts.range.keyword = searchParams['keyword'];
+                }
+                break;
+        }
+
+        return opts;
+    }
+
+    function getParams(opts) {
+        "use strict";
         var params = {
             "rangetype": opts.rangetype,
             "q": opts.query,
-            "field": field,
+            "field": opts.field,
             "interval": opts.interval,
             "valueType": opts.valuetype,
             "streamId": opts.streamid
         };
 
-        switch(opts.rangetype) {
+        switch (opts.rangetype) {
             case "relative":
-                if (opts.range.relative == undefined) {
-                    opts.range.relative = $("#universalsearch-relative-permanent").text();
-                }
-
                 params["relative"] = opts.range.relative;
                 break;
             case "absolute":
-                if (opts.range.from == undefined) {
-                    opts.range.from = $("#universalsearch-from-permanent").text();
-                }
-
-                if (opts.range.to == undefined) {
-                    opts.range.to = $("#universalsearch-to-permanent").text();
-                }
-
                 params["from"] = opts.range.from;
                 params["to"] = opts.range.to;
                 break;
             case "keyword":
-                if (opts.range.keyword == undefined) {
-                    opts.range.keyword = $("#universalsearch-keyword-permanent").text();
-                }
-
                 params["keyword"] = opts.range.keyword;
                 break;
         }
 
-        insertSpinner(opts.position);
+        return params;
+    }
 
-        // Delete a possibly already existing graph with this id. (for updates)
-        $('.field-graph-container[data-chart-id="' + opts.chartid + '"]', $("#field-graphs")).remove();
+    function renderFieldChart(opts, graphContainer) {
+        var field = opts.field;
+        var $graphContainer = $(graphContainer);
+
+        opts = getDefaultOptions(opts);
+        var params = getParams(opts);
+
+        insertSpinner($graphContainer);
+
+        // Delete a possibly already existing graph to manage updates.
+        $('.field-graph-y-axis', $graphContainer).html("");
+        $('.field-graph', $graphContainer).html("");
 
         $.ajax({
             url: appPrefixed('/a/search/fieldhistogram'),
             data: params,
-            success: function(data) {
-                var template = $("#field-graph-template").clone();
-                template.removeAttr("id");
-                template.attr("data-chart-position", opts.position);
-                template.attr("data-chart-id", opts.chartid);
-                template.attr("data-field", field);
-                template.css("display", "block");
-                $("h3 .title span", template).text(field);
-                $("ul", template).attr("data-field", field);
+            success: function (data) {
+                var $graphElement = $('.field-graph', $graphContainer);
+                var $graphYAxis = $('.field-graph-y-axis', $graphContainer);
+
+                $("ul", $graphContainer).attr("data-field", field);
 
                 if (opts.query.trim().length > 0) {
-                    $(".field-graph-query", template).text(opts.query);
+                    $(".field-graph-query", $graphContainer).text(opts.query);
                 } else {
-                    $(".field-graph-query", template).text("*");
+                    $(".field-graph-query", $graphContainer).text("*");
                 }
 
                 var lines = [];
                 lines.push(JSON.stringify(opts));
-                template.attr("data-lines", lines);
+                $graphContainer.attr("data-lines", lines);
 
-                $(".type-description", template).text("[" + opts.valuetype + "] " + opts.field + ", ");
+                $(".type-description", $graphContainer).text("[" + opts.valuetype + "] " + opts.field + ", ");
 
-                if(opts.pinned) {
-                    $(".pin", template).hide();
-                    $(".unpin", template).show();
-                }
+                rickshawHelper.processHistogramData(data.values, data.from, data.to, data.interval);
 
-
-                var previousElement = findElementBeforePosition(opts.position, "data-chart-position");
-                previousElement.after(template);
-
-                var graphContainer = $('.field-graph-container[data-chart-id="' + opts.chartid + '"]', $("#field-graphs"));
-                var graphElement = $('.field-graph', graphContainer);
-                var graphYAxis = $('.field-graph-y-axis', graphContainer);
-
-                var resultGraphElement = $("#result-graph");
-
-                rickshawHelper.processHistogramData(data.values, resultGraphElement.data("from"), resultGraphElement.data("to"), data.interval);
-
-                var graph = new Rickshaw.Graph( {
-                    element: graphElement[0],
-                    width: graphElement.width(),
-                    height: 175,
+                var graph = new Rickshaw.Graph({
+                    element: $graphElement[0],
+                    width: $graphElement.width(),
+                    height: GRAPH_HEIGHT,
                     interpolation: opts.interpolation,
                     renderer: rickshawHelper.getRenderer(opts.renderer),
                     resolution: data.interval,
-                    series: [ {
+                    series: [{
                         name: "value",
                         data: data.values,
                         color: '#26ADE4',
                         gl2_query: opts.query,
                         valuetype: opts.valuetype,
                         field: opts.field
-                    } ]
+                    }]
                 });
 
-                new Rickshaw.Graph.Axis.Y( {
+                new Rickshaw.Graph.Axis.Y({
                     graph: graph,
                     tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
                     orientation: 'left',
-                    element: graphYAxis[0],
+                    element: $graphYAxis[0],
                     pixelsPerTick: 30
                 });
 
@@ -233,8 +212,8 @@ $(document).ready(function() {
 
                 new Rickshaw.Graph.HoverDetail({
                     graph: graph,
-                    formatter: function(series, x, y) {
-                        var dateMoment = momentHelper.toUserTimeZone(new Date(x * 1000 ));
+                    formatter: function (series, x, y) {
+                        var dateMoment = momentHelper.toUserTimeZone(new Date(x * 1000));
                         var date = '<span class="date">' + dateMoment.format('ddd MMM DD YYYY HH:mm:ss ZZ') + '</span>';
                         var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
                         var content = swatch + '[' + series.valuetype + '] ' + series.field + ': ' + numeral(y).format('0,0.[000]') + '<br>' + date;
@@ -242,7 +221,7 @@ $(document).ready(function() {
                     }
                 });
 
-                new Rickshaw.Graph.Graylog2Selector( {
+                new Rickshaw.Graph.Graylog2Selector({
                     graph: graph
                 });
 
@@ -257,29 +236,24 @@ $(document).ready(function() {
                 graph.render();
 
                 // Highlight menu items.
-                $("ul.interval-selector li a", graphContainer).removeClass("selected");
-                $('ul.interval-selector li a[data-type="' + opts.interval + '"]', graphContainer).addClass("selected");
+                $("ul.interval-selector li a", $graphContainer).removeClass("selected");
+                $('ul.interval-selector li a[data-type="' + opts.interval + '"]', $graphContainer).addClass("selected");
 
-                $("ul.interpolation-selector li a", graphContainer).removeClass("selected");
-                $('ul.interpolation-selector li a[data-type="' + opts.interpolation + '"]', graphContainer).addClass("selected");
+                $("ul.interpolation-selector li a", $graphContainer).removeClass("selected");
+                $('ul.interpolation-selector li a[data-type="' + opts.interpolation + '"]', $graphContainer).addClass("selected");
 
-                $("ul.type-selector li a", graphContainer).removeClass("selected");
-                $('ul.type-selector li a[data-type="' + opts.renderer + '"]', graphContainer).addClass("selected");
+                $("ul.type-selector li a", $graphContainer).removeClass("selected");
+                $('ul.type-selector li a[data-type="' + opts.renderer + '"]', $graphContainer).addClass("selected");
 
-                $("ul.valuetype-selector li a", graphContainer).removeClass("selected");
-                $('ul.valuetype-selector li a[data-type="' + opts.valuetype + '"]', graphContainer).addClass("selected");
+                $("ul.valuetype-selector li a", $graphContainer).removeClass("selected");
+                $('ul.valuetype-selector li a[data-type="' + opts.valuetype + '"]', $graphContainer).addClass("selected");
 
                 fieldGraphs[opts.chartid] = graph;
 
-                // Is this chart pinned? We need to update it's settings then.
-                var pinned = getPinnedCharts();
-                if (pinned[opts.chartid] != undefined) {
-                    pinned[opts.chartid] = opts;
-                    setPinnedCharts(pinned);
-                }
+                sendUpdateGraphEvent(opts);
 
                 // Make it draggable.
-                graphContainer.draggable({
+                $graphContainer.draggable({
                     handle: ".reposition-handle",
                     cursor: "move",
                     scope: "#field-graphs",
@@ -292,26 +266,26 @@ $(document).ready(function() {
                 });
 
                 // ...and droppable.
-                graphContainer.droppable({
+                $graphContainer.droppable({
                     scope: "#field-graphs",
                     tolerance: "intersect",
-                    activate: function(event, ui) {
+                    activate: function (event, ui) {
                         // Show merge hints on all charts except the dragged one when dragging starts.
                         $("#field-graphs .merge-hint").not($(".merge-hint", ui.draggable)).show();
                     },
-                    deactivate: function() {
+                    deactivate: function () {
                         // Hide all merge hints when dragging stops.
                         $("#field-graphs .merge-hint").hide();
                     },
-                    over: function() {
+                    over: function () {
                         $(this).css("background-color", "#C7E2ED");
                         $(".merge-hint span", $(this)).switchClass("alpha80", "merge-drop-ready");
                     },
-                    out: function() {
+                    out: function () {
                         $(this).css("background-color", "#fff");
                         $(".merge-hint span", $(this)).switchClass("merge-drop-ready", "alpha80");
                     },
-                    drop: function(event, ui) {
+                    drop: function (event, ui) {
                         // Merge charts.
                         var target = $(this).attr("data-chart-id");
                         var dragged = ui.draggable.attr("data-chart-id");
@@ -323,22 +297,24 @@ $(document).ready(function() {
                     }
                 });
             },
-            error: function(data) {
-                if(data.status != 400) {
-                    showError("Could not load histogram.");
+            error: function (data) {
+                if (data.status != 400) {
+                    showError("Loading field graph for '" + opts.field + "' failed with status: " + data.status);
                 }
             },
-            statusCode: { 400: function() {
-                fieldCharts.show();
-            }},
-            complete: function() {
-                deleteSpinner(opts.position);
+            statusCode: {
+                400: function () {
+                    sendFailureEvent(opts.chartid, "Field graphs are only available for numeric fields.");
+                }
+            },
+            complete: function () {
+                deleteSpinner($graphContainer);
             }
         });
     }
 
     // Changing type of value graphs.
-    $(document).on("click", ".field-graph-container ul.type-selector li a", function(e) {
+    $(document).on("click", ".field-graph-container ul.type-selector li a", function (e) {
         e.preventDefault();
 
         var field = $(this).closest("ul").attr("data-field");
@@ -363,20 +339,14 @@ $(document).ready(function() {
 
         graph.render();
 
-        // Is this chart pinned? We need to update it's settings then.
-        var pinned = getPinnedCharts();
-        var chartId = graphOpts.chartid;
-        if (pinned[chartId] != undefined) {
-            pinned[chartId] = chartOptionsFromContainer(graphContainer);
-            setPinnedCharts(pinned);
-        }
+        sendUpdateGraphEvent(chartOptionsFromContainer(graphContainer));
 
         $("a", $(this).closest("ul")).removeClass("selected");
         $(this).addClass("selected");
     });
 
     // Changing interpolation of value graphs.
-    $(document).on("click", ".field-graph-container ul.interpolation-selector li a", function(e) {
+    $(document).on("click", ".field-graph-container ul.interpolation-selector li a", function (e) {
         e.preventDefault();
 
         var field = $(this).closest("ul").attr("data-field");
@@ -390,20 +360,14 @@ $(document).ready(function() {
         graph.interpolation = interpolation;
         graph.render();
 
-        // Is this chart pinned? We need to update it's settings then.
-        var pinned = getPinnedCharts();
-        var chartId = graphOpts.chartid;
-        if (pinned[chartId] != undefined) {
-            pinned[chartId] = chartOptionsFromContainer(graphContainer);
-            setPinnedCharts(pinned);
-        }
+        sendUpdateGraphEvent(chartOptionsFromContainer(graphContainer));
 
         $("a", $(this).closest("ul")).removeClass("selected");
         $(this).addClass("selected");
     });
 
     // Changing interval of value graphs.
-    $(document).on("click", ".field-graph-container ul.interval-selector li a", function(e) {
+    $(document).on("click", ".field-graph-container ul.interval-selector li a", function (e) {
         e.preventDefault();
         var field = $(this).closest("ul").attr("data-field");
         var graphContainer = $(this).closest(".field-graph-container");
@@ -413,7 +377,7 @@ $(document).ready(function() {
         opts.interval = interval;
         opts.field = field;
 
-        renderFieldChart(opts);
+        renderFieldChart(opts, graphContainer);
         changeGraphConfig(graphContainer, "interval", interval);
 
         $("a", $(this).closest("ul")).removeClass("selected");
@@ -421,7 +385,7 @@ $(document).ready(function() {
     });
 
     // Changing value type of value graphs.
-    $(document).on("click", ".field-graph-container ul.valuetype-selector li a", function(e) {
+    $(document).on("click", ".field-graph-container ul.valuetype-selector li a", function (e) {
         e.preventDefault();
         var field = $(this).closest("ul").attr("data-field");
         var graphContainer = $(this).closest(".field-graph-container");
@@ -431,24 +395,11 @@ $(document).ready(function() {
         opts.valuetype = valuetype;
         opts.field = field;
 
-        renderFieldChart(opts);
+        renderFieldChart(opts, graphContainer);
         changeGraphConfig(graphContainer, "valuetype", valuetype);
 
         $("a", $(this).closest("ul")).removeClass("selected");
         $(this).addClass("selected");
-    });
-
-    // Removing a value graph.
-    $(document).on("click", ".field-graph-container li a.hide", function(e) {
-        e.preventDefault();
-        var field = $(this).closest("ul").attr("data-field");
-        var graphContainer = $(this).closest(".field-graph-container");
-        var graphOpts = chartOptionsFromContainer(graphContainer);
-
-        unpinChart(graphOpts.chartid);
-
-        graphContainer.remove();
-        delete fieldGraphs[graphOpts.chartid];
     });
 
     function chartOptionsFromContainer(cc) {
@@ -462,53 +413,6 @@ $(document).ready(function() {
         graphContainer.attr("data-lines", JSON.stringify(opts));
     }
 
-    $(document).on("click", ".field-graph-container .pin", function(e) {
-        e.preventDefault();
-        var graphElem = $(this).closest(".field-graph-container");
-
-        var chartOpts = chartOptionsFromContainer(graphElem);
-        chartOpts.field = graphElem.attr("data-field");
-        var chartId = chartOpts.chartid;
-
-        // Get all pinned charts.
-        var pinned = getPinnedCharts();
-
-        // Write chart with current options.
-        pinned[chartId] = chartOpts;
-
-        setPinnedCharts(pinned);
-
-        // Mark as pinned.
-        $(this).hide();
-        $(".unpin", graphElem).show();
-    });
-
-    $(document).on("click", ".field-graph-container .unpin", function(e) {
-        e.preventDefault();
-        var graphElem = $(this).closest(".field-graph-container");
-        var graphOpts = chartOptionsFromContainer(graphElem);
-
-        changeGraphConfig(graphElem, "pinned", false);
-        unpinChart(graphOpts.chartid);
-
-        // Mark as unpinned.
-        $(this).hide();
-        $(".pin", graphElem).show();
-    });
-
-    $(".clear-pinned-charts").on("click", function(e) {
-        e.preventDefault();
-
-        setPinnedCharts({});
-
-        // Mark all as unpinned.
-        $(".field-graph-container .unpin").hide();
-        $(".field-graph-container .pin").show();
-
-        $(this).hide();
-        showSuccess("All charts have been unpinned.")
-    });
-
     function mergeCharts(targetId, draggedId) {
         var targetChart = fieldGraphs[targetId];
         var draggedChart = fieldGraphs[draggedId];
@@ -519,14 +423,14 @@ $(document).ready(function() {
         var draggedOpts = JSON.parse(draggedElem.attr("data-lines"));
 
         // Update title and description.
-        $(".title", targetElem).text("Combined chart");
+        $("h1", targetElem).text("Combined graph");
 
         for (var i = 0; i < draggedChart.series.length; i++) {
             var lineColor = palette.color();
             var series = draggedChart.series[i];
             var query = series.gl2_query;
 
-            if (query == undefined || query == "") {
+            if (query == undefined || query == "") {
                 query = "*";
             }
 
@@ -558,58 +462,4 @@ $(document).ready(function() {
         targetChart.update();
         targetChart.render();
     }
-
-    // Load all pinned charts
-    (function() {
-        if ($("#field-graphs").length > 0) {
-            var charts = getPinnedCharts();
-
-            // Are there even any pinned charts?
-            if (Object.keys(charts).length > 0) {
-                // Whoop whoop, pinned charts! Display the clear button first.
-                $(".clear-pinned-charts").show();
-
-                // Display all charts.
-                for(var id in charts) {
-                    var chart = charts[id];
-                    chart.pinned = true;
-
-                    renderFieldChart(chart);
-                }
-            }
-        }
-    })();
-
-    function getPinnedCharts() {
-        var pinned = store.get("pinned-field-charts");
-        if (pinned == undefined) {
-            pinned = {};
-        }
-
-        return pinned;
-    }
-
-    function setPinnedCharts(pinned) {
-        store.set("pinned-field-charts", pinned);
-    }
-
-    function unpinChart(id) {
-        var pinned = getPinnedCharts();
-        delete pinned[id];
-        setPinnedCharts(pinned);
-    }
-
-    function askBeforeUnload() {
-        window.addEventListener("beforeunload", function(e) {
-            var numFieldCharts = $(".field-graph-container").length - 1;
-            var numPinnedCharts = Object.keys(getPinnedCharts()).length;
-
-            if (numFieldCharts > 0 && numFieldCharts != numPinnedCharts) {
-                var confirmationMessage = "Some field graphs are not pinned and will be lost.";
-                e.returnValue = confirmationMessage;
-                return confirmationMessage;
-            }
-        });
-    }
-
 });

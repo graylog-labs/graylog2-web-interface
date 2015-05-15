@@ -1,4 +1,4 @@
-/* global jsRoutes */
+/* global jsRoutes, momentHelper */
 
 'use strict';
 
@@ -25,13 +25,26 @@ var MessageDetail = React.createClass({
     getInitialState() {
         return {
             messageTerms: Immutable.Map(),
-            streamsListLoaded: false,
-            streamsList: Immutable.List()
+            allStreamsLoaded: false,
+            allStreams: Immutable.List()
         };
     },
     componentDidMount() {
-        this._loadStreams();
+        if (this.props.allStreams === undefined) {
+            // our parent does not provide allStreams for the test against stream menu, we have to load it ourselves
+            // this can happen if the component is used outside the regular search result
+            // only load the streams per page
+            if (this.state.allStreamsLoaded) {
+                return;
+            }
+            var promise = StreamsStore.listStreams();
+            promise.done((streams) => this._onStreamsLoaded(streams));
+        }
     },
+    _onStreamsLoaded(streams) {
+        this.setState({allStreamsLoaded: true, allStreams: Immutable.List(streams).sortBy(stream => stream.title)});
+    },
+
     _inputName(inputId) {
         var input = this.props.inputs.get(inputId);
         return input ? <span style={{wordBreak: 'break-word'}}>{input['title']}</span> : "deleted input";
@@ -58,20 +71,15 @@ var MessageDetail = React.createClass({
         var map = Immutable.Map().set(field, terms);
         this.setState({messageTerms: map});
     },
-
-    _loadStreams() {
-        // only load the streams once per message.
-        if (this.state.streamsListLoaded) {
-            return;
+    _getAllStreams() {
+        if (this.props.allStreams) {
+            return this.props.allStreams;
+        } else {
+            return this.state.allStreams;
         }
-        var promise = StreamsStore.listStreams();
-        promise.done((streams) => this._onStreamsLoaded(streams));
-    },
-    _onStreamsLoaded(streams) {
-        this.setState({streamsListLoaded: true, streamsList: Immutable.List(streams).sortBy(stream => stream.title)});
     },
     render() {
-        var messageUrl = jsRoutes.controllers.MessagesController.show(this.props.message.index, this.props.message.id).url;
+        var messageUrl = jsRoutes.controllers.SearchControllerV2.showMessage(this.props.message.index, this.props.message.id).url;
 
         var fields = [];
         var formattedFields = Immutable.Map(this.props.message['formatted_fields']).sortBy((value, key) => key, (a,b) => a.localeCompare(b));
@@ -108,7 +116,7 @@ var MessageDetail = React.createClass({
         });
 
         var streamList = null;
-        this.state.streamsList.forEach((stream) => {
+        this._getAllStreams().forEach((stream) => {
             if (!streamList) {
                 streamList = [];
             }
@@ -128,6 +136,16 @@ var MessageDetail = React.createClass({
                 via <em>{this._inputName(this.props.message['source_radio_input_id'])}</em> on radio {this._nodeName(this.props.message['source_radio_id'])}
             </span>;
         }
+
+        var timestamp = null;
+        if (this.props.showTimestamp) {
+            var formattedTime = momentHelper.toUserTimeZone(moment(this.props.message.fields['timestamp'])).format();
+            timestamp = [];
+
+            timestamp.push(<dt key="0">Timestamp</dt>);
+            timestamp.push(<dd key="1"><time dateTime={this.props.message.fields['timestamp']}>{formattedTime}</time></dd>);
+        }
+
         return (<div>
 
             <Row>
@@ -148,7 +166,8 @@ var MessageDetail = React.createClass({
 
                         <DropdownButton ref="streamDropdown" pullRight bsSize="small" title="Test against stream">
                             { streamList }
-                            { ! streamList && <MenuItem header><i className="fa fa-spin fa-spinner"></i> Loading streams</MenuItem> }
+                            { (! streamList && ! this.props.allStreamsLoaded) && <MenuItem header><i className="fa fa-spin fa-spinner"></i> Loading streams</MenuItem> }
+                            { (! streamList && this.props.allStreamsLoaded) && <MenuItem header>No streams available</MenuItem> }
                         </DropdownButton>
                     </ButtonGroup>
                     <h3><i className="fa fa-envelope"></i> <a href={messageUrl} style={{color: '#000'}}>{this.props.message.id}</a></h3>
@@ -157,6 +176,7 @@ var MessageDetail = React.createClass({
             <Row>
                 <Col md={3}>
                     <dl className="message-details">
+                        {timestamp}
                         <dt>Received by</dt>
                         <dd>
                             <em>{this._inputName(this.props.message['source_input_id'])}</em> on {this._nodeName(this.props.message['source_node_id'])}
