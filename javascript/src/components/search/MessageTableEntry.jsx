@@ -12,6 +12,9 @@ var MessageTableEntry = React.createClass({
 
     possiblyHighlight(fieldName) {
         var origValue = this.props.message.fields[fieldName];
+        if (origValue === undefined) {
+            return "";
+        }
         if (this.props.highlight && this.props.message.highlight_ranges) {
             if (this.props.message.highlight_ranges.hasOwnProperty(fieldName)) {
                 var chunks = [];
@@ -42,7 +45,7 @@ var MessageTableEntry = React.createClass({
     },
     render() {
         var colSpanFixup = this.props.selectedFields.size + 1;
-        var formattedTime = momentHelper.toUserTimeZone(moment(this.props.message.fields['timestamp'])).format();
+        var formattedTime = momentHelper.toUserTimeZone(moment(this.props.message.fields['timestamp'])).format('YYYY-MM-DD HH:mm:ss.SSS');
 
         var classes = "message-group";
         if (this.props.expanded) {

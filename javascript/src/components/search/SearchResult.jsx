@@ -9,6 +9,8 @@ var LegacyHistogram = require('./LegacyHistogram');
 var FieldGraphs = require('./FieldGraphs');
 var FieldQuickValues = require('./FieldQuickValues');
 var FieldStatistics = require('./FieldStatistics');
+var AddToDashboardMenu = require('../dashboard/AddToDashboardMenu');
+var Widget = require('../widgets/Widget');
 var Immutable = require('immutable');
 
 var DashboardStore = require('../../stores/dashboard/DashboardStore');
@@ -23,7 +25,6 @@ var SearchResult = React.createClass({
             selectedFields: initialFields,
             showAllFields: false,
             currentSidebarWidth: null,
-            dashboards: Immutable.Map(),
             shouldHighlight: true,
             currentPage: SearchStore.page
         };
@@ -84,7 +85,7 @@ var SearchResult = React.createClass({
 
     componentDidMount() {
         this._updateWidth();
-        this._getWritableDashboardList();
+        DashboardStore.updateDashboards();
         $(window).on('resize', this._resizeCallback);
     },
     componentWillUnmount() {
@@ -99,10 +100,6 @@ var SearchResult = React.createClass({
         var node = React.findDOMNode(this.refs.opa);
         this.setState({currentSidebarWidth: $(node).width()});
     },
-    _getWritableDashboardList() {
-        var promise = DashboardStore.getWritableDashboardList();
-        promise.done(dashboards => this.setState({dashboards: Immutable.Map(dashboards)}));
-    },
 
     render() {
         var style = {};
@@ -111,11 +108,55 @@ var SearchResult = React.createClass({
         }
         var anyHighlightRanges = Immutable.fromJS(this.props.result.messages).some(message => message.get('highlight_ranges') !== null);
 
+        // short circuit if the result turned up empty
+        if (this.props.result['total_result_count'] === 0) {
+            var streamDescription = null;
+            if (this.props.searchInStream) {
+                streamDescription = "in stream " + this.props.searchInStream.title;
+            }
+            return (
+                <div>
+                    <div className="row content content-head">
+                        <div className="col-md-12">
+                            <h1>
+                                <span><i className="fa fa-search"></i> Nothing found {streamDescription}</span>
+                                <AddToDashboardMenu title="Add count to dashboard"
+                                                    widgetType={this.props.searchInStream ? Widget.Type.STREAM_SEARCH_RESULT_COUNT : Widget.Type.SEARCH_RESULT_COUNT}
+                                                    permissions={this.props.permissions}/>
+                            </h1>
+
+                            <p>
+                                Your search returned no results.&nbsp;
+                                <strong>Take a look at the&nbsp;<a
+                                    href="https://www.graylog.org/documentation/general/queries/" target="_blank">documentation</a>
+                                    &nbsp;if you need help with the search syntax.</strong>
+                            </p>
+                        </div>
+                    </div>
+                    <div className="row content">
+                        <div className="col-md-12">
+                            <div className="support-sources">
+                                <h2>Need help?</h2>
+                                Do not hesitate to consult the Graylog community if your questions are not answered in the&nbsp;
+                                <a href="https://www.graylog.org/documentation/" target="_blank">documentation</a>.
+
+                                <ul>
+                                    <li><i className="fa fa-group"></i> <a href="https://www.graylog.org/community-support/" target="_blank">Forum / Mailing list</a></li>
+                                    <li><i className="fa fa-github-alt"></i> <a href="https://github.com/Graylog2/graylog2-web-interface/issues" target="_blank">Issue tracker</a></li>
+                                    <li><i className="fa fa-heart"></i> <a href="https://www.graylog.com/support/" target="_blank">Commercial support</a></li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>);
+        }
         return (
-            <div >
+            <div id='main-content-search' className='row'>
                 <div ref="opa" className="col-md-3" id="sidebar">
                     <div data-spy="affix" data-offset-top="90" style={style} className="hidden-sm hidden-xs">
                         <SearchSidebar result={this.props.result}
+                                       builtQuery={this.props.builtQuery}
                                        selectedFields={this.state.selectedFields}
                                        fields={this._fields()}
                                        showAllFields={this.state.showAllFields}
@@ -129,27 +170,27 @@ var SearchResult = React.createClass({
                                        shouldHighlight={this.state.shouldHighlight}
                                        toggleShouldHighlight={(event) => this.setState({shouldHighlight: !this.state.shouldHighlight})}
                                        currentSavedSearch={SearchStore.savedSearch}
-                                       dashboards={this.state.dashboards}
-                                       searchInStreamId={this.props.searchInStreamId}
+                                       searchInStream={this.props.searchInStream}
+                                       permissions={this.props.permissions}
                             />
                     </div>
                 </div>
                 <div className="col-md-9" id="main-content-sidebar">
                     <FieldStatistics ref='fieldStatisticsComponent'
-                                     dashboards={this.state.dashboards}/>
+                                     permissions={this.props.permissions}/>
 
                     <FieldQuickValues ref='fieldQuickValuesComponent'
-                                      dashboards={this.state.dashboards}/>
+                                      permissions={this.props.permissions}/>
 
                     <LegacyHistogram formattedHistogram={this.props.formattedHistogram}
                                      histogram={this.props.histogram}
-                                     dashboards={this.state.dashboards}/>
+                                     permissions={this.props.permissions}/>
 
                     <FieldGraphs ref='fieldGraphsComponent'
                                  resolution={this.props.histogram['interval']}
                                  from={this.props.histogram['histogram_boundaries'].from}
                                  to={this.props.histogram['histogram_boundaries'].to}
-                                 dashboards={this.state.dashboards}/>
+                                 permissions={this.props.permissions}/>
 
                     <ResultTable messages={this.props.result.messages}
                                  page={this.state.currentPage}

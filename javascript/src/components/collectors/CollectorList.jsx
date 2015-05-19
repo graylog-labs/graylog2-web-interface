@@ -3,13 +3,16 @@
 var React = require('react/addons');
 var CollectorsStore = require('../../stores/collectors/CollectorsStore');
 var CollectorRow = require('./CollectorRow');
+var Spinner = require('../common/Spinner');
+var Col = require('react-bootstrap').Col;
+var Row = require('react-bootstrap').Row;
+var Alert = require('react-bootstrap').Alert;
 
 var CollectorList = React.createClass({
     COLLECTOR_DATA_REFRESH: 5*1000,
 
     getInitialState() {
         return {
-            collectors: [],
             filter: "",
             sort: undefined,
             showInactive: false
@@ -44,55 +47,54 @@ var CollectorList = React.createClass({
         }
     },
     render() {
-        var collectorList;
+        if (this.state.collectors) {
+            if (this.state.collectors.length === 0) {
+                return <Alert>There are no collectors.</Alert>;
+            } else {
+                var collectors = this._getFilteredCollectors()
+                    .filter((collector) => {return (this.state.showInactive || collector.active);})
+                    .sort(this._bySortField)
+                    .map((collector) => {
+                        return <CollectorRow key={collector.id} collector={collector}/>;
+                    }
+                );
 
-        if (this.state.collectors.length === 0) {
-            collectorList = <div><div className="alert alert-info">There are no collectors.</div></div>;
-        } else {
-            var collectors = this._getFilteredCollectors()
-                .filter((collector) => {return (this.state.showInactive || collector.active);})
-                .sort(this._bySortField)
-                .map((collector) => {
-                    return <CollectorRow key={collector.id} collector={collector}/>;
-                }
-            );
+                var showOrHideInactive = (this.state.showInactive ? "Hide" : "Include");
 
-            var showOrHideInactive = (this.state.showInactive ? "Hide" : "Show");
+                return (
+                    <Row>
+                        <Col md={12}>
+                            <a onClick={this.toggleShowInactive} className="btn btn-primary pull-right">{showOrHideInactive} inactive collectors</a>
 
-            collectorList = (
-                <div>
-                    <div className="row">
-                        <div className="col-md-12">
-                            <form className="form-inline collectors-filter-form">
+                            <form className="form-inline collectors-filter-form" onSubmit={(e) => e.preventDefault() }>
                                 <label htmlFor="collectorsfilter">Filter collectors:</label>
                                 <input type="text" name="filter" id="collectorsfilter" value={this.state.filter} onChange={(event) => {this.setState({filter: event.target.value});}} />
                             </form>
 
-                            <a onClick={this.toggleShowInactive}>{showOrHideInactive}</a> inactive collectors
-
-                            <table className="table table-striped users-list">
+                            <table className="table table-striped collectors-list">
                                 <thead>
                                 <tr>
+                                    <th onClick={this.sortByNodeId}>Host Name</th>
+                                    <th onClick={this.sortByOperatingSystem}>Operating System</th>
+                                    <th onClick={this.sortByLastSeen}>Last Seen</th>
                                     <th className="name" onClick={this.sortById}>
                                         Collector Id
                                     </th>
-                                    <th onClick={this.sortByNodeId}>Host Name</th>
                                     <th onClick={this.sortByCollectorVersion}>Collector Version</th>
-                                    <th onClick={this.sortByOperatingSystem}>Operating System</th>
-                                    <th onClick={this.sortByLastSeen}>Last Seen</th>
+                                    <th>&nbsp;</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                    {collectors}
+                                {collectors}
                                 </tbody>
                             </table>
-                        </div>
-                    </div>
-                </div>
-            );
+                        </Col>
+                    </Row>
+                );
+            }
+        } else {
+            return <Spinner />;
         }
-
-        return collectorList;
     },
     toggleShowInactive() {
         this.setState({showInactive: !this.state.showInactive});

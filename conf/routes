@@ -17,12 +17,11 @@ GET           /                                                                 
 GET           /startpage                                                                         @controllers.StartpageController.redirect()
 
 # Search
-GET         /search                                                                  @controllers.SearchController.index(q ?= "", rangetype ?= "", relative:Integer ?= -1, from ?= "", to ?= "", keyword ?= "", interval ?= "", page:Integer ?= 1, saved:String ?= "", sortField:String ?= "", sortOrder:String ?= "", fields:String ?= "", width:Integer ?= -1)
-GET         /searchv2                                                                @controllers.SearchControllerV2.index(q ?= "", rangetype ?= "relative", relative:Integer ?= 600, from ?= "", to ?= "", keyword ?= "", interval ?= "", page:Integer ?= 1, saved:String ?= "", sortField:String ?= "", sortOrder:String ?= "", fields:String ?= "", width:Integer ?= -1)
-GET         /searchv2/csv                                                              @controllers.SearchControllerV2.exportAsCsv(q ?= "", filter ?= "", rangetype ?= "", relative:Integer ?= -1, from ?= "", to ?= "", keyword ?= "", fields:String ?= "")
+GET           /search                                                                            @controllers.SearchController.index(q ?= "", rangetype ?= "relative", relative:Integer ?= 300, from ?= "", to ?= "", keyword ?= "", interval ?= "", page:Integer ?= 1, saved:String ?= "", sortField:String ?= "", sortOrder:String ?= "", fields:String ?= "", width:Integer ?= -1)
+GET           /search/csv                                                                        @controllers.SearchController.exportAsCsv(q ?= "", filter ?= "", rangetype ?= "", relative:Integer ?= -1, from ?= "", to ?= "", keyword ?= "", fields:String ?= "")
 
 # Messages
-GET           /messages/:index/:id                                                               @controllers.SearchControllerV2.showMessage(index: String, id: String)
+GET           /messages/:index/:id                                                               @controllers.SearchController.showMessage(index: String, id: String)
 GET           /messages/:index/:id/partial                                                       @controllers.MessagesController.partial(index: String, id: String)
 
 # Streams
@@ -44,7 +43,7 @@ POST          /streams/:stream_id/clone                                         
 GET           /streams/:stream_id/csv                                                            @controllers.StreamSearchController.exportAsCsv(stream_id: String, q ?= "", rangetype ?= "", relative:Integer ?= -1, from ?= "", to ?= "", keyword ?= "", fields:String ?="")
 
 # Stream Outputs
-GET         /streams/:stream_id/outputs                                              @controllers.StreamOutputsController.index(stream_id: String)
+GET           /streams/:stream_id/outputs                                                        @controllers.StreamOutputsController.index(stream_id: String)
 
 # Alerts
 GET           /streams/:stream_id/alerts                                                         @controllers.AlertsController.index(stream_id: String)
@@ -52,7 +51,7 @@ POST          /streams/:stream_id/alerts/conditions/add/messagecount            
 POST          /streams/:stream_id/alerts/conditions/add/fieldvalue                               @controllers.AlertsController.addTypeFieldValue(stream_id: String)
 POST          /streams/:stream_id/alerts/conditions/add/fielstringdvalue                         @controllers.AlertsController.addTypeFieldStringValue(stream_id: String)
 POST          /streams/:stream_id/alerts/conditions/:condition_id                                @controllers.AlertsController.updateCondition(stream_id: String, condition_id: String)
-POST          /streams/:stream_id/alerts/conditions/:condition_id/delete                         @controllers.AlertsController.removeCondition(stream_id: String, condition_id: String)
+GET           /streams/:stream_id/alerts/conditions/:condition_id/delete                         @controllers.AlertsController.removeCondition(stream_id: String, condition_id: String)
 POST          /streams/:stream_id/alerts/receivers/user/add                                      @controllers.AlertsController.addReceiverUser(stream_id: String)
 POST          /streams/:stream_id/alerts/receivers/email/add                                     @controllers.AlertsController.addReceiverEmail(stream_id: String)
 GET           /streams/:stream_id/alerts/receivers/user/delete                                   @controllers.AlertsController.removeReceiverUser(stream_id: String, username: String)
@@ -124,6 +123,7 @@ DELETE        /savedsearches/:search_id/delete                                  
 
 # Extractors
 GET           /system/inputs/:node_id/:input_id/extractors                                       @controllers.ExtractorsController.manage(node_id: String, input_id: String)
+GET           /system/inputs/:input_id/extractors                                                @controllers.ExtractorsController.manageGlobal(input_id: String)
 GET           /system/inputs/:node_id/:input_id/extractors/new                                   @controllers.ExtractorsController.newExtractor(node_id: String, input_id: String, extractor_type ?= "", field ?= "", example_index ?= "", example_id ?= "")
 POST          /system/inputs/:node_id/:input_id/extractors                                       @controllers.ExtractorsController.create(node_id: String, input_id: String)
 POST          /system/inputs/:node_id/:input_id/extractors/:extractor_id/delete                  @controllers.ExtractorsController.delete(node_id: String, input_id: String, extractor_id: String)
@@ -137,7 +137,6 @@ POST          /system/inputs/:node_id/:input_id/extractors/import               
 GET           /system/users                                                                      @controllers.UsersController.index()
 POST          /system/users                                                                      @controllers.UsersController.create()
 POST          /system/users/delete/:username                                                     @controllers.UsersController.delete(username: String)
-GET           /system/users/show/:username                                                       @controllers.UsersController.show(username: String)
 POST          /system/users/save/:username                                                       @controllers.UsersController.saveChanges(username: String)
 GET           /system/users/new                                                                  @controllers.UsersController.newUserForm()
 GET           /system/users/edit/:username                                                       @controllers.UsersController.editUserForm(username: String)
@@ -169,7 +168,6 @@ GET           /dashboards                                                       
 GET           /dashboards/new                                                                    @controllers.DashboardsController.newDashboard()
 GET           /dashboards/:id                                                                    @controllers.DashboardsController.show(id: String)
 POST          /dashboards/create                                                                 @controllers.DashboardsController.create()
-POST          /dashboards/:id/update                                                             @controllers.DashboardsController.update(id: String)
 POST          /dashboards/:id/delete                                                             @controllers.DashboardsController.delete(id: String)
 
 # API: Search (i.e. facets)
@@ -210,9 +208,12 @@ DELETE      /a/system/user/:username                                            
 PUT         /a/system/user/:username/preferences                                     @controllers.api.UsersApiController.saveUserPreferences(username: String)
 
 # API: Inputs
+GET           /a/system/inputs                                                                   @controllers.api.InputsApiController.list()
+GET           /a/system/inputs/global/:input_id/recent_message                                   @controllers.api.InputsApiController.globalRecentMessage(input_id: String, filtered: Boolean ?= false)
+GET           /a/system/inputs/global/:input_id/recent_message/filtered                          @controllers.api.InputsApiController.globalRecentMessage(input_id: String, filtered: Boolean ?= true)
+GET           /a/system/inputs/global/:input_id/io                                               @controllers.api.InputsApiController.globaIO(input_id: String)
 GET           /a/system/inputs/:node_id/:input_id/recent_message                                 @controllers.api.InputsApiController.recentMessage(node_id: String, input_id: String, filtered: Boolean ?= false)
 GET           /a/system/inputs/:node_id/:input_id/recent_message/filtered                        @controllers.api.InputsApiController.recentMessage(node_id: String, input_id: String, filtered: Boolean ?= true)
-GET           /a/system/inputs/global/:input_id/io                                               @controllers.api.InputsApiController.globaIO(input_id: String)
 GET           /a/system/inputs/:node_id/:input_id/io                                             @controllers.api.InputsApiController.io(node_id: String, input_id: String)
 GET           /a/system/inputs/:node_id/:input_id/connections                                    @controllers.api.InputsApiController.connections(node_id: String, input_id: String)
 
@@ -232,8 +233,10 @@ GET           /a/connection/available                                           
 
 # API: Dashboards
 GET         /a/dashboards                                                            @controllers.api.DashboardsApiController.index()
+POST        /a/dashboards                                                            @controllers.api.DashboardsApiController.create()
 GET         /a/dashboards/writable                                                   @controllers.api.DashboardsApiController.listWritable()
 POST        /a/dashboards/:id/positions                                              @controllers.api.DashboardsApiController.setWidgetPositions(id: String)
+PUT         /a/dashboards/:dashboard_id                                              @controllers.api.DashboardsApiController.update(dashboard_id: String)
 GET         /a/dashboards/:dashboard_id/widgets/:widget_id                           @controllers.api.DashboardsApiController.widget(dashboard_id: String, widget_id: String)
 PUT         /a/dashboards/:dashboard_id/widgets/:widget_id                           @controllers.api.DashboardsApiController.updateWidget(dashboard_id: String, widget_id: String)
 GET         /a/dashboards/:dashboard_id/widgets/:widget_id/value                     @controllers.api.DashboardsApiController.widgetValue(dashboard_id: String, widget_id: String, resolution: Integer ?= -1)
@@ -244,8 +247,22 @@ POST        /a/dashboards/:dashboard_id/widgets/:widget_id/description          
 POST        /a/dashboards/:dashboard_id/widgets/:widget_id/cachetime                 @controllers.api.DashboardsApiController.updateWidgetCacheTime(dashboard_id: String, widget_id: String)
 
 # API: Streams
+GET         /a/streams                                                               @controllers.api.StreamsApiController.list()
+POST        /a/streams                                                               @controllers.api.StreamsApiController.create()
+GET         /a/streams/:stream_id                                                    @controllers.api.StreamsApiController.get(stream_id: String)
+PUT         /a/streams/:stream_id                                                    @controllers.api.StreamsApiController.update(stream_id: String)
+DELETE      /a/streams/:stream_id                                                    @controllers.api.StreamsApiController.delete(stream_id: String)
 POST        /a/streams/:stream_id/testMatch                                          @controllers.api.StreamsApiController.testMatch(stream_id: String)
-GET         /a/streams                                                               @controllers.api.StreamsApiController.listStreams()
+POST        /a/streams/:stream_id/pause                                              @controllers.api.StreamsApiController.pause(stream_id: String)
+POST        /a/streams/:stream_id/resume                                             @controllers.api.StreamsApiController.resume(stream_id: String)
+POST        /a/streams/:stream_id/cloneStream                                        @controllers.api.StreamsApiController.cloneStream(stream_id: String)
+
+# API: Stream Rules
+GET         /a/streams/:stream_id/rules                                              @controllers.api.StreamRulesApiController.list(stream_id: String)
+POST        /a/streams/:stream_id/rules                                              @controllers.api.StreamRulesApiController.create(stream_id: String)
+GET         /a/streams/rules/types                                                   @controllers.api.StreamRulesApiController.types()
+PUT         /a/streams/:stream_id/rules/:streamrule_id                               @controllers.api.StreamRulesApiController.update(stream_id: String, streamrule_id: String)
+DELETE      /a/streams/:stream_id/rules/:streamrule_id                               @controllers.api.StreamRulesApiController.delete(stream_id: String, streamrule_id: String)
 
 # API: Alerts
 GET           /a/streams/alerts/allowed                                                          @controllers.api.AlertsApiController.allAllowedSince(since:Integer ?= 0)
