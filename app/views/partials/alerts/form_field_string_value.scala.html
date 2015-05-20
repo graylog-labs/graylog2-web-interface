@@ -2,11 +2,6 @@
 
 <form action="@conditionDecorator.getFormAction(stream.getId)" method="POST" class="alert-type-form alert-type-form-field-string-value" id="@conditionDecorator.getFormId">
     <div class="well well-small">
-        <h2 style="margin-bottom: 10px;">
-            <i class="fa fa-bell-alt"></i>
-            @conditionDecorator.getFormTitle
-        </h2>
-
         Trigger alert when a message arrives that has the field
         <input name="field" type="text" class="input-large typeahead-fields" autocomplete="off" required />
 
