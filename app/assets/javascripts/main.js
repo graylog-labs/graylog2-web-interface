@@ -221,22 +221,25 @@ $(document).ready(function() {
         });
     });
 
-    // Typeahead for message fields.
-    $.ajax({
-        url: appPrefixed('/a/system/fields'),
-        success: function(data) {
-            $('.typeahead-fields').typeahead({
-                    hint: true,
-                    highlight: true,
-                    minLength: 1
-                },
-                {
-                    name: 'fields',
-                    displayKey: 'value',
-                    source: substringMatcher(data.fields, 'value', 6)
-                });
-        }
-    });
+    var $typeaheadFields = $('.typeahead-fields');
+    if ($typeaheadFields.length > 0) {
+        // Typeahead for message fields.
+        $.ajax({
+            url: appPrefixed('/a/system/fields'),
+            success: function (data) {
+                $typeaheadFields.typeahead({
+                        hint: true,
+                        highlight: true,
+                        minLength: 1
+                    },
+                    {
+                        name: 'fields',
+                        displayKey: 'value',
+                        source: substringMatcher(data.fields, 'value', 6)
+                    });
+            }
+        });
+    }
 
     // Update progress for systemjobs that provide it.
     if ($(".systemjob-progress").size() > 0) {
@@ -736,13 +739,6 @@ $(document).ready(function() {
             pushState: true,
             search: false
         }
-    });
-
-    // Show sort order icons on message table hover.
-    $(".messages td, .messages th").on("mouseover", function() {
-        $(".choose-sort-order", $(this).closest("table").find("th").eq($(this).index())).show();
-    }).on("mouseout", function() {
-        $(".choose-sort-order").hide();
     });
 
     // Make a word plural/singular based on input field value.

@@ -23,6 +23,8 @@ var SearchResult = React.createClass({
         var initialFields = SearchStore.fields;
         return {
             selectedFields: initialFields,
+            sortField: SearchStore.sortField,
+            sortOrder: SearchStore.sortOrder,
             showAllFields: false,
             currentSidebarWidth: null,
             shouldHighlight: true,
@@ -154,7 +156,7 @@ var SearchResult = React.createClass({
         return (
             <div id='main-content-search' className='row'>
                 <div ref="opa" className="col-md-3" id="sidebar">
-                    <div data-spy="affix" data-offset-top="90" style={style} className="hidden-sm hidden-xs">
+                    <div data-spy="affix" data-offset-top="90" style={style} className="hidden-sm hidden-xs" id="sidebar-affix">
                         <SearchSidebar result={this.props.result}
                                        builtQuery={this.props.builtQuery}
                                        selectedFields={this.state.selectedFields}
@@ -195,6 +197,8 @@ var SearchResult = React.createClass({
                     <ResultTable messages={this.props.result.messages}
                                  page={this.state.currentPage}
                                  selectedFields={this.state.selectedFields}
+                                 sortField={this.state.sortField}
+                                 sortOrder={this.state.sortOrder}
                                  resultCount={this.props.result['total_result_count']}
                                  inputs={this.props.inputs}
                                  streams={this.props.streams}
