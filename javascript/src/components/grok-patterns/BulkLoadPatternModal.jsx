@@ -15,7 +15,7 @@ var BulkLoadPatternModal = React.createClass({
             <div>
                 <div className="form-group">
                     <label htmlFor="pattern-file">Pattern file</label>
-                    <input id="pattern-file" type="file" required/>
+                    <input id="pattern-file" name="patterns" type="file" required/>
                     <span className="help-block">A file containing Grok patterns, one per line. Name and patterns should be separated by whitespace.</span>
                 </div>
                 <div className="checkbox">
@@ -31,7 +31,6 @@ var BulkLoadPatternModal = React.createClass({
 
                 <BootstrapModal
                     ref="modal"
-                    onConfirm={this.uploadPatterns}
                     confirm="Upload"
                     onCancel={this._closeModal}
                     cancel="Cancel"
@@ -49,12 +48,7 @@ var BulkLoadPatternModal = React.createClass({
     },
     openModal() {
         this.refs.modal.open();
-    },
-    uploadPatterns(event) {
-        event.target.submit();
-        this._closeModal();
     }
-
 });
 
 module.exports = BulkLoadPatternModal;
