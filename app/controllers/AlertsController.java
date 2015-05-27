@@ -179,7 +179,7 @@ public class AlertsController extends AuthenticatedController {
     }
 
     @BodyParser.Of(BodyParser.FormUrlEncoded.class)
-    public Result addTypeFieldStringValue(String streamId) {
+    public Result addTypeFieldContentValue(String streamId) {
         Map<String,String> form = flattenFormUrlEncoded(request().body().asFormUrlEncoded());
 
         if(!checkParam("grace", form) || !checkParam("value", form)
@@ -193,7 +193,7 @@ public class AlertsController extends AuthenticatedController {
             Stream stream = streamService.get(streamId);
 
             CreateAlertConditionRequest request = new CreateAlertConditionRequest();
-            request.type = "field_string_value";
+            request.type = "field_content_value";
             request.parameters.put("grace", Integer.parseInt(form.get("grace")));
             request.parameters.put("field", form.get("field"));
             request.parameters.put("value", form.get("value"));
