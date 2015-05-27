@@ -34,4 +34,11 @@ public class FieldContentValueAlertConditionDecorator extends AlertConditionDeco
         }
     }
 
+    public String getField() {
+        return (String) getParameter("field", "");
+    }
+
+    public String getValue() {
+        return (String) getParameter("value", "");
+    }
 }
