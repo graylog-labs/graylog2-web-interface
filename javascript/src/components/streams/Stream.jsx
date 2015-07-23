@@ -6,6 +6,8 @@ var React = require('react');
 var StreamThroughput = require('./StreamThroughput');
 var StreamControls = require('./StreamControls');
 var StreamStateBadge = require('./StreamStateBadge');
+var StreamTags = require('./StreamTags');
+
 var CollapsibleStreamRuleList = require('../streamrules/CollapsibleStreamRuleList');
 var PermissionsMixin = require('../../util/PermissionsMixin');
 var StreamsStore = require('../../stores/streams/StreamsStore');
@@ -74,6 +76,7 @@ var Stream = React.createClass({
                     <a href={jsRoutes.controllers.StreamSearchController.index(stream.id, "*", "relative", 300).url}>{stream.title}</a>
 
                     <StreamStateBadge stream={stream} onClick={this.props.onResume}/>
+                    <StreamTags stream={stream}/>
                 </h2>
                 <div className="stream-data">
                     <div className="stream-actions pull-right">
