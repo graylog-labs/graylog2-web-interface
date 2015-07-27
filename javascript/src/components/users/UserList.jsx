@@ -4,6 +4,7 @@ var React = require('react');
 
 var UsersStore = require('../../stores/users/UsersStore');
 var DataTable = require('../common/DataTable');
+var TypeAheadInput = require('../common/TypeAheadInput');
 
 var PermissionsMixin = require('../../util/PermissionsMixin');
 
@@ -79,6 +80,7 @@ var UserList = React.createClass({
         } else {
             roleBadge = <span className="label label-default">Reader</span>;
         }
+        var userRoles = user.roles.map((role) => <span key={role} className="label label-default">{role}</span>);
 
         var actions = null;
         if (!user.read_only) {
@@ -111,17 +113,26 @@ var UserList = React.createClass({
                 <td className="limited">{user.full_name}</td>
                 <td className="limited">{user.username}</td>
                 <td className="limited">{user.email}</td>
-                <td>{roleBadge}</td>
+                <td>{roleBadge} {userRoles}</td>
                 <td>{actions}</td>
             </tr>
         );
     },
-    render() {
-        var filterKeys = ["username", "full_name", "email"];
-        var headers = ["", "Name", "Username", "Email Address", "Role", "Actions"];
 
+    _onSuggestionSelected(event, suggestion) {
+        console.log("Selected this very fine suggestion: ", event, suggestion);
+    },
+
+    render() {
+        var filterKeys = ["username", "full_name", "email", "roles"];
+        var headers = ["", "Name", "Username", "Email Address", "Role", "Actions"];
+        var suggestions = ["good selection", "OMG lolol selection", "verduras", "click aqui"];
         return (
             <div>
+                <TypeAheadInput displayKey="value"
+                                suggestions={suggestions}
+                                onSuggestionSelected={this._onSuggestionSelected} />
+
                 <DataTable id="user-list"
                            className="table-hover"
                            headers={headers}
