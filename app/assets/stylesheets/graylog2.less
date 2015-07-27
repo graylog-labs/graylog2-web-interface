@@ -2540,10 +2540,33 @@ ul.tag-list {
 
 ul.tag-list li {
   display: inline;
-  margin-right: 5px;
 }
 
 .tag {
   color: #333;
   background-color: #E3E5E5;
+  font-size: 14px;
+  margin-right: 5px;
+}
+
+.tag-standalone {
+  float: left;
+  margin-bottom: 10px;
+}
+
+.tag-remove {
+  color: #333;
+  cursor: pointer;
+  margin-left: 5px;
+  vertical-align: middle;
+}
+
+.tag-remove:before {
+  content: "×";
+}
+
+input.form-control.tag-input-error {
+  border-color: #a94442;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+  color: #a94442;
 }

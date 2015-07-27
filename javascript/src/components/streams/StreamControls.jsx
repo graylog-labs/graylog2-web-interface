@@ -33,6 +33,10 @@ var StreamControls = React.createClass({
         event.preventDefault();
         this.props.onQuickAdd(this.props.stream.id);
     },
+    _onManageTags(event) {
+        event.preventDefault();
+        this.props.onManageTags(this.props.stream.id);
+    },
     render() {
         var permissions = this.props.permissions;
         var stream = this.props.stream;
@@ -41,6 +45,7 @@ var StreamControls = React.createClass({
 
         if (this.isPermitted(permissions, ['streams:edit:' + stream.id])) {
             menuItems.push(<MenuItem key={"editStreams-" + stream.id} onClick={this._onEdit}>Edit stream</MenuItem>);
+            menuItems.push(<MenuItem key={"manageTags-" + stream.id} onClick={this._onManageTags}>Manage tags</MenuItem>);
             menuItems.push(<MenuItem key={"quickAddRule-" + stream.id} onClick={this._onQuickAdd}>Quick add rule</MenuItem>);
         }
 

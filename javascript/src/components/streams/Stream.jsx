@@ -3,6 +3,7 @@
 'use strict';
 
 var React = require('react');
+var Immutable = require('immutable');
 var StreamThroughput = require('./StreamThroughput');
 var StreamControls = require('./StreamControls');
 var StreamStateBadge = require('./StreamStateBadge');
@@ -14,9 +15,15 @@ var StreamsStore = require('../../stores/streams/StreamsStore');
 var StreamRulesStore = require('../../stores/streams/StreamRulesStore');
 var StreamRuleForm = require('../streamrules/StreamRuleForm');
 var UserNotification = require('../../util/UserNotification');
+var ManageTagsForm = require('../tags/ManageTagsForm');
 
 var Stream = React.createClass({
     mixins: [PermissionsMixin],
+    getInitialState() {
+        return {
+            tags: Immutable.OrderedSet(["foo", "bar", "baz"])
+        };
+    },
     _formatNumberOfStreamRules(stream) {
         return (stream.stream_rules.length > 0 ? stream.stream_rules.length + " configured stream rule(s)." : "no configured rules.");
     },
@@ -44,6 +51,12 @@ var Stream = React.createClass({
     },
     _onSaveStreamRule(streamRuleId, streamRule) {
         StreamRulesStore.create(this.props.stream.id, streamRule, () => UserNotification.success("Stream rule was created successfully.", "Success"));
+    },
+    _onManageTags() {
+        this.refs.manageTagsForm.open();
+    },
+    _updateTags(updatedTags) {
+        this.setState({tags: updatedTags});
     },
     render() {
         var stream = this.props.stream;
@@ -76,7 +89,7 @@ var Stream = React.createClass({
                     <a href={jsRoutes.controllers.StreamSearchController.index(stream.id, "*", "relative", 300).url}>{stream.title}</a>
 
                     <StreamStateBadge stream={stream} onClick={this.props.onResume}/>
-                    <StreamTags stream={stream}/>
+                    <StreamTags tags={this.state.tags}/>
                 </h2>
                 <div className="stream-data">
                     <div className="stream-actions pull-right">
@@ -87,7 +100,7 @@ var Stream = React.createClass({
 
                         <StreamControls stream={stream} permissions={this.props.permissions} user={this.props.user}
                                         onDelete={this._onDelete} onUpdate={this._onUpdate} onClone={this._onClone}
-                                        onQuickAdd={this._onQuickAdd}/>
+                                        onQuickAdd={this._onQuickAdd} onManageTags={this._onManageTags}/>
                     </div>
                     <div className="stream-description">
                         {createdFromContentPack}
@@ -104,6 +117,7 @@ var Stream = React.createClass({
                     </div>
                 </div>
                 <StreamRuleForm ref="quickAddStreamRuleForm" title="New Stream Rule" onSubmit={this._onSaveStreamRule} streamRuleTypes={this.props.streamRuleTypes}/>
+                <ManageTagsForm ref="manageTagsForm" title={stream.title} entity="stream" tags={this.state.tags} onSaveTags={this._updateTags}/>
             </li>
         );
     }
