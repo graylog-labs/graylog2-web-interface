@@ -1,6 +1,8 @@
 'use strict';
 
 var React = require('react');
+var Immutable = require('immutable');
+
 var StreamsStore = require('../../stores/streams/StreamsStore');
 var StreamList = require('./StreamList');
 var CreateStreamButton = require('./CreateStreamButton');
@@ -11,6 +13,7 @@ var UsersStore = require('../../stores/users/UsersStore');
 var Col = require('react-bootstrap').Col;
 var UserNotification = require('../../util/UserNotification');
 var Spinner = require('../common/Spinner');
+var TypeAheadDataFilter = require('../common/TypeAheadDataFilter');
 
 var DocsHelper = require('../../util/DocsHelper');
 var DocumentationLink = require('../support/DocumentationLink');
@@ -18,7 +21,9 @@ var DocumentationLink = require('../support/DocumentationLink');
 var StreamComponent = React.createClass({
     mixins: [PermissionsMixin],
     getInitialState() {
-        return {};
+        return {
+            tags: Immutable.OrderedSet(["foo", "bar", "baz", "one", "two", "three", "four"])
+        };
     },
     componentDidMount() {
         this.loadData();
@@ -77,6 +82,15 @@ var StreamComponent = React.createClass({
                 <div>
                     {pageHeader}
 
+                    <div className="row content">
+                        <Col md={12}>
+                            <TypeAheadDataFilter id="stream-filter"
+                                                 displayKey="value"
+                                                 label="Filter streams"
+                                                 suggestions={this.state.tags.toJS()}
+                                                 filterBy="tag"/>
+                        </Col>
+                    </div>
                     <div className="row content">
                         <Col md={12}>
                             <StreamList streams={this.state.streams} streamRuleTypes={this.state.streamRuleTypes}
