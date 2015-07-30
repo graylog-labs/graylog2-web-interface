@@ -59,8 +59,10 @@ var TypeAheadInput = React.createClass({
         return (
             <form className="form-inline" onSubmit={this._onFieldChanged} style={{display: 'inline'}}>
                 <Input type="text" ref="fieldInput"
-                       wrapperClassName="typeahead-wrapper" {...this.props}/>
+                       wrapperClassName="typeahead-wrapper"
+                       label={this.props.label}/>
                 <ButtonInput type="submit" value="Filter" style={{marginLeft: 5}}/>
+                {this.props.children}
             </form>
         );
     }

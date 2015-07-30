@@ -19,11 +19,6 @@ var ManageTagsForm = require('../tags/ManageTagsForm');
 
 var Stream = React.createClass({
     mixins: [PermissionsMixin],
-    getInitialState() {
-        return {
-            tags: Immutable.OrderedSet(["foo", "bar", "baz"])
-        };
-    },
     _formatNumberOfStreamRules(stream) {
         return (stream.stream_rules.length > 0 ? stream.stream_rules.length + " configured stream rule(s)." : "no configured rules.");
     },
@@ -89,7 +84,7 @@ var Stream = React.createClass({
                     <a href={jsRoutes.controllers.StreamSearchController.index(stream.id, "*", "relative", 300).url}>{stream.title}</a>
 
                     <StreamStateBadge stream={stream} onClick={this.props.onResume}/>
-                    <StreamTags tags={this.state.tags}/>
+                    <StreamTags tags={stream.tags}/>
                 </h2>
                 <div className="stream-data">
                     <div className="stream-actions pull-right">
@@ -117,7 +112,7 @@ var Stream = React.createClass({
                     </div>
                 </div>
                 <StreamRuleForm ref="quickAddStreamRuleForm" title="New Stream Rule" onSubmit={this._onSaveStreamRule} streamRuleTypes={this.props.streamRuleTypes}/>
-                <ManageTagsForm ref="manageTagsForm" title={stream.title} entity="stream" tags={this.state.tags} onSaveTags={this._updateTags}/>
+                <ManageTagsForm ref="manageTagsForm" title={stream.title} entity="stream" tags={stream.tags} onSaveTags={this._updateTags}/>
             </li>
         );
     }

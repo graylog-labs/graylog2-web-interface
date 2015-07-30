@@ -22,7 +22,8 @@ var StreamComponent = React.createClass({
     mixins: [PermissionsMixin],
     getInitialState() {
         return {
-            tags: Immutable.OrderedSet(["foo", "bar", "baz", "one", "two", "three", "four"])
+            tags: Immutable.OrderedSet(["foo", "bar", "baz", "one", "two", "three", "four"]),
+            filteredStreams: []
         };
     },
     componentDidMount() {
@@ -38,13 +39,21 @@ var StreamComponent = React.createClass({
     },
     loadData() {
         StreamsStore.load((streams) => {
-            this.setState({streams: streams});
+            streams = streams.map((stream) => {
+                var endIndex = Math.floor(Math.random() * (this.state.tags.count() - 1)) + 1;
+                stream.tags = this.state.tags.slice(0, endIndex).toJS();
+                return stream
+            });
+            this.setState({streams: streams, filteredStreams: streams});
         });
     },
     _onSave(streamId, stream) {
         StreamsStore.save(stream, () => {
             UserNotification.success("Stream has been successfully created.", "Success");
         });
+    },
+    _filterStreams(filteredStreams) {
+        this.setState({filteredStreams: filteredStreams});
     },
     render() {
         var createStreamButton = (this.isPermitted(this.props.permissions, ["streams:create"]) ?
@@ -87,13 +96,16 @@ var StreamComponent = React.createClass({
                             <TypeAheadDataFilter id="stream-filter"
                                                  displayKey="value"
                                                  label="Filter streams"
-                                                 suggestions={this.state.tags.toJS()}
-                                                 filterBy="tag"/>
+                                                 filterBy="tag"
+                                                 filterSuggestions={this.state.tags.toJS()}
+                                                 data={this.state.streams}
+                                                 searchInKeys={['name', 'description']}
+                                                 onDataFiltered={this._filterStreams}/>
                         </Col>
                     </div>
                     <div className="row content">
                         <Col md={12}>
-                            <StreamList streams={this.state.streams} streamRuleTypes={this.state.streamRuleTypes}
+                            <StreamList streams={this.state.filteredStreams} streamRuleTypes={this.state.streamRuleTypes}
                                         permissions={this.props.permissions} user={this.state.user}
                                         onStreamCreated={this._onSave}/>
                         </Col>

@@ -40,7 +40,7 @@ var ManageTagsForm = React.createClass({
             <div className="configuration">
                 <p>Assign new or existing tags by typing in the text input.</p>
                 <fieldset ref="inputFieldset">
-                    <TagsInput value={this.state.tags.toJS()}
+                    <TagsInput value={this.state.tags}
                                classNames={tagInputStyle}
                                onTagAdd={this._onTagAdd}
                                onTagRemove={this._onTagRemove}/>
