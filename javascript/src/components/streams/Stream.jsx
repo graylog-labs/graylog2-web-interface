@@ -50,7 +50,7 @@ var Stream = React.createClass({
         this.refs.manageTagsForm.open();
     },
     _updateTags(updatedTags) {
-        this.setState({tags: updatedTags});
+        console.log("tags got updated:", updatedTags);
     },
     render() {
         var stream = this.props.stream;

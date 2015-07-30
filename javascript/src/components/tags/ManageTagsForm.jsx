@@ -1,14 +1,14 @@
 'use strict';
 
 var React = require('react');
-
+var Immutable = require('immutable');
 var TagsInput = require('react-tagsinput');
 var BootstrapModal = require('../bootstrap/BootstrapModal');
 
 var ManageTagsForm = React.createClass({
     getInitialState() {
         return {
-            tags: this.props.tags
+            tags: Immutable.OrderedSet(this.props.tags)
         };
     },
     open() {
@@ -24,7 +24,7 @@ var ManageTagsForm = React.createClass({
         this.setState({tags: this.state.tags.delete(removedTag)});
     },
     _saveTags() {
-        this.props.onSaveTags(this.state.tags);
+        this.props.onSaveTags(this.state.tags.toJS());
         this.hide();
     },
     render() {
@@ -40,7 +40,7 @@ var ManageTagsForm = React.createClass({
             <div className="configuration">
                 <p>Assign new or existing tags by typing in the text input.</p>
                 <fieldset ref="inputFieldset">
-                    <TagsInput value={this.state.tags}
+                    <TagsInput value={this.state.tags.toJS()}
                                classNames={tagInputStyle}
                                onTagAdd={this._onTagAdd}
                                onTagRemove={this._onTagRemove}/>
