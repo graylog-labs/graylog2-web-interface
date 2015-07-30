@@ -3,7 +3,6 @@
 'use strict';
 
 var React = require('react');
-var Immutable = require('immutable');
 var StreamThroughput = require('./StreamThroughput');
 var StreamControls = require('./StreamControls');
 var StreamStateBadge = require('./StreamStateBadge');
