@@ -22,6 +22,8 @@ var StreamComponent = React.createClass({
     mixins: [PermissionsMixin],
     getInitialState() {
         return {
+            streamsLoaded: false,
+            streamRuleTypesLoaded: false,
             tags: Immutable.OrderedSet(["foo", "bar", "baz", "one", "two", "three", "four"]),
             filteredStreams: []
         };
@@ -29,7 +31,7 @@ var StreamComponent = React.createClass({
     componentDidMount() {
         this.loadData();
         StreamRulesStore.types((types) => {
-            this.setState({streamRuleTypes: types});
+            this.setState({streamRuleTypes: types, streamRuleTypesLoaded: true});
         });
         UsersStore.load(this.props.username).done((user) => {
             this.setState({user: user});
@@ -44,7 +46,7 @@ var StreamComponent = React.createClass({
                 stream.tags = this.state.tags.slice(0, endIndex).toJS();
                 return stream
             });
-            this.setState({streams: streams, filteredStreams: streams});
+            this.setState({streams: streams, filteredStreams: streams, streamsLoaded: true});
         });
     },
     _onSave(streamId, stream) {
@@ -86,7 +88,19 @@ var StreamComponent = React.createClass({
             </div>
         );
 
-        if (this.state.streams && this.state.streamRuleTypes) {
+        if (this.state.streamsLoaded && this.state.streamRuleTypesLoaded) {
+            var streamList;
+
+            if (this.state.streams.length > 0 && this.state.filteredStreams.length === 0) {
+                streamList = <div>No streams matched your filter criteria.</div>;
+            } else {
+                streamList = (
+                    <StreamList streams={this.state.filteredStreams} streamRuleTypes={this.state.streamRuleTypes}
+                                permissions={this.props.permissions} user={this.state.user}
+                                onStreamCreated={this._onSave} />
+                );
+            }
+
             return (
                 <div>
                     {pageHeader}
@@ -105,9 +119,7 @@ var StreamComponent = React.createClass({
                     </div>
                     <div className="row content">
                         <Col md={12}>
-                            <StreamList streams={this.state.filteredStreams} streamRuleTypes={this.state.streamRuleTypes}
-                                        permissions={this.props.permissions} user={this.state.user}
-                                        onStreamCreated={this._onSave}/>
+                            {streamList}
                         </Col>
                     </div>
                 </div>
