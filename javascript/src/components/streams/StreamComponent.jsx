@@ -113,7 +113,7 @@ var StreamComponent = React.createClass({
                                                  filterBy="tag"
                                                  filterSuggestions={this.state.tags.toJS()}
                                                  data={this.state.streams}
-                                                 searchInKeys={['name', 'description']}
+                                                 searchInKeys={['title', 'description']}
                                                  onDataFiltered={this._filterStreams}/>
                         </Col>
                     </div>
