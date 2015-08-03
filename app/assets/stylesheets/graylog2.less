@@ -2035,11 +2035,19 @@ ul.streams li.stream:not(:last-child) {
   border-bottom: 1px solid #6dcff6;
 }
 
-ul.streams li.stream .stream-data .stream-actions {
-  position: relative;
-  float: right;
-  right: 0px;
-  bottom: 20px;
+@media(max-width: @screen-md-min) {
+  ul.streams li.stream .stream-data .stream-actions {
+    margin-top: 5px;
+  }
+}
+
+@media(min-width: @screen-md-min) {
+  ul.streams li.stream .stream-data .stream-actions {
+    position: relative;
+    float: right;
+    right: 0px;
+    bottom: 20px;
+  }
 }
 
 ul.streams li.stream .stream-data .stream-actions form.action-form {

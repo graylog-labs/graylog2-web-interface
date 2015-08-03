@@ -11,10 +11,10 @@ var StreamTags = React.createClass({
         });
 
         if (this.props.tags === 0) {
-            return <div></div>;
+            return <div className="stream-tags"></div>;
         } else {
             return (
-                <ul className="tag-list" style={{fontSize: 16}}>
+                <ul className="stream-tags tag-list" style={{fontSize: 16}}>
                     {formattedTags}
                 </ul>
             );

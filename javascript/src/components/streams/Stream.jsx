@@ -85,7 +85,7 @@ var Stream = React.createClass({
                     <StreamStateBadge stream={stream} onClick={this.props.onResume}/>
                 </h2>
                 <div className="stream-data">
-                    <div className="stream-actions pull-right">
+                    <div className="stream-actions">
                         {editRulesLink}{' '}
                         {manageOutputsLink}{' '}
                         {manageAlertsLink}{' '}
