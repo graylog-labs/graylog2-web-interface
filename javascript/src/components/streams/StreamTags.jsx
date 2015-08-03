@@ -9,11 +9,16 @@ var StreamTags = React.createClass({
         var formattedTags = this.props.tags.map((tag) => {
             return <li key={"li-" + tag}><Tag name={tag}/></li>
         });
-        return (
-            <ul className="tag-list" style={{fontSize: 16, lineHeight: '23px'}}>
-                {formattedTags}
-            </ul>
-        );
+
+        if (this.props.tags === 0) {
+            return <div></div>;
+        } else {
+            return (
+                <ul className="tag-list" style={{fontSize: 16}}>
+                    {formattedTags}
+                </ul>
+            );
+        }
     }
 });
 

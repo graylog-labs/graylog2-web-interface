@@ -2035,10 +2035,6 @@ ul.streams li.stream:not(:last-child) {
   border-bottom: 1px solid #6dcff6;
 }
 
-ul.streams li.stream .stream-data {
-  margin-top: 8px;
-}
-
 ul.streams li.stream .stream-data .stream-actions {
   position: relative;
   float: right;
@@ -2059,7 +2055,12 @@ ul.streams li.stream .stream-data .stream-actions .btn-delete.last {
   margin-right: 0;
 }
 
+ul.streams li.stream .stream-tags {
+  margin-top: 5px;
+}
+
 ul.streams li.stream .stream-description {
+  margin-top: 5px;
   margin-bottom: 3px;
 }
 
@@ -2532,19 +2533,14 @@ i.error-icon {
 ul.tag-list,
 ul.pill-list {
   display: inline-block;
-  margin-left: 10px;
   list-style: none;
   padding: 0;
   position: relative;
+}
+
+ul.pill-list {
+  margin-left: 10px;
   vertical-align: middle;
-}
-
-ul.tag-list {
-  vertical-align: bottom;
-}
-
-.tags-input ul.tag-list {
-  margin-left: 0;
 }
 
 ul.tag-list > li,

@@ -83,7 +83,6 @@ var Stream = React.createClass({
                     <a href={jsRoutes.controllers.StreamSearchController.index(stream.id, "*", "relative", 300).url}>{stream.title}</a>
 
                     <StreamStateBadge stream={stream} onClick={this.props.onResume}/>
-                    <StreamTags tags={stream.tags}/>
                 </h2>
                 <div className="stream-data">
                     <div className="stream-actions pull-right">
@@ -96,6 +95,7 @@ var Stream = React.createClass({
                                         onDelete={this._onDelete} onUpdate={this._onUpdate} onClone={this._onClone}
                                         onQuickAdd={this._onQuickAdd} onManageTags={this._onManageTags}/>
                     </div>
+                    <StreamTags tags={stream.tags}/>
                     <div className="stream-description">
                         {createdFromContentPack}
 
