@@ -57,7 +57,8 @@ var TypeAheadInput = React.createClass({
     render() {
         return <Input type="text" ref="fieldInput"
                       wrapperClassName="typeahead-wrapper"
-                      label={this.props.label}/>;
+                      label={this.props.label}
+                      onKeyPress={this.props.onKeyPress}/>;
     }
 });
 

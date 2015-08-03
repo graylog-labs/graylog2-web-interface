@@ -2,7 +2,7 @@
 
 var React = require('react');
 var Immutable = require('immutable');
-var TagsInput = require('react-tagsinput');
+var TagsInput = require('./TagsInput');
 var BootstrapModal = require('../bootstrap/BootstrapModal');
 
 var ManageTagsForm = React.createClass({
@@ -28,20 +28,13 @@ var ManageTagsForm = React.createClass({
         this.hide();
     },
     render() {
-        var tagInputStyle = {
-            div: "form-group",
-            input: "form-control",
-            tag: "tag tag-standalone label label-default",
-            invalid: "tag-input-error",
-            remove: "tag-remove"
-        };
         var configModalHeader = <h2 className="modal-title">Manage <em>{this.props.title}</em> tags</h2>;
         var configModalBody = (
             <div className="configuration">
                 <p>Assign new or existing tags by typing in the text input.</p>
                 <fieldset ref="inputFieldset">
                     <TagsInput value={this.state.tags.toJS()}
-                               classNames={tagInputStyle}
+                               tags={this.props.availableTags.toJS()}
                                onTagAdd={this._onTagAdd}
                                onTagRemove={this._onTagRemove}/>
                 </fieldset>

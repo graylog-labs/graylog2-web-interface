@@ -97,7 +97,7 @@ var StreamComponent = React.createClass({
                 streamList = (
                     <StreamList streams={this.state.filteredStreams} streamRuleTypes={this.state.streamRuleTypes}
                                 permissions={this.props.permissions} user={this.state.user}
-                                onStreamCreated={this._onSave} />
+                                onStreamCreated={this._onSave} tags={this.state.tags}/>
                 );
             }
 

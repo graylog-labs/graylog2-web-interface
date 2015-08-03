@@ -23,7 +23,6 @@
     "qs": "2.3.x",
     "react": "0.13.x",
     "react-bootstrap": "0.23.x",
-    "react-tagsinput": "^1.4.0",
     "react-zeroclipboard": "^1.1.0",
     "sockjs-client": "1.0.x"
   },

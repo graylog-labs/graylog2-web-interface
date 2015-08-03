@@ -111,7 +111,7 @@ var Stream = React.createClass({
                     </div>
                 </div>
                 <StreamRuleForm ref="quickAddStreamRuleForm" title="New Stream Rule" onSubmit={this._onSaveStreamRule} streamRuleTypes={this.props.streamRuleTypes}/>
-                <ManageTagsForm ref="manageTagsForm" title={stream.title} entity="stream" tags={stream.tags} onSaveTags={this._updateTags}/>
+                <ManageTagsForm ref="manageTagsForm" title={stream.title} entity="stream" availableTags={this.props.tags} tags={stream.tags} onSaveTags={this._updateTags}/>
             </li>
         );
     }
