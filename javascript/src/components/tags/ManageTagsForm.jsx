@@ -36,7 +36,8 @@ var ManageTagsForm = React.createClass({
                     <TagsInput value={this.state.tags.toJS()}
                                tags={this.props.availableTags.toJS()}
                                onTagAdd={this._onTagAdd}
-                               onTagRemove={this._onTagRemove}/>
+                               onTagRemove={this._onTagRemove}
+                               entity={this.props.entity}/>
                 </fieldset>
             </div>
         );
