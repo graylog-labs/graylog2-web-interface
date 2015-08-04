@@ -24,7 +24,15 @@ var StreamComponent = React.createClass({
         return {
             streamsLoaded: false,
             streamRuleTypesLoaded: false,
-            tags: Immutable.OrderedSet(["foo", "bar", "baz", "one", "two", "three", "four"]),
+            tags: Immutable.OrderedSet([
+                { title: 'foo', style: 'success' },
+                { title: 'bar', style: '' },
+                { title: 'baz', style: '' },
+                { title: 'one', style: 'danger' },
+                { title: 'two', style: 'warning' },
+                { title: 'three', style: 'info' },
+                { title: 'four', style: 'primary' }
+            ]),
             filteredStreams: []
         };
     },
@@ -111,6 +119,7 @@ var StreamComponent = React.createClass({
                                                  displayKey="value"
                                                  label="Filter streams"
                                                  filterBy="tag"
+                                                 filterSuggestionAccessor="title"
                                                  filterSuggestions={this.state.tags.toJS()}
                                                  data={this.state.streams}
                                                  searchInKeys={['title', 'description']}

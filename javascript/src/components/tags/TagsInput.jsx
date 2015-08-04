@@ -1,9 +1,11 @@
 'use strict';
 
 var React = require('react');
+var Immutable = require('immutable');
 var DropdownButton = require('react-bootstrap').DropdownButton;
 var MenuItem = require('react-bootstrap').MenuItem;
 var Label = require('react-bootstrap').Label;
+
 var TypeAheadInput = require('../common/TypeAheadInput');
 
 var TagsInput = React.createClass({
@@ -31,30 +33,32 @@ var TagsInput = React.createClass({
         this.props.onTagAdd(this.refs.tagInput.getValue());
         this.refs.tagInput.clear();
     },
-    _changeColour(event) {
-        event.preventDefault();
-        console.log("New colour:", event.target.getAttribute('data-colour'));
+    _changeColour(tagTitle, style) {
+        return (event) => {
+            event.preventDefault();
+            this.props.onTagUpdate(tagTitle, style);
+        }
     },
-    _getColourList(tagName) {
+    _getColourList(tagTitle) {
         return this.BOOTSTRAP_STYLES.map((style) => {
             return (
-                <li key={style}><a href="#" onClick={this._changeColour} data-colour={style}><Label bsStyle={style}>{tagName}</Label></a></li>
+                <li key={style}><a href="#" onClick={this._changeColour(tagTitle, style)}><Label bsStyle={style}>{tagTitle}</Label></a></li>
             )
         });
     },
     render() {
-        var tags = this.props.value.map((tag) => {
+        var tags = Immutable.OrderedSet(this.props.value).sortBy((tag) => tag.title).map((tag) => {
             return (
-                <li key={`li-${tag}`}>
-                    <DropdownButton bsStyle="default" title={tag} style={{marginRight: 5}}>
+                <li key={`li-${tag.title}`}>
+                    <DropdownButton bsStyle={tag.style || 'default'} title={tag.title} style={{marginRight: 5}}>
                         <li className="dropdown-submenu">
                             <a href="#">Change tag colour</a>
                             <ul className="dropdown-menu">
-                                {this._getColourList(tag)}
+                                {this._getColourList(tag.title)}
                             </ul>
                         </li>
                         <MenuItem divider/>
-                        <MenuItem eventKey="2" target={tag} onSelect={this._onTagRemove}>Delete from {this.props.entity}</MenuItem>
+                        <MenuItem eventKey="2" target={tag.title} onSelect={this._onTagRemove}>Delete from {this.props.entity}</MenuItem>
                     </DropdownButton>
                 </li>
             );
@@ -66,7 +70,7 @@ var TagsInput = React.createClass({
                                 onFieldChange={this._onNewTagAdd}
                                 onSuggestionSelected={this._onTagAdd}
                                 suggestionText=""
-                                suggestions={this.props.tags}
+                                suggestions={this.props.tags.map((tag) => tag.title)}
                                 displayKey="value"
                                 onKeyPress={this._onKeyPress}/>
                 <ul className="tag-list">

@@ -7,7 +7,7 @@ var Tag = require('../tags/Tag');
 var StreamTags = React.createClass({
     render() {
         var formattedTags = this.props.tags.map((tag) => {
-            return <li key={"li-" + tag}><Tag name={tag}/></li>
+            return <li key={"li-" + tag.title}><Tag title={tag.title} style={tag.style}/></li>
         });
 
         if (this.props.tags === 0) {

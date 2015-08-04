@@ -17,11 +17,25 @@ var ManageTagsForm = React.createClass({
     hide() {
         this.refs.configModal.close();
     },
-    _onTagAdd(newTag) {
-        this.setState({tags: this.state.tags.add(newTag)});
+    _findTagByTitle(tagTitle) {
+        return this.state.tags.find((tag) => tagTitle.localeCompare(tag.title) === 0)
     },
-    _onTagRemove(removedTag) {
-        this.setState({tags: this.state.tags.delete(removedTag)});
+    _onTagAdd(newTagTitle) {
+        if (!this._findTagByTitle(newTagTitle)) {
+            this.setState({tags: this.state.tags.add({title: newTagTitle, style: ''})});
+        }
+    },
+    _onTagRemove(removedTagTitle) {
+        var removedTag = this._findTagByTitle(removedTagTitle);
+        if (removedTag) {
+            this.setState({tags: this.state.tags.delete(removedTag)});
+        }
+    },
+    _onTagUpdate(tagTitle, tagColour) {
+        var updatedTag = this._findTagByTitle(tagTitle);
+        if (updatedTag) {
+            this.setState({tags: this.state.tags.delete(updatedTag).add({title: tagTitle, style: tagColour})});
+        }
     },
     _saveTags() {
         this.props.onSaveTags(this.state.tags.toJS());
@@ -33,9 +47,10 @@ var ManageTagsForm = React.createClass({
             <div className="configuration">
                 <p>Assign new or existing tags by typing in the text input.</p>
                 <fieldset ref="inputFieldset">
-                    <TagsInput value={this.state.tags.toJS()}
-                               tags={this.props.availableTags.toJS()}
+                    <TagsInput value={this.state.tags}
+                               tags={this.props.availableTags}
                                onTagAdd={this._onTagAdd}
+                               onTagUpdate={this._onTagUpdate}
                                onTagRemove={this._onTagRemove}
                                entity={this.props.entity}/>
                 </fieldset>

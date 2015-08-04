@@ -5,7 +5,7 @@ var Label = require('react-bootstrap').Label;
 
 var Tag = React.createClass({
     render() {
-        return <Label className="tag" style={{fontSize: 12}}>{this.props.name}</Label>;
+        return <Label className="tag" bsStyle={this.props.style || 'default'} style={{fontSize: 12}}>{this.props.title}</Label>;
     }
 });
 
