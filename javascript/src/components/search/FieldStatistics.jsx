@@ -96,7 +96,8 @@ var FieldStatistics = React.createClass({
                         <td>{maybeSpinner}</td>
                         <td>{field}</td>
                         {FieldStatisticsStore.FUNCTIONS.keySeq().map((statFunction) => {
-                            return <td key={statFunction + "-td"}>{NumberUtils.formatNumber(stats[statFunction])}</td>;
+                            const formatNumber = NumberUtils.formatNumber(stats[statFunction]);
+                            return <td key={statFunction + "-td"} title={formatNumber === 'NaN' ? 'Not applicable to this field' : ''}>{formatNumber}</td>;
                         })}
                     </tr>
                 );
@@ -122,6 +123,14 @@ var FieldStatistics = React.createClass({
     render() {
         var content;
 
+        let foo = this.state.fieldStatistics.map((value, field) => {
+            const newValue = Immutable.Map(value).map((funcValue, funcName) => [funcName, NumberUtils.formatNumber(funcValue) === "NaN"]);
+            return Immutable.Map([[field, newValue]]);
+        });
+
+
+        const validFunctionsPerField = Immutable.Map();
+
         if (!this.state.fieldStatistics.isEmpty()) {
             content = (
                 <div className="content-col">
@@ -131,6 +140,7 @@ var FieldStatistics = React.createClass({
                                             configuration={{}}
                                             bsStyle='default'
                                             fields={this.state.fieldStatistics.keySeq()}
+                                            validFunctionsPerField={validFunctionsPerField}
                                             pullRight={true}
                                             permissions={this.props.permissions}>
 
