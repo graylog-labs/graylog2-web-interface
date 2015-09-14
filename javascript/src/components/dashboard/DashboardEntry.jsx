@@ -9,7 +9,7 @@ import PermissionsMixin from '../../util/PermissionsMixin';
 
 import DashboardStore from '../../stores/dashboard/DashboardStore';
 
-const Dashboard = React.createClass({
+const DashboardEntry = React.createClass({
   propTypes: {
     dashboard: React.PropTypes.object,
     permissions: React.PropTypes.arrayOf(React.PropTypes.string),
@@ -62,4 +62,4 @@ const Dashboard = React.createClass({
   },
 });
 
-export default Dashboard;
+export default DashboardEntry;

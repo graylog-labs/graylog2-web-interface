@@ -2,7 +2,7 @@ import React from 'react';
 import Immutable from 'immutable';
 import { Alert } from 'react-bootstrap';
 
-import Dashboard from './Dashboard';
+import DashboardEntry from './DashboardEntry';
 import EditDashboardModalTrigger from './EditDashboardModalTrigger';
 import PermissionsMixin from '../../util/PermissionsMixin';
 
@@ -46,7 +46,7 @@ const DashboardList = React.createClass({
   },
   _formatDashboard(dashboard) {
     return (
-      <Dashboard key={`dashboard-${dashboard.id}`} dashboard={dashboard} permissions={this.props.permissions}/>
+      <DashboardEntry key={`dashboard-${dashboard.id}`} dashboard={dashboard} permissions={this.props.permissions}/>
     );
   },
 });
