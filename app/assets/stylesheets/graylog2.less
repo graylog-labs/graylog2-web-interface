@@ -1081,112 +1081,194 @@ dl.metric-histogram dd {
   text-overflow: ellipsis;
 }
 
-.dashboard {
+/* new dashboards */
+
+.new-dashboard {
   color: #333333;
-  margin-left: -10px;
+  padding-top: 5px;
+
+  .react-widget {
+    margin-bottom: 10px;
+  }
+
+  .widget {
+    background-color: #FFF;
+    border: 1px solid #D1D1D1;
+    height: 100%;
+    padding: 15px;
+    position: relative;
+    z-index: auto;
+
+    .widget-title {
+      font-size: 18px;
+      height: 25px;
+      margin-right: 130px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .load-error {
+      color: #FF3B00;
+      margin-right: 5px;
+    }
+
+    .widget-update-info {
+      text-align: right;
+      float: right;
+      font-size: 11px;
+      height: 25px;
+      line-height: 25px;
+      width: 130px;
+    }
+
+    .actions {
+      position: absolute;
+      right: 15px;
+      bottom: 10px;
+    }
+
+    .actions div {
+      display: inline-block;
+      margin-left: 5px;
+    }
+
+    .actions button {
+      padding: 0 5px 0 5px;
+    }
+
+    .not-available {
+      font-size: 70px;
+    }
+
+    .loading,
+    .not-available {
+      line-height: 100px;
+      text-align: center;
+    }
+
+    .loading .spinner,
+    .not-available .spinner {
+      vertical-align: middle;
+    }
+  }
+
+  .number {
+    line-height: 70px;
+
+    .value {
+      line-height: 100px;
+      text-align: center;
+      font-size: 70px;
+      position: relative;
+    }
+
+    .trend-indicators {
+      font-size: 25px;
+      height: 70px;
+      position: absolute;
+      top: 30px;
+      right: 20px;
+      width: 25px;
+
+      .trend-icon {
+        color: #E3E5E5;
+        height: 25px;
+        margin-bottom: -18px;
+      }
+
+      .trend-icon.trend-good {
+        color: #8DC63F;
+      }
+
+      .trend-icon.trend-bad {
+        color: #BE1E2D;
+      }
+
+      .trend-icons-higher {
+        margin-bottom: 5px;
+      }
+    }
+  }
 }
 
-.dashboard .gridster .gs-w {
-  background-color: #FFF;
-  border: 1px solid #D1D1D1;
-  z-index: auto;
-}
+/* end new dashboards */
 
-.dashboard .gridster .player {
-  border-style: dashed;
-  border-color: #D1D1D1;
-}
 
-.dashboard .gridster .preview-holder {
-  border: none !important;
-  background: #16ACE3 !important;
-}
-
-.dashboard .gridster .resize-preview-holder {
-  z-index: -1;
-}
-
-.dashboard .widget {
-  margin: 15px;
-}
-
-.dashboard .widget .widget-top {
-  position: relative;
-  margin-bottom: -15px;
-  top: -5px;
-  font-size: 11px;
-  line-height: 11px;
-}
-
-.dashboard .widget .controls {
-  position: relative;
-  left: -3px;
-}
-
-.dashboard .widget .reloading {
-  margin-right: 2px;
-  font-weight: bold;
-  color: #0085A7;
-  display: none;
-}
-
-.dashboard .widget .search_result_count .value {
-  line-height: 70px !important;
-  text-align: center;
-  font-size: 70px;
-  position: relative;
-  top: 20px;
-}
-
-.dashboard .widget .search_result_count .trend-indicators {
-  font-size: 25px;
-  height: 70px;
-  position: absolute;
-  top: 35px;
-  left: 345px;
-  width: 25px;
-}
-
-.dashboard .widget .search_result_count .trend-indicators .trend-icon {
-  height: 25px;
-  margin-bottom: -18px;
-}
-
-.dashboard .widget .search_result_count .trend-indicators .trend-icons-higher {
-  margin-bottom: 5px;
-}
-
-.dashboard .widget .search_result_count .icon {
-  color: #ebebeb;
-}
-
-.dashboard .widget .loading-failed {
-  color: #ff4646 !important;
-}
-
-.dashboard .widget .controls {
-  display: none;
-}
-
-.dashboard .widget .edit-description {
-  display: none;
-  color: #0085A7 !important;
-  font-size: 12px;
-}
-
-.dashboard .widget .edit-description .icon {
-  color: #0085A7 !important;
-}
-
-.dashboard .widget .description-form {
-  display: none;
-}
-
-.dashboard .widget .info .cache-info {
-  display: none;
-}
-
-/* New widgets */
+//.dashboard {
+//  color: #333333;
+//  margin-left: -10px;
+//}
+//
+//.dashboard .gridster .gs-w {
+//  background-color: #FFF;
+//  border: 1px solid #D1D1D1;
+//  z-index: auto;
+//}
+//
+//.dashboard .gridster .player {
+//  border-style: dashed;
+//  border-color: #D1D1D1;
+//}
+//
+//.dashboard .gridster .preview-holder {
+//  border: none !important;
+//  background: #16ACE3 !important;
+//}
+//
+//.dashboard .gridster .resize-preview-holder {
+//  z-index: -1;
+//}
+//
+//.dashboard .widget {
+//  margin: 15px;
+//}
+//
+//.dashboard .widget .widget-top {
+//  position: relative;
+//  margin-bottom: -15px;
+//  top: -5px;
+//  font-size: 11px;
+//  line-height: 11px;
+//}
+//
+//.dashboard .widget .controls {
+//  position: relative;
+//  left: -3px;
+//}
+//
+//.dashboard .widget .reloading {
+//  margin-right: 2px;
+//  font-weight: bold;
+//  color: #0085A7;
+//  display: none;
+//}
+//
+//.dashboard .widget .loading-failed {
+//  color: #ff4646 !important;
+//}
+//
+//.dashboard .widget .controls {
+//  display: none;
+//}
+//
+//.dashboard .widget .edit-description {
+//  display: none;
+//  color: #0085A7 !important;
+//  font-size: 12px;
+//}
+//
+//.dashboard .widget .edit-description .icon {
+//  color: #0085A7 !important;
+//}
+//
+//.dashboard .widget .description-form {
+//  display: none;
+//}
+//
+//.dashboard .widget .info .cache-info {
+//  display: none;
+//}
 
 .datatable-badge {
   border-radius: 2px;
@@ -1207,146 +1289,144 @@ dl.metric-histogram dd {
   color: #E3E5E5;
 }
 
-.dashboard .gridster ul {
-  margin: 0;
-  transition: none;
-}
-
-.dashboard.unlocked .gridster .gs-w {
-  cursor: move;
-}
-
-.dashboard.unlocked .modal {
-  cursor: default;
-}
-
-.dashboard .react-widget {
-  height: 100%;
-  overflow: hidden;
-}
-
-.dashboard .react-widget .widget {
-  height: inherit;
-  margin: 0;
-  padding: 15px;
-}
-
-.dashboard .widget .dc-chart {
-  float: none;
-}
-
-.dashboard .widget .widget-title {
-  font-size: 18px;
-  height: 25px;
-  margin-right: 130px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.dashboard .widget .load-error {
-  color: #FF3B00;
-  margin-right: 5px;
-}
-
-.dashboard .widget .widget-update-info {
-  text-align: right;
-  float: right;
-  font-size: 11px;
-  height: 25px;
-  line-height: 25px;
-  width: 130px;
-}
-
-.dashboard .widget .configuration dt {
-  text-transform: capitalize;
-}
-
-.dashboard .widget svg {
-  overflow: hidden;
-}
-
-.dashboard .widget .number {
-  line-height: 70px;
-}
-
-.dashboard .widget .number .value {
-  line-height: 100px;
-  text-align: center;
-  font-size: 70px;
-  position: relative;
-}
-
-.dashboard .widget .number .trend-indicators {
-  font-size: 25px;
-  height: 70px;
-  position: absolute;
-  top: 30px;
-  right: 20px;
-  width: 25px;
-}
-
-.dashboard .widget .number .trend-indicators .trend-icon {
-  color: #E3E5E5;
-  height: 25px;
-  margin-bottom: -18px;
-}
-
-.dashboard .widget .number .trend-indicators .trend-icon.trend-good {
-  color: #8DC63F;
-}
-
-.dashboard .widget .number .trend-indicators .trend-icon.trend-bad {
-  color: #BE1E2D;
-}
-
-.dashboard .widget .number .trend-indicators .trend-icons-higher {
-  margin-bottom: 5px;
-}
-
-.dashboard .widget .quickvalues-visualization {
-  overflow: auto;
-}
-
-.dashboard .widget .quickvalues-graph {
-  text-align: center;
-}
-
-.dashboard .widget .graph.scatterplot path.line {
-  display: none;
-}
-
-.dashboard .widget .actions {
-  position: absolute;
-  right: 15px;
-  bottom: 10px;
-}
-
-.dashboard .widget .actions div {
-  display: inline-block;
-  margin-left: 5px;
-}
-
-.dashboard .widget .actions button {
-  padding: 0 5px 0 5px;
-}
-
-.dashboard .widget .not-available {
-  font-size: 70px;
-}
-
-.dashboard .widget .loading,
-.dashboard .widget .not-available {
-  line-height: 100px;
-  text-align: center;
-}
-
-.dashboard .widget .loading .spinner,
-.dashboard .widget .not-available .spinner {
-  vertical-align: middle;
-}
-
-/* End new widgets */
+//.dashboard .gridster ul {
+//  margin: 0;
+//  transition: none;
+//}
+//
+//.dashboard.unlocked .gridster .gs-w {
+//  cursor: move;
+//}
+//
+//.dashboard.unlocked .modal {
+//  cursor: default;
+//}
+//
+//.dashboard .react-widget {
+//  height: 100%;
+//  overflow: hidden;
+//}
+//
+//.dashboard .react-widget .widget {
+//  height: inherit;
+//  margin: 0;
+//  padding: 15px;
+//}
+//
+//.dashboard .widget .dc-chart {
+//  float: none;
+//}
+//
+//.dashboard .widget .widget-title {
+//  font-size: 18px;
+//  height: 25px;
+//  margin-right: 130px;
+//  overflow: hidden;
+//  text-overflow: ellipsis;
+//  white-space: nowrap;
+//}
+//
+//.dashboard .widget .load-error {
+//  color: #FF3B00;
+//  margin-right: 5px;
+//}
+//
+//.dashboard .widget .widget-update-info {
+//  text-align: right;
+//  float: right;
+//  font-size: 11px;
+//  height: 25px;
+//  line-height: 25px;
+//  width: 130px;
+//}
+//
+//.dashboard .widget .configuration dt {
+//  text-transform: capitalize;
+//}
+//
+//.dashboard .widget svg {
+//  overflow: hidden;
+//}
+//
+//.dashboard .widget .number {
+//  line-height: 70px;
+//}
+//
+//.dashboard .widget .number .value {
+//  line-height: 100px;
+//  text-align: center;
+//  font-size: 70px;
+//  position: relative;
+//}
+//
+//.dashboard .widget .number .trend-indicators {
+//  font-size: 25px;
+//  height: 70px;
+//  position: absolute;
+//  top: 30px;
+//  right: 20px;
+//  width: 25px;
+//}
+//
+//.dashboard .widget .number .trend-indicators .trend-icon {
+//  color: #E3E5E5;
+//  height: 25px;
+//  margin-bottom: -18px;
+//}
+//
+//.dashboard .widget .number .trend-indicators .trend-icon.trend-good {
+//  color: #8DC63F;
+//}
+//
+//.dashboard .widget .number .trend-indicators .trend-icon.trend-bad {
+//  color: #BE1E2D;
+//}
+//
+//.dashboard .widget .number .trend-indicators .trend-icons-higher {
+//  margin-bottom: 5px;
+//}
+//
+//.dashboard .widget .quickvalues-visualization {
+//  overflow: auto;
+//}
+//
+//.dashboard .widget .quickvalues-graph {
+//  text-align: center;
+//}
+//
+//.dashboard .widget .graph.scatterplot path.line {
+//  display: none;
+//}
+//
+//.dashboard .widget .actions {
+//  position: absolute;
+//  right: 15px;
+//  bottom: 10px;
+//}
+//
+//.dashboard .widget .actions div {
+//  display: inline-block;
+//  margin-left: 5px;
+//}
+//
+//.dashboard .widget .actions button {
+//  padding: 0 5px 0 5px;
+//}
+//
+//.dashboard .widget .not-available {
+//  font-size: 70px;
+//}
+//
+//.dashboard .widget .loading,
+//.dashboard .widget .not-available {
+//  line-height: 100px;
+//  text-align: center;
+//}
+//
+//.dashboard .widget .loading .spinner,
+//.dashboard .widget .not-available .spinner {
+//  vertical-align: middle;
+//}
 
 .configuration-field-optional {
   margin-left: 5px;

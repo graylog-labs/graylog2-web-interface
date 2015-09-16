@@ -4,6 +4,8 @@ import $ from 'jquery';
 import TrendConfigurationModal from './TrendConfigurationModal';
 import EditDashboardModalTrigger from './EditDashboardModalTrigger';
 import DashboardListPage from './DashboardListPage';
+import Dashboard from './Dashboard';
+import DashboardStore from 'stores/dashboard/DashboardStore';
 
 let component;
 
@@ -39,4 +41,15 @@ if (dashboardListPage) {
   component = <DashboardListPage permissions={permissions} username={username}/>;
 
   React.render(component, dashboardListPage);
+}
+
+const reactDashboards = document.getElementsByClassName('react-dashboard');
+for (let i = 0; i < reactDashboards.length; i++) {
+  const dashboard = reactDashboards[i];
+  const dashboardId = dashboard.getAttribute('data-dashboard-id');
+  const widgets = DashboardStore.dashboardsAsList(JSON.parse(dashboard.getAttribute('data-dashboard-widgets')));
+
+  component = <Dashboard id={dashboardId} widgets={widgets}/>;
+
+  React.render(component, dashboard);
 }

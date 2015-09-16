@@ -318,6 +318,7 @@ var Widget = React.createClass({
 
                 {this._getVisualization()}
 
+                <div className="clearfix"/>
                 <WidgetFooter locked={this.state.locked}
                               onReplaySearch={this._replaySearch}
                               onShowConfig={this._showConfig}

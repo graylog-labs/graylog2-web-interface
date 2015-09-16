@@ -3,9 +3,9 @@
 var React = require('react');
 var Widget = require('./Widget');
 
-var $ = require('jquery');
-$('.react-widget').each(function() {
-    var dashboardId = $(this).data('dashboard-id');
-    var widgetId = $(this).data('widget-id');
-    React.render(<Widget dashboardId={dashboardId} widgetId={widgetId}/>, this);
-});
+//var $ = require('jquery');
+//$('.react-widget').each(function() {
+//    var dashboardId = $(this).data('dashboard-id');
+//    var widgetId = $(this).data('widget-id');
+//    React.render(<Widget dashboardId={dashboardId} widgetId={widgetId}/>, this);
+//});

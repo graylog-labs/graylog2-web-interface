@@ -3,6 +3,7 @@
 @import scala.util.Try
 @import views.helpers.Permissions._
 @import lib.security.RestPermissions._
+@import lib.json.Json
 
 @sortedDashboards = @{
     dashboard.getWidgets.values().toSeq.sortWith((d1, d2) => {
@@ -64,31 +65,34 @@
         </div>
     </div>
 
-    @if(dashboard.getWidgets.isEmpty) {
-        <div class="row content">
-            <div class="col-md-12">
-                <div class="alert alert-info no-widgets">
-                    This dashboard has no widgets yet. Learn how to add widgets in the @views.html.partials.links.docs(views.helpers.DocsHelper.PAGE_DASHBOARDS, "documentation").
-                </div>
-            </div>
-        </div>
-    } else {
-        <div class="row">
-            <div class="dashboard">
-                <div class="gridster" data-dashboard-id="@dashboard.getId">
-                    <ul>
-                    @for(widget <- sortedDashboards) {
-                        <li data-row="@widget.getRow" data-col="@widget.getCol" data-sizex="@widget.getWidth" data-sizey="@widget.getHeight">
-                            <div class="react-widget" data-dashboard-id="@widget.getDashboard.getId"
-                            data-widget-id="@widget.getId"></div>
-                        </li>
-                    }
-                    </ul>
-                </div>
+    <div class="react-dashboard" data-dashboard-id="@dashboard.getId" data-dashboard-widgets="@Json.toJsonString(dashboard.getWidgets)"></div>
 
-                <br style="clear : both ;" />
+    @if(false) {
+        @if(dashboard.getWidgets.isEmpty) {
+            <div class="row content">
+                <div class="col-md-12">
+                    <div class="alert alert-info no-widgets">
+                        This dashboard has no widgets yet. Learn how to add widgets in the @views.html.partials.links.docs(views.helpers.DocsHelper.PAGE_DASHBOARDS, "documentation").
+                    </div>
+                </div>
             </div>
-        </div>
+        } else {
+            <div class="row">
+                <div class="dashboard">
+                    <div class="gridster" data-dashboard-id="@dashboard.getId">
+                        <ul>
+                        @for(widget <- sortedDashboards) {
+                            <li data-row="@widget.getRow" data-col="@widget.getCol" data-sizex="@widget.getWidth" data-sizey="@widget.getHeight">
+                                <div class="react-widget" data-dashboard-id="@widget.getDashboard.getId"
+                                data-widget-id="@widget.getId"></div>
+                            </li>
+                        }
+                        </ul>
+                    </div>
+
+                    <br style="clear : both ;" />
+                </div>
+            </div>
+        }
     }
-
 }

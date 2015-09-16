@@ -21,29 +21,17 @@ import lib.BreadcrumbList;
 import lib.security.RestPermissions;
 import org.graylog2.restclient.lib.APIException;
 import org.graylog2.restclient.lib.ApiClient;
-import org.graylog2.restclient.models.NodeService;
 import org.graylog2.restclient.models.Startpage;
 import org.graylog2.restclient.models.User;
-import org.graylog2.restclient.models.api.requests.dashboards.CreateDashboardRequest;
 import org.graylog2.restclient.models.dashboards.Dashboard;
 import org.graylog2.restclient.models.dashboards.DashboardService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import play.data.Form;
 import play.mvc.Result;
-import views.helpers.Permissions;
 
 import java.io.IOException;
-import java.util.List;
+
+import static views.helpers.Permissions.isPermitted;
 
 public class DashboardsController extends AuthenticatedController {
-    private static final Logger log = LoggerFactory.getLogger(DashboardsController.class);
-
-    private static final Form<CreateDashboardRequest> createDashboardForm = Form.form(CreateDashboardRequest.class);
-
-    @Inject
-    private NodeService nodeService;
-
     @Inject
     private DashboardService dashboardService;
 
@@ -53,6 +41,11 @@ public class DashboardsController extends AuthenticatedController {
 
     public Result show(String id) {
         final User currentUser = currentUser();
+
+        if (!isPermitted(RestPermissions.DASHBOARDS_READ, id)) {
+            return redirect(routes.DashboardsController.index());
+        }
+
         try {
             Dashboard dashboard = dashboardService.get(id);
 
@@ -62,7 +55,7 @@ public class DashboardsController extends AuthenticatedController {
 
             return ok(views.html.dashboards.show.render(currentUser, bc, dashboard));
         } catch (APIException e) {
-            if (e.getHttpCode() == NOT_FOUND || e.getHttpCode() == FORBIDDEN) {
+            if (e.getHttpCode() == NOT_FOUND) {
                 String msg = "The requested dashboard was deleted and no longer exists.";
                 final Startpage startpage = currentUser.getStartpage();
                 if (startpage != null) {
