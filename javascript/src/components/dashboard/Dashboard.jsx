@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import Immutable from 'immutable';
+import {Row, Col} from 'react-bootstrap';
 
 import Grid from './Grid';
 import DocumentationLink from 'components/support/DocumentationLink';
@@ -35,12 +36,14 @@ class Dashboard extends Component {
       );
     } else {
       widgetList = (
-        <div className="row">
-          <div className="new-dashboard">
-            <Grid id={this.props.id} widgets={this.props.widgets}/>
-          </div>
-          <br style={{clear: 'both'}}/>
-        </div>
+        <Row>
+          <Col md={12}>
+            <div className="new-dashboard">
+              <Grid id={this.props.id} widgets={this.props.widgets}/>
+            </div>
+            <br style={{clear: 'both'}}/>
+          </Col>
+        </Row>
       );
     }
     return (
