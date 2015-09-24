@@ -9,11 +9,13 @@ class Grid extends Component {
     widgets: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.object), PropTypes.instanceOf(Immutable.List)]),
     rowSize: PropTypes.number,
     columnSize: PropTypes.number,
+    margin: PropTypes.number,
   };
 
   static defaultProps = {
     rowSize: 200,
-    columnSize: 410,
+    columnSize: 400,
+    margin: 10,
   };
 
   constructor(props) {
@@ -24,11 +26,15 @@ class Grid extends Component {
     this._determineWidgetPosition = this._determineWidgetPosition.bind(this);
 
     const viewportWidth = window.innerWidth;
-    const sortedWidgets = this.props.widgets.sort(Grid._sortWidgets);
+    const arrangedWidgets = this.props.widgets.filter(widget => widget.row !== 0).sort(Grid._sortWidgets);
+    const disarrangedWidgets = this.props.widgets.filter(widget => widget.row === 0);
 
     this.state = {
       availableColumns: Math.floor(viewportWidth / props.columnSize),
-      sortedWidgets: sortedWidgets,
+      arrangedWidgets: arrangedWidgets,
+      disarrangedWidgets: disarrangedWidgets,
+      totalColumnSize: this.props.columnSize + this.props.margin,
+      totalRowSize: this.props.rowSize + this.props.margin,
     };
   }
 
@@ -39,32 +45,49 @@ class Grid extends Component {
     let occupiedPositionsInGrid = Immutable.List(columns.map(() => Immutable.Set()));
 
     let formattedWidgets = Immutable.List();
-    let effectiveRow = 0;
-    const maxRowValue = 2;
 
-    for (let currentRow = 1; currentRow <= maxRowValue + 1; currentRow++) {
-      const widgetsInRow = this.state.sortedWidgets.filter(widget => {
-        // Draw unsorted widgets last, so we check if we are in the last iteration to filter them
-        return (currentRow < maxRowValue + 1) ? widget.row === currentRow : widget.row === 0;
-      });
+    let gridRow = 0;
+    let gridColumn = 0;
 
-      let effectiveRow = currentRow - 1;
-      let effectiveColumn = 0;
+    let widgetRow = 1;
 
-      widgetsInRow.forEach(widget => {
-        // TODO: check if widget fits in row (doesn't exceed number of columns), and reposition if needed
-        // TODO: check if grid position is already taken, and reposition if it is
-        const widgetPosition = this._determineWidgetPosition(occupiedPositionsInGrid, widget, effectiveRow, effectiveColumn);
+    // Position all arranged widgets first
+    for (let widgetIndex = 0; widgetIndex < this.state.arrangedWidgets.count(); widgetIndex++) {
+      const widget = this.state.arrangedWidgets.get(widgetIndex);
 
-        occupiedPositionsInGrid = Grid._occupyPositionInGrid(occupiedPositionsInGrid, widgetPosition);
-        formattedWidgets = formattedWidgets.push(this._formatWidget(widget, widgetPosition));
+      // Reset column index and increase row index when widget is in a different row
+      if (widgetRow !== widget.row) {
+        widgetRow = widget.row;
+        gridRow = (widgetIndex === 0) ? 0 : gridRow + 1;
+        gridColumn = 0;
+      }
 
-        effectiveColumn++;
-      }, this);
+      const widgetPosition = this._determineWidgetPosition(occupiedPositionsInGrid, widget, gridRow, gridColumn);
+      occupiedPositionsInGrid = Grid._occupyPositionInGrid(occupiedPositionsInGrid, widgetPosition);
+      formattedWidgets = formattedWidgets.push(this._formatWidget(widget, widgetPosition));
+
+      gridColumn = widgetPosition.column + widgetPosition.width;
     }
 
+    // Place not arranged widgets in a new row
+    gridRow++;
+    gridColumn = 0;
+
+    // Position not arranged widgets
+    for (let widgetIndex = 0; widgetIndex < this.state.disarrangedWidgets.count(); widgetIndex++) {
+      const widget = this.state.disarrangedWidgets.get(widgetIndex);
+
+      const widgetPosition = this._determineWidgetPosition(occupiedPositionsInGrid, widget, gridRow, gridColumn);
+      occupiedPositionsInGrid = Grid._occupyPositionInGrid(occupiedPositionsInGrid, widgetPosition);
+      formattedWidgets = formattedWidgets.push(this._formatWidget(widget, widgetPosition));
+
+      gridRow = widgetPosition.row;
+      gridColumn = widgetPosition.column + widgetPosition.width;
+    }
+
+    const totalRows = occupiedPositionsInGrid.map(column => column.max() || 0).max() + 1;
     return (
-      <div className="grid" style={{height: this.gridHeight}}>
+      <div className="grid" style={{height: totalRows * this.state.totalRowSize}}>
         {formattedWidgets}
       </div>
     );
@@ -103,8 +126,8 @@ class Grid extends Component {
   _determineWidgetPosition(grid, widget, desiredRow, desiredColumn) {
     let effectiveRow = desiredRow;
     let effectiveColumn = desiredColumn;
-    while (Grid._isOccupied(grid, effectiveRow, effectiveColumn)) {
-      if (effectiveColumn + widget.width + 1 < this.state.availableColumns) {
+    while (Grid._areCellsOccupied(grid, effectiveRow, effectiveRow + widget.height - 1, effectiveColumn, effectiveColumn + widget.width - 1)) {
+      if (effectiveColumn + widget.width < this.state.availableColumns) {
         effectiveColumn++;
       } else {
         effectiveRow++;
@@ -120,12 +143,23 @@ class Grid extends Component {
     };
   }
 
+  static _areCellsOccupied(grid, beginRow, endRow, beginColumn, endColumn) {
+    for (let i = beginRow; i <= endRow; i++) {
+      for (let j = beginColumn; j <= endColumn; j++) {
+        if (this._isOccupied(grid, i, j)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
   static _isOccupied(grid, row, column) {
-    return grid.get(column) !== undefined && grid.get(column).has(row);
+    return grid.get(column) === undefined || grid.get(column).has(row);
   }
 
   _formatWidget(widget, widgetPosition) {
-    console.log(widget);
     return (
       <div key={widget.id} className="widget-container" style={this._getWidgetStyle(widgetPosition)}>
         <Widget dashboardId={this.props.id} widgetId={widget.id}/>
@@ -135,10 +169,10 @@ class Grid extends Component {
 
   _getWidgetStyle(widgetPosition) {
     return {
-      width: this.props.columnSize * widgetPosition.width,
-      height: this.props.rowSize * widgetPosition.height,
-      left: this.props.columnSize * widgetPosition.column,
-      top: this.props.rowSize * widgetPosition.row,
+      width: this.props.columnSize * widgetPosition.width + (this.props.margin * (widgetPosition.width - 1)),
+      height: this.props.rowSize * widgetPosition.height + (this.props.margin * (widgetPosition.height - 1)),
+      left: this.state.totalColumnSize * widgetPosition.column,
+      top: this.state.totalRowSize * widgetPosition.row,
     };
   }
 
