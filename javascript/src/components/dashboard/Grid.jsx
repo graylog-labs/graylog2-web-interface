@@ -140,7 +140,10 @@ class Grid extends Component {
   _determineWidgetPosition(grid, widget, desiredRow, desiredColumn) {
     let effectiveRow = desiredRow;
     let effectiveColumn = desiredColumn;
-    while (Grid._areCellsOccupied(grid, effectiveRow, effectiveRow + widget.height - 1, effectiveColumn, effectiveColumn + widget.width - 1)) {
+
+    const widgetWidth = (widget.width < this.state.fittingColumns) ? widget.width : this.state.fittingColumns;
+
+    while (Grid._areCellsOccupied(grid, effectiveRow, effectiveRow + widget.height - 1, effectiveColumn, effectiveColumn + widgetWidth - 1)) {
       if (effectiveColumn + widgetWidth < this.state.fittingColumns) {
         effectiveColumn++;
       } else {
@@ -152,7 +155,7 @@ class Grid extends Component {
     return {
       row: effectiveRow,
       column: effectiveColumn,
-      width: widget.width,
+      width: widgetWidth,
       height: widget.height,
     };
   }
