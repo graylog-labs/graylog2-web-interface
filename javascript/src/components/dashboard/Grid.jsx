@@ -21,22 +21,30 @@ class Grid extends Component {
   constructor(props) {
     super(props);
 
+    this._updateDimensions = this._updateDimensions.bind(this);
     this._getGridCell = this._getGridCell.bind(this);
     this._determineWidgetPosition = this._determineWidgetPosition.bind(this);
 
-    const viewportWidth = window.innerWidth;
     const arrangedWidgets = this.props.widgets.filter(widget => widget.row !== 0).sort(Grid._sortWidgets);
     const disarrangedWidgets = this.props.widgets.filter(widget => widget.row === 0);
 
     this.state = {
-      availableColumns: Math.floor(viewportWidth / props.columnSize),
+      fittingColumns: this._getFittingColumns(props),
       arrangedWidgets: arrangedWidgets,
       disarrangedWidgets: disarrangedWidgets,
     };
   }
 
+  componentDidMount() {
+    window.addEventListener('resize', this._updateDimensions);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._updateDimensions);
+  }
+
   render() {
-    const columns = Immutable.Range(0, this.state.availableColumns);
+    const columns = Immutable.Range(0, this.state.fittingColumns);
 
     // Table of occupied grid positions, indexed by column
     let occupiedPositionsInGrid = Immutable.List(columns.map(() => Immutable.Set()));
@@ -90,6 +98,15 @@ class Grid extends Component {
     );
   }
 
+  _getFittingColumns(props) {
+    const viewportWidth = window.innerWidth;
+    return Math.max(Math.floor(viewportWidth / (props.columnSize + props.margin)), 1);
+  }
+
+  _updateDimensions() {
+    this.setState({fittingColumns: this._getFittingColumns(this.props)});
+  }
+
   static _sortWidgets(widget1, widget2) {
     // Move widgets without a set position to the end of the list
     if (widget1.row === 0) return 1;
@@ -124,7 +141,7 @@ class Grid extends Component {
     let effectiveRow = desiredRow;
     let effectiveColumn = desiredColumn;
     while (Grid._areCellsOccupied(grid, effectiveRow, effectiveRow + widget.height - 1, effectiveColumn, effectiveColumn + widget.width - 1)) {
-      if (effectiveColumn + widget.width < this.state.availableColumns) {
+      if (effectiveColumn + widgetWidth < this.state.fittingColumns) {
         effectiveColumn++;
       } else {
         effectiveRow++;
