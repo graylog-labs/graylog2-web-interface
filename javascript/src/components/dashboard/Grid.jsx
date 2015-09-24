@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import Immutable from 'immutable';
 
-import Widget from 'components/widgets/Widget';
+import GridCell from 'components/dashboard/GridCell';
 
 class Grid extends Component {
   static propTypes = {
@@ -21,8 +21,7 @@ class Grid extends Component {
   constructor(props) {
     super(props);
 
-    this._formatWidget = this._formatWidget.bind(this);
-    this._getWidgetStyle = this._getWidgetStyle.bind(this);
+    this._getGridCell = this._getGridCell.bind(this);
     this._determineWidgetPosition = this._determineWidgetPosition.bind(this);
 
     const viewportWidth = window.innerWidth;
@@ -33,8 +32,6 @@ class Grid extends Component {
       availableColumns: Math.floor(viewportWidth / props.columnSize),
       arrangedWidgets: arrangedWidgets,
       disarrangedWidgets: disarrangedWidgets,
-      totalColumnSize: this.props.columnSize + this.props.margin,
-      totalRowSize: this.props.rowSize + this.props.margin,
     };
   }
 
@@ -64,7 +61,7 @@ class Grid extends Component {
 
       const widgetPosition = this._determineWidgetPosition(occupiedPositionsInGrid, widget, gridRow, gridColumn);
       occupiedPositionsInGrid = Grid._occupyPositionInGrid(occupiedPositionsInGrid, widgetPosition);
-      formattedWidgets = formattedWidgets.push(this._formatWidget(widget, widgetPosition));
+      formattedWidgets = formattedWidgets.push(this._getGridCell(widget, widgetPosition));
 
       gridColumn = widgetPosition.column + widgetPosition.width;
     }
@@ -79,7 +76,7 @@ class Grid extends Component {
 
       const widgetPosition = this._determineWidgetPosition(occupiedPositionsInGrid, widget, gridRow, gridColumn);
       occupiedPositionsInGrid = Grid._occupyPositionInGrid(occupiedPositionsInGrid, widgetPosition);
-      formattedWidgets = formattedWidgets.push(this._formatWidget(widget, widgetPosition));
+      formattedWidgets = formattedWidgets.push(this._getGridCell(widget, widgetPosition));
 
       gridRow = widgetPosition.row;
       gridColumn = widgetPosition.column + widgetPosition.width;
@@ -87,7 +84,7 @@ class Grid extends Component {
 
     const totalRows = occupiedPositionsInGrid.map(column => column.max() || 0).max() + 1;
     return (
-      <div className="grid" style={{height: totalRows * this.state.totalRowSize}}>
+      <div className="grid" style={{height: totalRows * (this.props.rowSize + this.props.margin)}}>
         {formattedWidgets}
       </div>
     );
@@ -159,21 +156,11 @@ class Grid extends Component {
     return grid.get(column) === undefined || grid.get(column).has(row);
   }
 
-  _formatWidget(widget, widgetPosition) {
+  _getGridCell(widget, widgetPosition) {
     return (
-      <div key={widget.id} className="widget-container" style={this._getWidgetStyle(widgetPosition)}>
-        <Widget dashboardId={this.props.id} widgetId={widget.id}/>
-      </div>
+      <GridCell key={widget.id} dashboardId={this.props.id} widget={widget} widgetPosition={widgetPosition}
+                width={this.props.columnSize} height={this.props.rowSize} margin={this.props.margin}/>
     );
-  }
-
-  _getWidgetStyle(widgetPosition) {
-    return {
-      width: this.props.columnSize * widgetPosition.width + (this.props.margin * (widgetPosition.width - 1)),
-      height: this.props.rowSize * widgetPosition.height + (this.props.margin * (widgetPosition.height - 1)),
-      left: this.state.totalColumnSize * widgetPosition.column,
-      top: this.state.totalRowSize * widgetPosition.row,
-    };
   }
 
 }
