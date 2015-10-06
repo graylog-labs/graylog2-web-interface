@@ -15,6 +15,7 @@ class MessageDetail extends Component {
     message: PropTypes.object.isRequired,
     possiblyHighlight: PropTypes.func.isRequired,
     disableFieldActions: PropTypes.bool,
+    customFieldActions: PropTypes.node,
     disableTestAgainstStream: PropTypes.bool,
     allStreams: PropTypes.object,
     allStreamsLoaded: PropTypes.bool,
@@ -219,7 +220,8 @@ class MessageDetail extends Component {
         <Col md={9}>
           <div ref="messageList">
             <MessageFields message={this.props.message} possiblyHighlight={this.props.possiblyHighlight}
-                           disableFieldActions={this.props.disableFieldActions}/>
+                           disableFieldActions={this.props.disableFieldActions}
+                           customFieldActions={this.props.customFieldActions}/>
           </div>
         </Col>
       </Row>

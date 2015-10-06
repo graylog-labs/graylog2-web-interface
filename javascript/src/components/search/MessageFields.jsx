@@ -9,6 +9,7 @@ class MessageFields extends Component {
     message: PropTypes.object.isRequired,
     possiblyHighlight: PropTypes.func.isRequired,
     disableFieldActions: PropTypes.bool,
+    customFieldActions: PropTypes.node,
   };
 
   render() {
@@ -25,7 +26,8 @@ class MessageFields extends Component {
                                            fieldName={key}
                                            fieldValue={innerValue}
                                            possiblyHighlight={this.props.possiblyHighlight}
-                                           disableFieldActions={this.props.disableFieldActions}/>);
+                                           disableFieldActions={this.props.disableFieldActions}
+                                           customFieldActions={this.props.customFieldActions}/>);
     });
 
     return (

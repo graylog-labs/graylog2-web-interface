@@ -13,6 +13,7 @@ class LoaderTabs extends Component {
     index: PropTypes.string,
     onMessageLoaded: PropTypes.func,
     selectedInputId: PropTypes.string,
+    customFieldActions: PropTypes.node,
   };
 
   constructor(props) {
@@ -59,7 +60,9 @@ class LoaderTabs extends Component {
       displayMessage = (
         <div className="col-md-12">
           <MessageShow message={this.state.message} inputs={this.state.inputs}
-                       disableTestAgainstStream disableFieldActions/>
+                       disableTestAgainstStream
+                       disableFieldActions={!this.props.customFieldActions}
+                       customFieldActions={this.props.customFieldActions}/>
         </div>
       );
     }
