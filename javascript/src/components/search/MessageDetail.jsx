@@ -148,7 +148,7 @@ class MessageDetail extends Component {
     }
 
     let receivedBy;
-    if (this.props.message.source_input_id && this.props.message.source_node_id) {
+    if (this.props.message.source_input_id && this.props.message.source_node_id && this.props.nodes) {
       receivedBy = (
         <div>
           <dt>Received by</dt>

@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {Input} from 'react-bootstrap';
+import {Input, FormControls} from 'react-bootstrap';
 import Spinner from 'components/common/Spinner';
 import Immutable from 'immutable';
 
@@ -9,6 +9,7 @@ class InputDropdown extends Component {
   static propTypes = {
     inputs: PropTypes.object,
     title: PropTypes.string,
+    preselectedInputId: PropTypes.string,
     onLoadMessage: PropTypes.func,
   };
 
@@ -19,7 +20,7 @@ class InputDropdown extends Component {
     this._onLoadMessage = this._onLoadMessage.bind(this);
 
     this.state = {
-      selectedInput: PLACEHOLDER,
+      selectedInput: props.preselectedInputId || PLACEHOLDER,
     };
   }
 
@@ -39,7 +40,27 @@ class InputDropdown extends Component {
     this.props.onLoadMessage(this.state.selectedInput);
   }
 
+  _formatStaticInput(input) {
+    return (
+      <Input type="select" style={{float: 'left', width: 400, marginRight: 10}} disabled>
+        <option>{`${input.title} (${input.type})`}</option>
+      </Input>
+    );
+  }
+
   render() {
+    // When an input is pre-selected, show a static dropdown
+    if (this.props.inputs && this.props.preselectedInputId) {
+      return (
+        <div>
+          {this._formatStaticInput(this.props.inputs.get(this.props.preselectedInputId))}
+
+          <a className="btn btn-info" disabled={this.state.selectedInput === PLACEHOLDER}
+             onClick={this._onLoadMessage}>{this.props.title}</a>
+        </div>
+      );
+    }
+
     if (this.props.inputs) {
       const inputs = Immutable.List(this.props.inputs.sort(this._sortByTitle).map(this._formatInput));
       return (

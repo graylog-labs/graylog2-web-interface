@@ -12,6 +12,7 @@ class LoaderTabs extends Component {
     messageId: PropTypes.string,
     index: PropTypes.string,
     onMessageLoaded: PropTypes.func,
+    selectedInputId: PropTypes.string,
   };
 
   constructor(props) {
@@ -73,7 +74,9 @@ class LoaderTabs extends Component {
       <div>
         <Tabs defaultActiveKey={defaultActiveKey} animation={false}>
           <Tab eventKey={1} title="Recent" style={{marginBottom: '10px'}}>
-            <RecentMessageLoader inputs={this.state.inputs} onMessageLoaded={this.onMessageLoaded}/>
+            <RecentMessageLoader inputs={this.state.inputs}
+                                 selectedInputId={this.props.selectedInputId}
+                                 onMessageLoaded={this.onMessageLoaded}/>
           </Tab>
           <Tab eventKey={2} title="Manual" style={{marginBottom: '10px'}}>
             <div style={{marginTop: '5px', marginBottom: '15px'}}>
