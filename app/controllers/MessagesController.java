@@ -52,6 +52,8 @@ public class MessagesController extends AuthenticatedController {
             result.put("filtered_fields", message.getFilteredFields());
             result.put("fields", message.getFields());
             result.put("formatted_fields", message.getFormattedFields());
+            result.put("source_node_id", message.getSourceNodeId());
+            result.put("source_input_id", message.getSourceInputId());
 
             return ok(Json.toJsonString(result)).as(MediaType.JSON_UTF_8.toString());
         } catch (IOException e) {

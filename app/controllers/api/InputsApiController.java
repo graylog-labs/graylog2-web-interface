@@ -181,7 +181,7 @@ public class InputsApiController extends AuthenticatedController {
 
     protected RecentMessageResult buildResultFromMessage(MessageResult message) {
         return new RecentMessageResult(message.getId(), message.getIndex(), message.getFields(), message.getFormattedFields(),
-                message.getFilteredFields());
+                message.getFilteredFields(), message.getSourceNodeId(), message.getSourceInputId());
     }
 
     public static class RecentMessageResult {
@@ -190,14 +190,19 @@ public class InputsApiController extends AuthenticatedController {
         public final Map<String, Object> fields;
         public final Map<String, Object> formattedFields;
         public final Map<String, Object> filteredFields;
+        public final String sourceNodeId;
+        public final String sourceInputId;
 
         public RecentMessageResult(String id, String index, Map<String, Object> fields,
-                                   Map<String, Object> formattedFields, Map<String, Object> filteredFields) {
+                                   Map<String, Object> formattedFields, Map<String, Object> filteredFields,
+                                   String sourceNodeId, String sourceInputId) {
             this.id = id;
             this.index = index;
             this.fields = fields;
             this.formattedFields = formattedFields;
             this.filteredFields = filteredFields;
+            this.sourceNodeId = sourceNodeId;
+            this.sourceInputId = sourceInputId;
         }
     }
 }
