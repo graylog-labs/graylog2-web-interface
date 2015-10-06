@@ -24,12 +24,14 @@ import controllers.AuthenticatedController;
 import lib.NaturalDateTest;
 import lib.extractors.testers.GrokTest;
 import lib.extractors.testers.JsonTest;
+import lib.extractors.testers.RegexReplaceTest;
 import lib.extractors.testers.RegexTest;
 import lib.extractors.testers.SplitAndIndexTest;
 import lib.extractors.testers.SubstringTest;
 import lib.json.Json;
 import org.graylog2.rest.models.tools.requests.GrokTestRequest;
 import org.graylog2.rest.models.tools.requests.JsonTestRequest;
+import org.graylog2.rest.models.tools.requests.RegexReplaceTestRequest;
 import org.graylog2.rest.models.tools.requests.RegexTestRequest;
 import org.graylog2.rest.models.tools.requests.SplitAndIndexTestRequest;
 import org.graylog2.rest.models.tools.requests.SubstringTestRequest;
@@ -41,6 +43,7 @@ import java.io.IOException;
 public class ToolsApiController extends AuthenticatedController {
 
     private final RegexTest regexTest;
+    private final RegexReplaceTest regexReplaceTest;
     private final SubstringTest substringTest;
     private final SplitAndIndexTest splitAndIndexTest;
     private final NaturalDateTest naturalDateTest;
@@ -49,12 +52,14 @@ public class ToolsApiController extends AuthenticatedController {
 
     @Inject
     private ToolsApiController(RegexTest regexTest,
+                               RegexReplaceTest regexReplaceTest,
                                SubstringTest substringTest,
                                SplitAndIndexTest splitAndIndexTest,
                                NaturalDateTest naturalDateTest,
                                GrokTest grokTest,
                                JsonTest jsonTest) {
         this.regexTest = regexTest;
+        this.regexReplaceTest = regexReplaceTest;
         this.substringTest = substringTest;
         this.splitAndIndexTest = splitAndIndexTest;
         this.naturalDateTest = naturalDateTest;
@@ -72,6 +77,23 @@ public class ToolsApiController extends AuthenticatedController {
             }
 
             return ok(Json.toJsonString(regexTest.test(request))).as(MediaType.JSON_UTF_8.toString());
+        } catch (IOException e) {
+            return internalServerError("io exception");
+        } catch (APIException e) {
+            return internalServerError("api exception " + e);
+        }
+    }
+
+    public Result regexReplaceTest() {
+        final JsonNode json = request().body().asJson();
+        final RegexReplaceTestRequest request = Json.fromJson(json, RegexReplaceTestRequest.class);
+
+        try {
+            if (request.regex().isEmpty() || request.string().isEmpty() || request.replacement().isEmpty()) {
+                return badRequest();
+            }
+
+            return ok(Json.toJsonString(regexReplaceTest.test(request))).as(MediaType.JSON_UTF_8.toString());
         } catch (IOException e) {
             return internalServerError("io exception");
         } catch (APIException e) {
