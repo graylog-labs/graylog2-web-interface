@@ -129,7 +129,11 @@
                             Contains messages up to @DateHelper.readablePeriodFromNow(DateTime.now)
                         } else {
                             @if(index.getRange.getBegin.isEqual(0L)) {
-                                Contains messages up to @DateHelper.readablePeriodFromNow(index.getRange.getEnd)
+                                @if(index.getRange.getEnd.isEqual(0L)) {
+                                    Contains no messages
+                                } else {
+                                    Contains messages up to @DateHelper.readablePeriodFromNow(index.getRange.getEnd)
+                                }
                             } else {
                                 Contains messages from @DateHelper.readablePeriodFromNow(index.getRange.getBegin) up to @DateHelper.readablePeriodFromNow(index.getRange.getEnd)
                             }
