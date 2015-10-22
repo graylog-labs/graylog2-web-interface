@@ -124,7 +124,7 @@ $(document).ready(function () {
         promise.done(function (matchResult) {
             if (matchResult.finds) {
                 if (matchResult.match != null) {
-                    highlightMatchResult(matchResult);
+                    showRegexReplaceResult(matchResult);
                 } else {
                     showWarning("Regular expression does not contain any matcher group to extract.");
                 }
@@ -327,6 +327,12 @@ $(document).ready(function () {
         matchesHtml += "</dl>";
 
         fields.html(matchesHtml);
+    }
+
+    function showRegexReplaceResult(result) {
+        var fields = $("#regex-replace-matches");
+        var matchHtml = htmlEscape(result.match.match);
+        fields.html(matchHtml);
     }
 
     // Add converter button.
