@@ -71,7 +71,11 @@ var WidgetsStore = {
 
     loadWidget(dashboardId: string, widgetId: string): JQueryPromise<string[]> {
         var url = jsRoutes.controllers.api.DashboardsApiController.widget(dashboardId, widgetId).url;
-        var promise = $.getJSON(url);
+        var promise = $.ajax({
+            type: "GET",
+            url: url,
+            headers: { "X-Graylog2-No-Session-Extension" : "true"}
+        });
         promise.fail((jqXHR, textStatus, errorThrown) => {
             if (jqXHR.status !== 404) {
                 UserNotification.error("Loading widget information failed with status: " + errorThrown,
@@ -102,7 +106,11 @@ var WidgetsStore = {
 
     loadValue(dashboardId: string, widgetId: string, resolution: number): JQueryPromise<string[]> {
         var url = jsRoutes.controllers.api.DashboardsApiController.widgetValue(dashboardId, widgetId, resolution).url;
-        return $.getJSON(url);
+        return $.ajax({
+            type: "GET",
+            url: url,
+            headers: {"X-Graylog2-No-Session-Extension": "true"}
+        });
     }
 };
 
