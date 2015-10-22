@@ -57,8 +57,8 @@ var MessageFieldDescription = React.createClass({
                 <li className="dropdown-submenu left-submenu">
                     <a href="#">Create extractor for field {this.props.fieldName}</a>
                     <ul className="dropdown-menu">
-                        <li><a href={this._getNewExtractorRoute("regex")}>Regular expression</a>
-                        </li>
+                        <li><a href={this._getNewExtractorRoute("regex")}>Regular expression</a></li>
+                        <li><a href={this._getNewExtractorRoute("regex_replace")}>Replace with regular expression</a></li>
                         <li><a href={this._getNewExtractorRoute("substring")}>Substring</a></li>
                         <li><a href={this._getNewExtractorRoute("split_and_index")}>Split &amp; Index</a></li>
                         <li><a href={this._getNewExtractorRoute("copy_input")}>Copy Input</a></li>
