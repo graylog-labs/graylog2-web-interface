@@ -1,6 +1,8 @@
 'use strict';
 
 var React = require('react');
+var Row = require('react-bootstrap').Row;
+var Col = require('react-bootstrap').Col;
 var MessageLoader = require('./MessageLoader');
 
 var ExtractorExampleMessage = React.createClass({
@@ -43,7 +45,13 @@ var ExtractorExampleMessage = React.createClass({
             <div>
                 {originalMessage}
                 {messagePreview}
-                <MessageLoader onMessageLoaded={this.onExampleLoaded}/>
+                <Col md={8}>
+                    <Row>
+                        <Col mdOffset={2}>
+                            <MessageLoader onMessageLoaded={this.onExampleLoaded}/>
+                        </Col>
+                    </Row>
+                </Col>
             </div>
         );
     }

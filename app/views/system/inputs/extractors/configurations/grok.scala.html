@@ -11,21 +11,19 @@
 <input type="hidden" name="extractor_type" value="grok" />
 
 <div class="form-group">
-    <label for="grok_pattern">Grok pattern:</label>
-    <div class="row">
-        <div class="col-md-5">
-            <div class="input-group">
-                <input name="grok_pattern" id="grok_pattern" type="text" class="form-control" value="@pattern_value" required />
-                <span class="input-group-btn">
-                    <button class="btn btn-info xtrc-try-grok" type="button">Try!</button>
-                </span>
-            </div>
+    <label for="grok_pattern" class="col-md-2 control-label">Grok pattern</label>
+    <div class="col-md-10">
+        <div class="input-group">
+            <input name="grok_pattern" id="grok_pattern" type="text" class="form-control" value="@pattern_value" required />
+            <span class="input-group-btn">
+                <button class="btn btn-info xtrc-try-grok" type="button">Try!</button>
+            </span>
         </div>
+        <span class="help-block">
+            Matches the field against the current Grok pattern list, use <b>%{PATTERN-NAME}</b>
+            to refer to a <a href="@routes.GrokPatternsController.index()">stored pattern</a>.
+        </span>
     </div>
-    <span class="help-block">
-        Matches the field against the current Grok pattern list, use <b>%{PATTERN-NAME}</b>
-        to refer to a <a href="@routes.GrokPatternsController.index()">stored pattern</a>.
-    </span>
 </div>
 
 @views.html.system.inputs.extractors.configurations.extractor_preview()

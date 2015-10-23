@@ -24,48 +24,49 @@
 <input type="hidden" name="extractor_type" value="regex_replace" />
 
 <div class="form-group">
-    <label for="regex_value">Regular expression:</label>
-    <div class="row">
-        <div class="col-md-5">
-            <input name="regex" id="regex" type="text"
-            placeholder="^.*string(.+)$" class="form-control" value="@regex" required />
-        </div>
-    </div>
-    <span class="help-block">
-        The regular expression used for extraction.
-        Learn more in the @views.html.partials.links.docs(views.helpers.DocsHelper.PAGE_EXTRACTORS, "documentation").
-    </span>
-</div>
-
-<div class="form-group">
-    <label for="regex_value">Replacement:</label>
-    <div class="row">
-        <div class="col-md-5">
-            <input name="replacement" id="replacement" type="text"
-            placeholder="$1" class="form-control" value="@replacement" required />
-        </div>
+    <label for="regex" class="col-md-2 control-label">Regular expression</label>
+    <div class="col-md-10">
+        <input name="regex" id="regex" type="text"
+        placeholder="^.*string(.+)$" class="form-control" value="@regex" required />
+        <span class="help-block">
+            The regular expression used for extraction.
+            Learn more in the @views.html.partials.links.docs(views.helpers.DocsHelper.PAGE_EXTRACTORS, "documentation").
+        </span>
     </div>
 </div>
 
 <div class="form-group">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="checkbox">
-                <label for="replace_all">
-                    <input name="replace_all" id="replace_all" type="checkbox" value="replace_all" @if(replace_all) {
-                        checked="checked" } />
-                    Replace all occurrences of the pattern.
-                </label>
-            </div>
-            <span class="help-block">
-                Whether to replace all occurrences of the given pattern or only the first occurrence.
-            </span>
-        </div>
+    <label for="replacement" class="col-md-2 control-label">Replacement</label>
+    <div class="col-md-10">
+        <input name="replacement" id="replacement" type="text"
+        placeholder="$1" class="form-control" value="@replacement" required />
+        <span class="help-block">
+            The replacement used for the matching text. Please refer to the
+            <a target="_blank" href="https://docs.oracle.com/javase/7/docs/api/java/util/regex/Matcher.html#replaceAll(java.lang.String)">Matcher</a>
+            API documentation for the possible options.
+        </span>
     </div>
 </div>
 
 <div class="form-group">
-    <button class="btn btn-info xtrc-try-regex-replace" type="button">Try!</button>
+    <div class="col-md-offset-2 col-md-10">
+        <div class="checkbox">
+            <label for="replace_all">
+                <input name="replace_all" id="replace_all" type="checkbox" value="replace_all" @if(replace_all) {
+                    checked="checked" } />
+                Replace all occurrences of the pattern.
+            </label>
+        </div>
+        <span class="help-block">
+            Whether to replace all occurrences of the given pattern or only the first occurrence.
+        </span>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-md-offset-2 col-md-10">
+        <button class="btn btn-info xtrc-try-regex-replace" type="button">Try!</button>
+    </div>
 </div>
 
 @views.html.system.inputs.extractors.configurations.extractor_preview()

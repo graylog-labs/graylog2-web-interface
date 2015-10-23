@@ -19,30 +19,30 @@
 <input type="hidden" name="extractor_type" value="split_and_index" />
 
 <div class="form-group">
-    <label for="split_by">Split by:</label>
-    <div class="row">
-        <div class="col-md-5">
-            <input name="split_by" id="split_by" type="text" class="form-control" value="@split_by_value" required />
-        </div>
+    <label for="split_by" class="col-md-2 control-label">Split by</label>
+    <div class="col-md-10">
+        <input name="split_by" id="split_by" type="text" class="form-control" value="@split_by_value" required />
+        <span class="help-block">
+            What character to split on. <strong>Example:</strong> A whitespace character will
+            split <em>foo bar baz</em> to <em>[foo,bar,baz]</em>.
+        </span>
     </div>
-    <span class="help-block">
-        What character to split on. <strong>Example:</strong> A whitespace character will
-        split <em>foo bar baz</em> to <em>[foo,bar,baz]</em>.
-    </span>
 </div>
 
 <div class="form-group">
-    <label for="index">Target index:</label>
-    <div class="row">
-        <div class="col-md-5">
-            <input name="index" id="index" type="number" class="form-control" value="@index_value" min="1" required />
-        </div>
+    <label for="index" class="col-md-2 control-label">Target index</label>
+    <div class="col-md-10">
+        <input name="index" id="index" type="number" class="form-control" value="@index_value" min="1" required />
+        <span class="help-block">
+            What part of the split string to you want to use?
+            <strong>Example:</strong> <em>2</em> selects <em>bar</em>
+            from <em>foo bar baz</em> when split by whitespace.
+        </span>
     </div>
-    <span class="help-block">
-        What part of the split string to you want to use?
-        <strong>Example:</strong> <em>2</em> selects <em>bar</em>
-        from <em>foo bar baz</em> when split by whitespace.
-    </span>
 </div>
 
-<button class="btn btn-info xtrc-try-splitandindex" type="button">Try!</button>
+<div class="form-group">
+    <div class="col-md-offset-2 col-md-10">
+        <button class="btn btn-info xtrc-try-splitandindex" type="button">Try!</button>
+    </div>
+</div>

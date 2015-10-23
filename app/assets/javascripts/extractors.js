@@ -406,7 +406,7 @@ $(document).ready(function () {
         fieldContainer.show();
         $("input", fieldContainer).attr("placeholder", "");
         $("input", fieldContainer).attr("data-escape", true);
-        $("label", fieldContainer).html("Field must include this string:");
+        $("label", fieldContainer).html("Field contains this string");
     }
 
     function regexConditionTypeChecked() {
@@ -415,7 +415,7 @@ $(document).ready(function () {
         div.show();
         $("input", div).attr("placeholder", "^\d{3,}");
         $("input", div).attr("data-escape", false);
-        $("label", div).html("Field must match this regular expression:");
+        $("label", div).html("Field matches this regular expression");
     }
 
     // If we are editing an extractor, we want to show the form for the selected condition type
