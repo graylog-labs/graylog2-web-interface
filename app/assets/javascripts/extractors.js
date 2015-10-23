@@ -44,6 +44,15 @@ $(document).ready(function () {
         });
     };
 
+    var testRegexReplace = function (regex, replacement, replaceAll) {
+        return testExtractor('/a/tools/regex_replace_test', {
+            string: $("#xtrc-example").text(),
+            regex: regex,
+            replacement: replacement,
+            replace_all: replaceAll
+        });
+    };
+
     var testSubstring = function (beginIndex, endIndex) {
         return testExtractor('/a/tools/substring_test', {
             string: $("#xtrc-example").text(),
@@ -88,6 +97,34 @@ $(document).ready(function () {
             if (matchResult.finds) {
                 if (matchResult.match != null) {
                     highlightMatchResult(matchResult);
+                } else {
+                    showWarning("Regular expression does not contain any matcher group to extract.");
+                }
+            } else {
+                showWarning("Regular expression did not match.");
+            }
+        });
+
+        promise.fail(function () {
+            showError("Could not try regular expression. Make sure that it is valid.");
+        });
+
+        promise.always(function () {
+            button.html("Try!");
+        });
+    });
+
+    // Try regular expression against example.
+    $(".xtrc-try-regex-replace").on("click", function () {
+        var button = $(this);
+
+        button.html("<i class='fa fa-spinner fa-spin'></i> Trying...");
+        var promise = testRegexReplace($("#regex").val(), $("#replacement").val(), $("#replace_all").is(":checked"));
+
+        promise.done(function (matchResult) {
+            if (matchResult.finds) {
+                if (matchResult.match != null) {
+                    showRegexReplaceResult(matchResult);
                 } else {
                     showWarning("Regular expression does not contain any matcher group to extract.");
                 }
@@ -290,6 +327,12 @@ $(document).ready(function () {
         matchesHtml += "</dl>";
 
         fields.html(matchesHtml);
+    }
+
+    function showRegexReplaceResult(result) {
+        var fields = $("#regex-replace-matches");
+        var matchHtml = htmlEscape(result.match.match);
+        fields.html(matchHtml);
     }
 
     // Add converter button.
