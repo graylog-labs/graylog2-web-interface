@@ -27,13 +27,8 @@
     <label for="regex_value">Regular expression:</label>
     <div class="row">
         <div class="col-md-5">
-            <div class="input-group">
-                <input name="regex" id="regex" type="text"
-                placeholder="^.*string(.+)$" class="form-control" value="@regex" required />
-                <span class="input-group-btn">
-                    <button class="btn btn-info xtrc-try-regex-replace" type="button">Try!</button>
-                </span>
-            </div>
+            <input name="regex" id="regex" type="text"
+            placeholder="^.*string(.+)$" class="form-control" value="@regex" required />
         </div>
     </div>
     <span class="help-block">
@@ -46,18 +41,12 @@
     <label for="regex_value">Replacement:</label>
     <div class="row">
         <div class="col-md-5">
-            <div class="input-group">
-                <input name="replacement" id="replacement" type="text"
-                placeholder="$1" class="form-control" value="@replacement" required />
-            </div>
+            <input name="replacement" id="replacement" type="text"
+            placeholder="$1" class="form-control" value="@replacement" required />
         </div>
     </div>
-    <span class="help-block">
-        The replacement used for the matching text. Please refer to the
-        <a target="_blank" href="https://docs.oracle.com/javase/7/docs/api/java/util/regex/Matcher.html#replaceAll(java.lang.String)">Matcher</a>
-        API documentation for the possible options.
-    </span>
 </div>
+
 <div class="form-group">
     <div class="row">
         <div class="col-md-12">
@@ -75,6 +64,8 @@
     </div>
 </div>
 
-<div id="regex-replace-matches">
+<div class="form-group">
+    <button class="btn btn-info xtrc-try-regex-replace" type="button">Try!</button>
 </div>
 
+@views.html.system.inputs.extractors.configurations.extractor_preview()

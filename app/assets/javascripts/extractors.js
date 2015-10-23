@@ -126,14 +126,17 @@ $(document).ready(function () {
                 if (matchResult.match != null) {
                     showRegexReplaceResult(matchResult);
                 } else {
+                    hideExtractorPreviewPanel();
                     showWarning("Regular expression does not contain any matcher group to extract.");
                 }
             } else {
+                hideExtractorPreviewPanel();
                 showWarning("Regular expression did not match.");
             }
         });
 
         promise.fail(function () {
+            hideExtractorPreviewPanel();
             showError("Could not try regular expression. Make sure that it is valid.");
         });
 
@@ -267,6 +270,7 @@ $(document).ready(function () {
         });
 
         promise.fail(function () {
+            hideExtractorPreviewPanel();
             showError(warningText);
         });
 
@@ -275,8 +279,19 @@ $(document).ready(function () {
         });
     });
 
+    var $previewPanel = $("#extractor-preview");
+
+    function hideExtractorPreviewPanel() {
+        $previewPanel.hide();
+    }
+
+    function prepareExtractorPreviewPanel() {
+        $previewPanel.show();
+        return $('.panel-body', $previewPanel);
+    }
+
     function showJsonMatches(result) {
-        var fields = $("#json-matches");
+        var $previewContainer = prepareExtractorPreviewPanel();
 
         var matchesHtml = "<dl>";
         for (var match in result.matches) {
@@ -285,7 +300,7 @@ $(document).ready(function () {
         }
         matchesHtml += "</dl>";
 
-        fields.html(matchesHtml);
+        $previewContainer.html(matchesHtml);
     }
 
     // Try grok against example.
@@ -302,6 +317,7 @@ $(document).ready(function () {
             if (result.finds) {
                 showGrokMatches(result);
             } else {
+                hideExtractorPreviewPanel();
                 showWarning(warningText);
             }
         });
@@ -316,7 +332,7 @@ $(document).ready(function () {
     });
 
     function showGrokMatches(result) {
-        var fields = $("#grok-matches");
+        var $previewContainer = prepareExtractorPreviewPanel();
 
         var matchesHtml = "<dl>";
         for (var i = 0; i < result.matches.length; i++) {
@@ -326,13 +342,13 @@ $(document).ready(function () {
         }
         matchesHtml += "</dl>";
 
-        fields.html(matchesHtml);
+        $previewContainer.html(matchesHtml);
     }
 
     function showRegexReplaceResult(result) {
-        var fields = $("#regex-replace-matches");
+        var $previewContainer = prepareExtractorPreviewPanel();
         var matchHtml = htmlEscape(result.match.match);
-        fields.html(matchHtml);
+        $previewContainer.html(matchHtml);
     }
 
     // Add converter button.
