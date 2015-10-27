@@ -1,0 +1,16 @@
+@(currentUser: org.graylog2.restclient.models.User, clusterId: String, masterOs: String, masterVersion: String, gettingStartedUrl: String)
+
+@import lib.json.Json
+@import views.helpers.Permissions
+@import lib.security.RestPermissions._
+
+@main("Getting Started", null, null, currentUser, false) {
+
+    <div id="react-gettingstarted"
+         data-cluster-id="@clusterId"
+         data-master-os="@masterOs"
+         data-master-version="@masterVersion"
+         data-getting-started-url="@gettingStartedUrl"
+    >
+    </div>
+}

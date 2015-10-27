@@ -26,4 +26,5 @@ $(document).ready(() => {
     require('./components/streamrules/mount');
     require('./components/search/mount');
     require('./components/alerts/mount');
+    require('./components/gettingstarted/mount');
 });

@@ -13,6 +13,9 @@ GET           /disconnected                                                     
 # Home page
 GET           /                                                                                  @controllers.SearchController.globalSearch()
 
+# Getting started
+GET           /gettingstarted                                                                    @controllers.GettingStartedController.index()
+
 # Redirect for personal startpage.
 GET           /startpage                                                                         @controllers.StartpageController.redirect()
 
