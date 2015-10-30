@@ -10,12 +10,12 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+    	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    	<meta name="robots" content="noindex, nofollow"/>
         <title>Graylog - @title</title>
         <script type="text/javascript">
             var userPreferences = @Html(Json.toJsonString(currentUser.getPreferences));
         </script>
-        <meta name="robots" content="noindex, nofollow">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
       	@partials.head()
     </head>
     <body>
