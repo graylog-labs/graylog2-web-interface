@@ -100,7 +100,11 @@ public enum RestPermissions {
     ROLES_CREATE("roles:create"),
     ROLES_READ("roles:read"),
     ROLES_EDIT("roles:edit"),
-    ROLES_DELETE("roles:delete");
+    ROLES_DELETE("roles:delete"),
+    CLUSTER_CONFIG_ENTRY_CREATE("clusterconfigentry:create"),
+    CLUSTER_CONFIG_ENTRY_READ("clusterconfigentry:read"),
+    CLUSTER_CONFIG_ENTRY_EDIT("clusterconfigentry:edit"),
+    CLUSTER_CONFIG_ENTRY_DELETE("clusterconfigentry:delete");
 
     private final String permission;
 
