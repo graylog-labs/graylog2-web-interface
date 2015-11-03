@@ -199,6 +199,7 @@ public class Global extends GlobalSettings {
     public <T extends EssentialFilter> Class<T>[] filters() {
         final List<Class<T>> filters = Lists.newArrayList();
         filters.add((Class<T>) NoCacheHeader.class);
+        filters.add((Class<T>) UserAgentCompatibleHeader.class);
 
         if (gelfAccessLog) {
             filters.add((Class<T>) AccessLog.class);
