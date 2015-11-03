@@ -27,4 +27,5 @@ $(document).ready(() => {
     require('./components/search/mount');
     require('./components/alerts/mount');
     require('./components/gettingstarted/mount');
+    require('./components/usagestats/mount');
 });

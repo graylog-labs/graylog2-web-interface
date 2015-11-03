@@ -1,3 +1,5 @@
+@import lib.security.RestPermissions
+@import views.helpers.Permissions.isPermitted
 @(currentUser: org.graylog2.restclient.models.User, clusterId: String, masterOs: String, masterVersion: String, gettingStartedUrl: String)
 
 @import lib.json.Json
@@ -5,6 +7,10 @@
 @import lib.security.RestPermissions._
 
 @main("Getting Started", null, null, currentUser, false) {
+
+    @if(isPermitted(CLUSTER_CONFIG_ENTRY_EDIT, "org.graylog.plugins.usagestatistics.UsageStatsOptOutState")) {
+        <div id="usage-stats-opt-out"></div>
+    }
 
     <div id="react-gettingstarted"
          data-cluster-id="@clusterId"

@@ -313,6 +313,10 @@ GET         /a/streams/:stream_id/alerts/:alert_id/history                      
 # API: Collectors
 GET           /a/system/collectors                                                               @controllers.api.CollectorsApiController.index()
 
+# API: Usage Stats
+GET           /a/system/usagestats/opt-out                                                       @controllers.api.UsageStatsApiController.getOptOutState()
+POST          /a/system/usagestats/opt-out                                                       @controllers.api.UsageStatsApiController.setOptOutState()
+
 GET           /robots.txt                                                                        controllers.Assets.at(path="/public", file="robots.txt")
 
 # Map static resources from the /public folder to the /assets URL path

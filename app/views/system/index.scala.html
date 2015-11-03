@@ -141,6 +141,10 @@
         </div>
     </div>
 
+    @if(isPermitted(CLUSTER_CONFIG_ENTRY_EDIT, "org.graylog.plugins.usagestatistics.UsageStatsOptOutState")) {
+        <div id="usage-stats-opt-in"></div>
+    }
+
     @if(isPermitted(SYSTEMMESSAGES_READ)) {
         <div class="row content">
             <div class="col-md-12">
