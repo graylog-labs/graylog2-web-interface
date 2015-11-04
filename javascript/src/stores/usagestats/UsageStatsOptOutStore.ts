@@ -10,6 +10,12 @@ export interface UsageStatsOptOutState {
 }
 
 export var UsageStatsOptOutStore = {
+    pluginEnabled(): JQueryPromise<boolean> {
+        var url = jsRoutes.controllers.api.UsageStatsApiController.pluginEnabled().url;
+        var promise = $.getJSON(url);
+
+        return promise;
+    },
     getOptOutState(): JQueryPromise<UsageStatsOptOutState> {
         var url = jsRoutes.controllers.api.UsageStatsApiController.setOptOutState().url;
         var promise = $.getJSON(url);

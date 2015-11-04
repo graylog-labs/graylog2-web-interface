@@ -18,10 +18,13 @@
  */
 package controllers.api;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.net.MediaType;
 import controllers.AuthenticatedController;
 import lib.json.Json;
+import org.graylog2.restclient.models.UsageStatsConfigurationResponse;
 import org.graylog2.restclient.models.UsageStatsOptOutState;
 import org.graylog2.restclient.models.UsageStatsService;
 import play.mvc.Result;
@@ -34,6 +37,13 @@ public class UsageStatsApiController extends AuthenticatedController {
     @Inject
     public UsageStatsApiController(UsageStatsService usageStatsService) {
         this.usageStatsService = usageStatsService;
+    }
+
+    public Result pluginEnabled() {
+        final UsageStatsConfigurationResponse config = usageStatsService.getConfig();
+        final PluginEnabledResponse response = new PluginEnabledResponse(config != null && config.isEnabled());
+
+        return ok(Json.toJsonString(response));
     }
 
     public Result getOptOutState() {
@@ -49,5 +59,15 @@ public class UsageStatsApiController extends AuthenticatedController {
         usageStatsService.setOptOutState(optOutState);
 
         return ok();
+    }
+
+    @JsonAutoDetect
+    private static class PluginEnabledResponse {
+        @JsonProperty("plugin_enabled")
+        private final boolean pluginEnabled;
+
+        public PluginEnabledResponse(boolean pluginEnabled) {
+            this.pluginEnabled = pluginEnabled;
+        }
     }
 }

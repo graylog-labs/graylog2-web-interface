@@ -316,6 +316,7 @@ GET           /a/system/collectors                                              
 # API: Usage Stats
 GET           /a/system/usagestats/opt-out                                                       @controllers.api.UsageStatsApiController.getOptOutState()
 POST          /a/system/usagestats/opt-out                                                       @controllers.api.UsageStatsApiController.setOptOutState()
+GET           /a/system/usagestats/plugin-enabled                                                @controllers.api.UsageStatsApiController.pluginEnabled()
 
 GET           /robots.txt                                                                        controllers.Assets.at(path="/public", file="robots.txt")
 

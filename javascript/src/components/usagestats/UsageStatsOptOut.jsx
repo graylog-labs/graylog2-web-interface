@@ -9,10 +9,17 @@ const UsageStatsOptOut = React.createClass({
     getInitialState() {
         return {
             optOutStateLoaded: false,
-            optOutState: null
+            optOutState: null,
+            pluginEnabled: false
         };
     },
     componentDidMount() {
+        UsageStatsOptOutStore.pluginEnabled().done((data) => {
+            if (data && data.plugin_enabled === true) {
+                this.setState({pluginEnabled: true});
+            }
+        });
+
         UsageStatsOptOutStore.getOptOutState().done((optOutState) => {
             this.setState({optOutStateLoaded: true, optOutState: optOutState});
         });
@@ -30,7 +37,7 @@ const UsageStatsOptOut = React.createClass({
 
         if (this.state.optOutStateLoaded) {
             // We only show the opt-out form if there is no opt-out state!
-            if (this.state.optOutState === null) {
+            if (this.state.pluginEnabled === true && this.state.optOutState === null) {
                 content = (
                     <Row className="content">
                         <Col md={12}>
