@@ -29,7 +29,7 @@ const UsageStatsOptIn = React.createClass({
         var content = null;
 
         if (this.state.optOutStateLoaded) {
-            // We only show the opt-out form if there is no opt-out state!
+            // Only show the opt-in if there is state. Otherwise the plugin is not loaded or the user hasn't decided yet.
             if (this.state.optOutState !== null) {
                 var form = null;
 
