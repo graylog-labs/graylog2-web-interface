@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.net.MediaType;
 import controllers.AuthenticatedController;
 import lib.json.Json;
-import org.graylog2.rest.models.system.usagestats.UsageStatsOptOutState;
+import org.graylog2.restclient.models.UsageStatsOptOutState;
 import org.graylog2.restclient.models.UsageStatsService;
 import play.mvc.Result;
 
