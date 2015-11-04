@@ -41,13 +41,12 @@ const UsageStatsOptOut = React.createClass({
                 content = (
                     <Row className="content">
                         <Col md={12}>
-                            <div>
-                                Graylog periodically sends anonymous usage information to help us improve your experience.
-                                {' '}
-                                <Button bsSize="small" bsStyle="success" onClick={this._handleClickEnable}>Ok</Button>
-                                {' '}
-                                <Button bsSize="xsmall" bsStyle="link" onClick={this._handleClickDisable}>Don't send</Button>
-                            </div>
+                            <p>
+                                Graylog collects completely anonymous usage data to help us improve the product for you. Continuing means you are cool with sending us anonymous data. If this makes you unhappy, click "Don't send" to disable.
+                            </p>
+                            <Button bsSize="small" bsStyle="success" onClick={this._handleClickEnable}>Ok</Button>
+                            {' '}
+                            <Button bsSize="small" bsStyle="info" onClick={this._handleClickDisable}>Don't send</Button>
                         </Col>
                     </Row>
                 );

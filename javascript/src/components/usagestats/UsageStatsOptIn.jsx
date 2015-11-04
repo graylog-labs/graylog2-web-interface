@@ -37,7 +37,7 @@ const UsageStatsOptIn = React.createClass({
                     form = (
                         <div>
                             <p className="description">
-                                Anonymous usage statistics collection is currently <strong>disabled</strong>. You can enable it to help us making Graylog better.
+                                You have currently <strong>disabled</strong> sending usage statistics to Graylog. Please consider turning it back on to provide anonymous statistics that will help us make Graylog better for you.
                             </p>
                             <Button bsSize="small" bsStyle="success" onClick={this._handleClickEnable}>Enable</Button>
                         </div>
@@ -46,7 +46,7 @@ const UsageStatsOptIn = React.createClass({
                     form = (
                         <div>
                             <p className="description">
-                                You decided to <strong>enable</strong> the anonymous usage statistics collection to make Graylog better. Thank you!
+                                You have currently <strong>enabled</strong> sending usage statistics to Graylog. Thank you! User statistics help us make Graylog better. If you've changed your mind, click "Disable".
                             </p>
                             <Button bsSize="small" bsStyle="info" onClick={this._handleClickDisable}>Disable</Button>
                         </div>
