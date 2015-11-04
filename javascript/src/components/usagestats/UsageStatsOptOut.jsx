@@ -12,6 +12,11 @@ const UsageStatsOptOut = React.createClass({
             optOutState: null
         };
     },
+    componentDidMount() {
+        UsageStatsOptOutStore.getOptOutState().done((optOutState) => {
+            this.setState({optOutStateLoaded: true, optOutState: optOutState});
+        });
+    },
     _handleClickEnable() {
         UsageStatsOptOutStore.setOptIn(true);
         this.setState({optOutStateLoaded: true, optOutState: {opt_out: false}});
@@ -40,10 +45,6 @@ const UsageStatsOptOut = React.createClass({
                     </Row>
                 );
             }
-        } else {
-            UsageStatsOptOutStore.getOptOutState().done((optOutState) => {
-                this.setState({optOutStateLoaded: true, optOutState: optOutState});
-            });
         }
 
         return content;
