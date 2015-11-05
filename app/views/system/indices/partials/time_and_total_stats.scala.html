@@ -1,0 +1,6 @@
+@import org.graylog2.rest.models.system.indexer.responses.IndexStats
+@(t: IndexStats.TimeAndTotalStats)
+<span class="number-format" data-format="0,0">@t.total</span> ops
+@if(t.total > 0) {
+    (took <span class="moment-humanize" data-unit="seconds" title="@(t.timeSeconds)s">@t.timeSeconds</span>)
+}

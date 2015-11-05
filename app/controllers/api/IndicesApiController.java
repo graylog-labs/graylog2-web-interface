@@ -102,8 +102,7 @@ public class IndicesApiController extends AuthenticatedController {
                 return notFound();
             }
             final String currentTarget = indexService.getDeflectorInfo().currentTarget;
-            return ok(views.html.partials.indices.index_info.render(currentTarget, index));
-
+            return ok(views.html.partials.indices.index_info.render(currentTarget, index, indexService.indexInfo(indexName)));
         } catch (APIException | IOException e) {
             return internalServerError();
         }
