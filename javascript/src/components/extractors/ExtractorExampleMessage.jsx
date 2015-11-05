@@ -45,13 +45,7 @@ var ExtractorExampleMessage = React.createClass({
             <div>
                 {originalMessage}
                 {messagePreview}
-                <Col md={8}>
-                    <Row>
-                        <Col mdOffset={2}>
-                            <MessageLoader onMessageLoaded={this.onExampleLoaded}/>
-                        </Col>
-                    </Row>
-                </Col>
+                <MessageLoader onMessageLoaded={this.onExampleLoaded}/>
             </div>
         );
     }
