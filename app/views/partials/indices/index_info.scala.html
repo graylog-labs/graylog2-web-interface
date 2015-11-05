@@ -1,4 +1,6 @@
-@(deflectorTarget: String, index: org.graylog2.restclient.models.Index)
+@import org.graylog2.rest.models.system.indexer.responses.IndexInfo
+@import org.graylog2.restclient.models.Index
+@(deflectorTarget: String, index: Index, indexInfo: IndexInfo)
 
 @import views.helpers.DateHelper
 
@@ -8,23 +10,23 @@
         in @(index.getRange.getCalculationTookMs)ms.
     }
 
-    @if(index.getInfo == null) {
+    @if(indexInfo == null) {
         <div class="alert alert-info"><i class="fa fa-info-circle"></i> Index information is not available at the moment, please try again later.</div>
     } else {
-        @index.getInfo.getSegments segments,
-        @index.getInfo.getOpenSearchContexts open search contexts,
-        @index.getInfo.getDocuments.deleted deleted messages
+        @indexInfo.primaryShards.segments segments,
+        @indexInfo.primaryShards.openSearchContexts open search contexts,
+        @indexInfo.primaryShards.documents.deleted deleted messages
 
         <div class="row" style="margin-bottom: 10px;">
-            @views.html.system.indices.partials.shard_meters.render("Primary shard operations", index.getInfo.getPrimaryShards)
-            @views.html.system.indices.partials.shard_meters.render("Total shard operations", index.getInfo.getAllShards)
+            @views.html.system.indices.partials.index_stats.render("Primary shard operations", indexInfo.primaryShards())
+            @views.html.system.indices.partials.index_stats.render("Total shard operations", indexInfo.allShards())
         </div>
 
         <div class="shard-routing">
             <h3>Shard routing</h3>
 
             <ul class="shards">
-            @for(route <- index.getInfo.getShardRouting.sortBy(_.id)) {
+            @for(route <- indexInfo.routing.sortBy(_.id)) {
                 <li class="shard shard-@route.state
                     @if(route.primary) {
                         shard-primary

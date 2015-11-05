@@ -1,0 +1,21 @@
+@import org.graylog2.rest.models.system.indexer.responses.IndexStats
+@(title: String, indexStats: IndexStats)
+<div class="shard-meters col-md-4">
+    <h3 style="display: inline;">@title</h3>
+    <dl>
+        <dt>Index:</dt>
+        <dd>@views.html.system.indices.partials.time_and_total_stats.render(indexStats.index())</dd>
+        <dt>Flush:</dt>
+        <dd>@views.html.system.indices.partials.time_and_total_stats.render(indexStats.flush())</dd>
+        <dt>Merge:</dt>
+        <dd>@views.html.system.indices.partials.time_and_total_stats.render(indexStats.merge())</dd>
+        <dt>Query:</dt>
+        <dd>@views.html.system.indices.partials.time_and_total_stats.render(indexStats.searchQuery())</dd>
+        <dt>Fetch:</dt>
+        <dd>@views.html.system.indices.partials.time_and_total_stats.render(indexStats.searchFetch())</dd>
+        <dt>Get:</dt>
+        <dd>@views.html.system.indices.partials.time_and_total_stats.render(indexStats.get())</dd>
+        <dt>Refresh:</dt>
+        <dd>@views.html.system.indices.partials.time_and_total_stats.render(indexStats.refresh())</dd>
+    </dl>
+</div>

@@ -76,6 +76,7 @@ public class IndicesController extends AuthenticatedController {
                     currentUser(),
                     bc,
                     indexService.all(),
+                    indexService.allIndicesInfo(),
                     closedIndices.indices,
                     reopenedSet,
                     clusterHealth,

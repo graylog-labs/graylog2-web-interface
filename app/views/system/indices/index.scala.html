@@ -1,9 +1,11 @@
 @import org.joda.time.DateTime
+@import org.graylog2.rest.models.system.indexer.responses.IndexInfo
 @(currentUser: org.graylog2.restclient.models.User,
         breadcrumbs: lib.BreadcrumbList,
-        indices: List[org.graylog2.restclient.models.Index],
-        closedIndices: List[String],
-        reopenedSet: Set[String],
+        indices: java.util.List[org.graylog2.restclient.models.Index],
+        indicesInfo : java.util.Map[String, IndexInfo],
+        closedIndices: java.util.List[String],
+        reopenedSet: java.util.Set[String],
         clusterHealth: org.graylog2.restclient.models.ESClusterHealth,
         deflectorTarget: String,
         deflectorConfig: org.graylog2.restclient.models.api.responses.system.indices.DeflectorConfigResponse)
@@ -93,7 +95,7 @@
     </div>
 
     @* We may not have deflector index information if the deflector is cycled and the index ranges are being rebuilt. *@
-    @if(indices.find(_.getName == deflectorTarget) == None) {
+    @if(!indices.exists(_.getName == deflectorTarget)) {
         <div class="row index-description content">
             <div class="col-md-12">
                 <h3>
@@ -111,18 +113,19 @@
     }
 
     @for(index <- indices.sortWith(_.getNumber > _.getNumber)) {
-        <div class="row index-description content">
-            <div class="col-md-12">
-                <h2>
-                    @if(index.getName.equals(deflectorTarget)) {
-                        <i class="fa fa-bolt" title="Write-active index"></i>
-                    }
+        @defining(indicesInfo.get(index.getName)) { indexInfo =>
+            <div class="row index-description content">
+                <div class="col-md-12">
+                    <h2>
+                        @if(index.getName.equals(deflectorTarget)) {
+                            <i class="fa fa-bolt" title="Write-active index"></i>
+                        }
 
-                    @index.getName
+                        @index.getName
 
-                    @if(reopenedSet.contains(index.getName)) {
-                        <i class="fa fa-retweet" title="Reopened index"></i>
-                    }
+                        @if(reopenedSet.contains(index.getName)) {
+                            <i class="fa fa-retweet" title="Reopened index"></i>
+                        }
 
                     <small>
                         @if(index.getName.equals(deflectorTarget)) {
@@ -139,28 +142,31 @@
                             }
                         }
 
-                        @if(index != null && index.getInfo != null) {
-                            (@Tools.byteToHuman(index.getInfo.getStoreSizeBytes) /
-                            <span class="number-format" data-format="0,0">@index.getInfo.getDocuments.count</span> messages)
+                        @if(index != null && indexInfo != null) {
+                            (@Tools.byteToHuman(indexInfo.primaryShards.storeSizeBytes) /
+                            <span class="number-format" data-format="0,0">@indexInfo.primaryShards.documents.count</span>
+                            messages)
                         }
 
                         @if(!index.getName.equals(deflectorTarget)) {
-                            <a href="#" class="index-details" data-index-name="@index.getName"><i class="fa fa-caret-right"></i>  Load Details / Actions</a>
+                            <a href="#" class="index-details" data-index-name="@index.getName"><i class="fa fa-caret-right"></i>
+                                Load Details / Actions</a>
                         }
                     </small>
-                </h2>
+                    </h2>
 
-                <div class="index-info-holder"
-                    @if(!index.getName.equals(deflectorTarget)) {
-                        style="display: none;"
-                        }
-                >
-                @if(index.getName.equals(deflectorTarget)) {
-                    @views.html.partials.indices.index_info.render(deflectorTarget, index)
-                }
+                    <div class="index-info-holder"
+                        @if(!index.getName.equals(deflectorTarget)) {
+                            style="display: none;"
+                            }
+                    >
+                    @if(index.getName.equals(deflectorTarget)) {
+                        @views.html.partials.indices.index_info.render(deflectorTarget, index, indexInfo)
+                    }
+                    </div>
                 </div>
             </div>
-        </div>
+        }
     }
 
 }
