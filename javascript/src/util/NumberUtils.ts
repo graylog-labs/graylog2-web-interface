@@ -41,6 +41,9 @@ var NumberUtils = {
             return percentage;
         }
     },
+    isNumber(possibleNumber) {
+        return possibleNumber !== "" && !isNaN(possibleNumber);
+    },
 };
 
 export = NumberUtils;
