@@ -9,26 +9,33 @@ const UsageStatsOptIn = React.createClass({
     getInitialState() {
         return {
             optOutStateLoaded: false,
-            optOutState: null
+            optOutState: null,
+            pluginEnabled: false
         };
     },
     componentDidMount() {
+        UsageStatsOptOutStore.pluginEnabled().done((data) => {
+            if (data && data.plugin_enabled === true) {
+                this.setState({pluginEnabled: true});
+            }
+        });
+
         UsageStatsOptOutStore.getOptOutState().done((optOutState) => {
             this.setState({optOutStateLoaded: true, optOutState: optOutState});
         });
     },
     _handleClickEnable() {
         UsageStatsOptOutStore.setOptIn(false);
-        this.setState({optOutStateLoaded: true, optOutState: {opt_out: false}});
+        this.setState({optOutState: {opt_out: false}});
     },
     _handleClickDisable() {
         UsageStatsOptOutStore.setOptOut(false);
-        this.setState({optOutStateLoaded: true, optOutState: {opt_out: true}});
+        this.setState({optOutState: {opt_out: true}});
     },
     render() {
         var content = null;
 
-        if (this.state.optOutStateLoaded) {
+        if (this.state.optOutStateLoaded && this.state.pluginEnabled === true) {
             var form = null;
 
             if (this.state.optOutState !== null && this.state.optOutState.opt_out === true) {
