@@ -62,13 +62,6 @@ var Navigation = React.createClass({
                             { this._isPermitted(['INPUTS_EDIT']) && <MenuItem href={jsRoutes.controllers.GrokPatternsController.index().url}>Grok Patterns</MenuItem> }
                         </DropdownButton>
 
-                        <DropdownButton title="Help" active={this._isActive('/gettingstarted')}>
-                            <MenuItem href={jsRoutes.controllers.GettingStartedController.index().url}>Getting Started</MenuItem>
-                            <MenuItem href="http://docs.graylog.org" target="blank"><i className="fa fa-external-link"></i> Documentation</MenuItem>
-                            <MenuItem divider />
-                            <MenuItem href="https://www.graylog.org/support/" target="blank"><i className="fa fa-external-link"></i> Get support</MenuItem>
-                        </DropdownButton>
-
                     </Nav>
 
                     <Nav navbar>
@@ -81,6 +74,14 @@ var Navigation = React.createClass({
                         <NavItem href={jsRoutes.controllers.NodesController.nodes().url}>
                             <GlobalThroughput />
                         </NavItem>
+
+                        <DropdownButton title="Help" active={this._isActive('/gettingstarted')}>
+                            <MenuItem href={jsRoutes.controllers.GettingStartedController.index().url}>Getting Started</MenuItem>
+                            <MenuItem href="http://docs.graylog.org" target="blank"><i className="fa fa-external-link"></i> Documentation</MenuItem>
+                            <MenuItem divider />
+                            <MenuItem href="https://www.graylog.org/support/" target="blank"><i className="fa fa-external-link"></i> Get support</MenuItem>
+                        </DropdownButton>
+
                         <UserMenu fullName={this.props.fullName} loginName={this.props.loginName}/>
                     </Nav>
                 </CollapsibleNav>
