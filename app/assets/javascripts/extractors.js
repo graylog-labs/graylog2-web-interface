@@ -20,8 +20,16 @@ $(document).ready(function () {
 
         var wizard = $(".xtrc-wizard");
         $(".xtrc-wizard-field", wizard).html(field);
-        $(".xtrc-wizard-example", wizard).html(htmlEscape(value));
+        var escapedValue;
 
+        // full_message field is already escaped, no need to do that again
+        if (field === 'full_message') {
+            escapedValue = value;
+        } else {
+            escapedValue = htmlEscape(value);
+        }
+
+        $(".xtrc-wizard-example", wizard).html(escapedValue);
         $("input[name=field]", wizard).val(field);
         $("input[name=example_id]", wizard).val(messageId);
         $("input[name=example_index]", wizard).val(messageIndex);
