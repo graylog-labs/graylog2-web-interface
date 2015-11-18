@@ -23,16 +23,26 @@ const Stream = React.createClass({
   render() {
     const stream = this.props.stream;
     const permissions = this.props.permissions;
-    const editRulesLink = (this.isPermitted(permissions, ['streams:edit:' + stream.id]) ?
-      <a href={jsRoutes.controllers.StreamRulesController.index(stream.id).url} className="btn btn-info">Edit rules</a> : null);
 
-    let manageOutputsLink = null;
-    let manageAlertsLink = null;
-    if (this.isPermitted(permissions, ['streams:edit:' + stream.id, 'stream_outputs:read'])) {
-      manageOutputsLink = (<a href={jsRoutes.controllers.StreamOutputsController.index(stream.id).url}
-                             className="btn btn-info">Manage outputs</a>);
-      manageAlertsLink = (<a href={jsRoutes.controllers.AlertsController.index(stream.id).url}
-                            className="btn btn-info">Manage alerts</a>);
+    let editRulesLink;
+    let manageOutputsLink;
+    let manageAlertsLink;
+    if (this.isPermitted(permissions, ['streams:edit:' + stream.id])) {
+      editRulesLink = (
+        <a href={jsRoutes.controllers.StreamRulesController.index(stream.id).url} className="btn btn-info">
+          Edit rules
+        </a>
+      );
+      manageAlertsLink = (
+        <a href={jsRoutes.controllers.AlertsController.index(stream.id).url} className="btn btn-info">
+          Manage alerts
+        </a>
+      );
+
+      if (this.isPermitted(permissions, ['stream_outputs:read'])) {
+        manageOutputsLink = (<a href={jsRoutes.controllers.StreamOutputsController.index(stream.id).url}
+                                className="btn btn-info">Manage outputs</a>);
+      }
     }
 
     let toggleStreamLink;
