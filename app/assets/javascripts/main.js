@@ -234,8 +234,8 @@ $(document).ready(function() {
     });
     toggleSessionTimeoutEditableState($("#session-timeout-never").is(":checked"));
 
-    // Submit button confirmation.
-    $('input[data-confirm], button[data-confirm], a[data-confirm]').on("click", function() {
+    // Confirm actions, even after adding new content to the page
+    $("body").on("click", "input[data-confirm], button[data-confirm], a[data-confirm]", function() {
         return confirm($(this).attr("data-confirm"));
     });
 
