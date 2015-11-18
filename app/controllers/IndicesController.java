@@ -159,7 +159,19 @@ public class IndicesController extends AuthenticatedController {
             indexService.recalculateRanges();
             return redirect(routes.SystemController.index(0));
         } catch (APIException e) {
-            String message = "Could not re-calculation trigger system job. We expected HTTP 202, but got a HTTP " + e.getHttpCode() + ".";
+            String message = "Could not trigger re-calculation system job. We expected HTTP 202, but got a HTTP " + e.getHttpCode() + ".";
+            return status(504, views.html.errors.error.render(message, e, request()));
+        } catch (IOException e) {
+            return status(504, views.html.errors.error.render(ApiClient.ERROR_MSG_IO, e, request()));
+        }
+    }
+
+    public Result recalculateIndexRange(String indexName) {
+        try {
+            indexService.recalculateIndexRange(indexName);
+            return redirect(routes.IndicesController.index());
+        } catch (APIException e) {
+            String message = "Could not trigger re-calculation system job. We expected HTTP 202, but got a HTTP " + e.getHttpCode() + ".";
             return status(504, views.html.errors.error.render(message, e, request()));
         } catch (IOException e) {
             return status(504, views.html.errors.error.render(ApiClient.ERROR_MSG_IO, e, request()));
