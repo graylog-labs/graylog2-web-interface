@@ -23,15 +23,16 @@ const BooleanField = React.createClass({
   render() {
     const field = this.state.field;
     const typeName = this.state.typeName;
+    const title = this.state.title;
     const value = this.state.value;
     return (
       <div className="form-group">
         <div className="checkbox">
           <label>
-            <input id={typeName + '-' + field.title}
+            <input id={typeName + '-' + title}
                    type="checkbox"
                    checked={value}
-                   name={`configuration[${field.title}]`}
+                   name={`configuration[${title}]`}
                    onChange={this.handleChange}/>
 
             {field.human_name}
