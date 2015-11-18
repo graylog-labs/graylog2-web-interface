@@ -9,22 +9,11 @@ const BooleanField = React.createClass({
     onChange: PropTypes.func.isRequired,
     value: PropTypes.any,
   },
-  getInitialState() {
-    return {
-      typeName: this.props.typeName,
-      field: this.props.field,
-      title: this.props.title,
-      value: (this.props.value === undefined ? this.props.field.default_value : this.props.value),
-    };
-  },
-  componentWillReceiveProps(props) {
-    this.setState(props);
-  },
   render() {
-    const field = this.state.field;
-    const typeName = this.state.typeName;
-    const title = this.state.title;
-    const value = this.state.value;
+    const field = this.props.field;
+    const typeName = this.props.typeName;
+    const title = this.props.title;
+    const value = this._getEffectiveValue();
     return (
       <div className="form-group">
         <div className="checkbox">
@@ -44,10 +33,13 @@ const BooleanField = React.createClass({
       </div>
     );
   },
+  _getEffectiveValue() {
+    return (this.props.value === undefined ? this.props.field.default_value : this.props.value);
+  },
   handleChange() {
-    const newValue = !this.state.value;
+    const newValue = !this._getEffectiveValue();
     this.setState({value: newValue});
-    this.props.onChange(this.state.title, newValue);
+    this.props.onChange(this.props.title, newValue);
   },
 });
 
