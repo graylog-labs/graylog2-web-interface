@@ -62,7 +62,7 @@
         <div class="col-md-12">
             @if(!closedIndices.isEmpty) {
                 <div class="alert alert-info closed-indices">
-                    <i class="fa fa-ban"></i>&nbsp;
+                    <i class="fa fa-retweet"></i>&nbsp;
 
                     @if(closedIndices.size() == 1) {
                         There is a closed index you can reopen.
@@ -76,8 +76,8 @@
                         @for(index <- closedIndices.sorted) {
                             <li>
                                 @index
-                                <a href="@routes.IndicesController.reopenIndex(index)" data-confirm="Really reopen index @index? It might take a few seconds until it appears in the list." title="Reopen">
-                                    <i class="fa fa-retweet"></i>
+                                <a href="@routes.IndicesController.reopenIndex(index)" data-confirm="Really reopen index @index? It might take a few seconds until it appears in the list." title="Reopen" style="margin-left: 5px">
+                                    Reopen
                                 </a>
                             </li>
                         }
@@ -113,59 +113,61 @@
     }
 
     @for(index <- indices.sortWith(_.getNumber > _.getNumber)) {
-        @defining(indicesInfo.get(index.getName)) { indexInfo =>
-            <div class="row index-description content">
-                <div class="col-md-12">
-                    <h2>
-                        @if(index.getName.equals(deflectorTarget)) {
-                            <i class="fa fa-bolt" title="Write-active index"></i>
-                        }
+        @if(!closedIndices.contains(index.getName)) {
+            @defining(indicesInfo.get(index.getName)) { indexInfo =>
+                <div class="row index-description content">
+                    <div class="col-md-12">
+                        <h2>
+                            @if(index.getName.equals(deflectorTarget)) {
+                                <i class="fa fa-bolt" title="Write-active index"></i>
+                            }
 
-                        @index.getName
+                            @index.getName
 
-                        @if(reopenedSet.contains(index.getName)) {
-                            <i class="fa fa-retweet" title="Reopened index"></i>
-                        }
+                            @if(reopenedSet.contains(index.getName)) {
+                                <i class="fa fa-retweet" title="Reopened index"></i>
+                            }
 
-                    <small>
-                        @if(index.getName.equals(deflectorTarget)) {
-                            Contains messages up to @DateHelper.readablePeriodFromNow(DateTime.now)
-                        } else {
-                            @if(index.getRange.getBegin.isEqual(0L)) {
-                                @if(index.getRange.getEnd.isEqual(0L)) {
-                                    Contains no messages
-                                } else {
-                                    Contains messages up to @DateHelper.readablePeriodFromNow(index.getRange.getEnd)
-                                }
+                        <small>
+                            @if(index.getName.equals(deflectorTarget)) {
+                                Contains messages up to @DateHelper.readablePeriodFromNow(DateTime.now)
                             } else {
-                                Contains messages from @DateHelper.readablePeriodFromNow(index.getRange.getBegin) up to @DateHelper.readablePeriodFromNow(index.getRange.getEnd)
+                                @if(index.getRange.getBegin.isEqual(0L)) {
+                                    @if(index.getRange.getEnd.isEqual(0L)) {
+                                        Contains no messages
+                                    } else {
+                                        Contains messages up to @DateHelper.readablePeriodFromNow(index.getRange.getEnd)
+                                    }
+                                } else {
+                                    Contains messages from @DateHelper.readablePeriodFromNow(index.getRange.getBegin) up to @DateHelper.readablePeriodFromNow(index.getRange.getEnd)
+                                }
                             }
-                        }
 
-                        @if(index != null && indexInfo != null) {
-                            (@Tools.byteToHuman(indexInfo.primaryShards.storeSizeBytes) /
-                            <span class="number-format" data-format="0,0">@indexInfo.primaryShards.documents.count</span>
-                            messages)
-                        }
-
-                        @if(!index.getName.equals(deflectorTarget)) {
-                            <a href="#" class="index-details" data-index-name="@index.getName"><i class="fa fa-caret-right"></i>
-                                Load Details / Actions</a>
-                        }
-                    </small>
-                    </h2>
-
-                    <div class="index-info-holder"
-                        @if(!index.getName.equals(deflectorTarget)) {
-                            style="display: none;"
+                            @if(index != null && indexInfo != null) {
+                                (@Tools.byteToHuman(indexInfo.primaryShards.storeSizeBytes) /
+                                <span class="number-format" data-format="0,0">@indexInfo.primaryShards.documents.count</span>
+                                messages)
                             }
-                    >
-                    @if(index.getName.equals(deflectorTarget)) {
-                        @views.html.partials.indices.index_info.render(deflectorTarget, index, indexInfo)
-                    }
+
+                            @if(!index.getName.equals(deflectorTarget)) {
+                                <a href="#" class="index-details" data-index-name="@index.getName"><i class="fa fa-caret-right"></i>
+                                    Load Details / Actions</a>
+                            }
+                        </small>
+                        </h2>
+
+                        <div class="index-info-holder"
+                            @if(!index.getName.equals(deflectorTarget)) {
+                                style="display: none;"
+                                }
+                        >
+                        @if(index.getName.equals(deflectorTarget)) {
+                            @views.html.partials.indices.index_info.render(deflectorTarget, index, indexInfo)
+                        }
+                        </div>
                     </div>
                 </div>
-            </div>
+            }
         }
     }
 
