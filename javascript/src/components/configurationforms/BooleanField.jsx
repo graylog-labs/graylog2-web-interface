@@ -1,48 +1,46 @@
-'use strict';
+import React, {PropTypes} from 'react';
+import FieldHelpers from './FieldHelpers';
 
-var React = require('react');
-var FieldHelpers = require('./FieldHelpers');
+const BooleanField = React.createClass({
+  propTypes: {
+    typeName: PropTypes.string.isRequired,
+    field: PropTypes.object.isRequired,
+    title: PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired,
+    value: PropTypes.any,
+  },
+  render() {
+    const field = this.props.field;
+    const typeName = this.props.typeName;
+    const title = this.props.title;
+    const value = this._getEffectiveValue();
+    return (
+      <div className="form-group">
+        <div className="checkbox">
+          <label>
+            <input id={typeName + '-' + title}
+                   type="checkbox"
+                   checked={value}
+                   name={`configuration[${title}]`}
+                   onChange={this.handleChange}/>
 
-var BooleanField = React.createClass({
-    getInitialState() {
-        return {
-            typeName: this.props.typeName,
-            field: this.props.field,
-            title: this.props.title,
-            value: (this.props.value === undefined ? this.props.field.default_value : this.props.value)
-        };
-    },
-    componentWillReceiveProps(props) {
-        this.setState(props);
-    },
-    handleChange(evt) {
-        var newValue = !this.state.value;
-        this.setState({value: newValue});
-        this.props.onChange(this.state.title, newValue);
-    },
-    render() {
-        var field = this.state.field;
-        var typeName = this.state.typeName;
-        var value = this.state.value;
-        return (
-            <div className="form-group">
-                <div className="checkbox">
-                    <label>
-                        <input id={typeName + "-" + field.title}
-                            type="checkbox"
-                            checked={value}
-                            name={"configuration[" + field.title + "]"}
-                            onChange={this.handleChange} />
+            {field.human_name}
 
-                            {field.human_name}
-
-                            {FieldHelpers.optionalMarker(field)}
-                    </label>
-                </div>
-                <p className="help-block">{field.description}</p>
-            </div>
-        );
-    }
+            {FieldHelpers.optionalMarker(field)}
+          </label>
+        </div>
+        <p className="help-block">{field.description}</p>
+      </div>
+    );
+  },
+  _getEffectiveValue() {
+    return (this.props.value === undefined ? this.props.field.default_value : this.props.value);
+  },
+  handleChange() {
+    const newValue = !this._getEffectiveValue();
+    this.setState({value: newValue});
+    this.props.onChange(this.props.title, newValue);
+  },
 });
 
-module.exports = BooleanField;
+export default BooleanField;
