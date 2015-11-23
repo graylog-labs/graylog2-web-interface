@@ -100,8 +100,9 @@ public class LdapController extends AuthenticatedController {
 
         final List<RoleResponse> roles = Lists.newArrayList(rolesService.loadAll());
         final Set<String> selectedAdditionalGroups = ldapSettings != null && ldapSettings.getAdditionalDefaultGroups() != null ? ldapSettings.getAdditionalDefaultGroups() : Collections.<String>emptySet();
+        final Map<String, String> groupMapping = ldapSettings == null ? Collections.<String, String>emptyMap() : ldapSettings.getGroupMapping();
         return ok(views.html.system.ldap.index.render(currentUser(), breadcrumbs(), ldapSettingsForm, roles,
-                                                      selectedAdditionalGroups));
+                                                      selectedAdditionalGroups, groupMapping));
     }
     public Result groups() {
         final LdapSettings ldapSettings = ldapSettingsService.load();
@@ -179,7 +180,7 @@ public class LdapController extends AuthenticatedController {
             final List<RoleResponse> roles = Lists.newArrayList(rolesService.loadAll());
             final Set<String> additionalGroupsAsSet = safeAdditionalGroupsAsSet(form.get().additionalDefaultGroups);
             return badRequest(views.html.system.ldap.index.render(currentUser(), breadcrumbs(), form, roles,
-                                                                  additionalGroupsAsSet));
+                                                                  additionalGroupsAsSet, form.get().groupMapping));
         }
         final LdapSettingsRequest2 formValue = form.get();
         final LdapSettingsRequest request = new LdapSettingsRequest();

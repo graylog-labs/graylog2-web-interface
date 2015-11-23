@@ -2,7 +2,7 @@
         breadcrumbs: lib.BreadcrumbList,
         ldapForm: Form[controllers.LdapController.LdapSettingsRequest2],
         roles: List[org.graylog2.rest.models.roles.responses.RoleResponse],
-        selectedAdditionalGroups: Set[String])
+        selectedAdditionalGroups: Set[String], groupMapping: Map[String, String])
 
 @main("LDAP Settings", null, "", currentUser, false) {
 
@@ -25,6 +25,10 @@
     <div class="row content">
         <div class="col-lg-8">
         @helper.form(action = routes.LdapController.saveLdapSettings(), 'class -> "form-horizontal", 'id -> "ldap-settings") {
+            @for((k, v) <- groupMapping) {
+                <input type="hidden" name="groupMapping[@k]" value="@v"/>
+            }
+
             <div class="form-group">
                 <div class="col-sm-offset-3 col-sm-9">
                     <div class="checkbox">
