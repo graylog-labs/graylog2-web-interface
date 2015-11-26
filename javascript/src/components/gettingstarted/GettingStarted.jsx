@@ -73,7 +73,7 @@ const GettingStarted = React.createClass({
         iframeStyles.display = 'none';
       }
 
-      const url = this.state.gettingStartedUrl === '' ? (this.props.gettingStartedUrl + '?' + query) : this.state.gettingStartedUrl;
+      const url = this.state.guideUrl === '' ? (this.props.gettingStartedUrl + '?' + query) : this.state.guideUrl;
       let spinner = null;
       if (!this.state.guideLoaded) {
         spinner = (
