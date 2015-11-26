@@ -23,7 +23,7 @@ public class GettingStartedController extends AuthenticatedController {
                                                          master.getVersion(),
                                                          Play.application().configuration().getString(
                                                                  "getting-started.url",
-                                                                 "https://versioncheck.graylog.com/getting-started"),
+                                                                 "https://gettingstarted.graylog.com/"),
                                                          menu
                                                          ));
     }
