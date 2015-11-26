@@ -5,12 +5,6 @@ declare var $: any;
 import UserNotification = require("../../util/UserNotification");
 import URLUtils = require("../../util/URLUtils");
 
-interface GrokPattern {
-    id: string;
-    name: string;
-    pattern: string;
-}
-
 var GettingStartedStore = {
     URL: URLUtils.appPrefixed('/a/system/gettingstarted/dismiss'),
 
