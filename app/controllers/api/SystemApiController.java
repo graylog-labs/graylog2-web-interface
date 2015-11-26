@@ -290,6 +290,15 @@ public class SystemApiController extends AuthenticatedController {
         }
     }
 
+    public Result dismissGettingStarted() {
+        try {
+            api().path(org.graylog2.restroutes.generated.routes.GettingStartedResource().dismissGettingStarted()).execute();
+            return noContent();
+        } catch (APIException | IOException e) {
+            return internalServerError(e.getMessage());
+        }
+    }
+
     private Map<String, Object> jvmMap(NodeJVMStats jvm, BufferInfo bufferInfo) {
         Map<String, Object> result = Maps.newHashMap();
 

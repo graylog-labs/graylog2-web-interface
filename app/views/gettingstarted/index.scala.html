@@ -1,6 +1,6 @@
 @import lib.security.RestPermissions
 @import views.helpers.Permissions.isPermitted
-@(currentUser: org.graylog2.restclient.models.User, clusterId: String, masterOs: String, masterVersion: String, gettingStartedUrl: String)
+@(currentUser: org.graylog2.restclient.models.User, clusterId: String, masterOs: String, masterVersion: String, gettingStartedUrl: String, noButton: Boolean)
 
 @import lib.json.Json
 @import views.helpers.Permissions
@@ -17,6 +17,7 @@
          data-master-os="@masterOs"
          data-master-version="@masterVersion"
          data-getting-started-url="@gettingStartedUrl"
+         data-no-button="@noButton"
     >
     </div>
 }

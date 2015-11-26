@@ -36,6 +36,7 @@ import lib.security.RestPermissions;
 import models.descriptions.InputDescription;
 import models.descriptions.NodeDescription;
 import models.descriptions.StreamDescription;
+import org.graylog2.rest.models.system.DisplayGettingStarted;
 import org.graylog2.rest.models.system.indexer.responses.IndexRangeSummary;
 import org.graylog2.restclient.lib.APIException;
 import org.graylog2.restclient.lib.ApiClient;
@@ -60,6 +61,7 @@ import org.graylog2.restclient.models.api.results.DateHistogramResult;
 import org.graylog2.restclient.models.api.results.MessageResult;
 import org.graylog2.restclient.models.api.results.SearchResult;
 import org.joda.time.Minutes;
+import org.slf4j.LoggerFactory;
 import play.Logger;
 import play.mvc.Result;
 import views.helpers.Permissions;
@@ -75,9 +77,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.graylog2.restroutes.generated.routes.GettingStartedResource;
 import static views.helpers.Permissions.isPermitted;
 
 public class SearchController extends AuthenticatedController {
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(SearchController.class);
+
     // guess high, so we never have a bad resolution
     private static final int DEFAULT_ASSUMED_GRAPH_RESOLUTION = 4000;
 
@@ -97,6 +102,19 @@ public class SearchController extends AuthenticatedController {
     private ObjectMapper objectMapper;
 
     public Result globalSearch() {
+        // if the user cannot create any inputs, it's currently pointless to display the getting started guide,
+        // IOW check whether the user is an admin
+        if (isPermitted(RestPermissions.INPUTS_CREATE)) {
+            try {
+                final DisplayGettingStarted gettingStarted = api().path(GettingStartedResource().displayGettingStarted(),
+                                                                 DisplayGettingStarted.class).execute();
+                if (gettingStarted.show()) {
+                    return redirect(routes.GettingStartedController.index(false));
+                }
+            } catch (Exception e) {
+                log.debug("Unable to determine whether to display getting started guide, not showing it.");
+            }
+        }
         // User would not be allowed to do any global searches anyway, so we can redirect him to the streams page to avoid confusion.
         if (Permissions.isPermitted(RestPermissions.SEARCHES_ABSOLUTE)
                 || Permissions.isPermitted(RestPermissions.SEARCHES_RELATIVE)

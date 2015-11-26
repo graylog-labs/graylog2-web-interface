@@ -15,7 +15,7 @@ public class GettingStartedController extends AuthenticatedController {
         this.serverNodes = serverNodes;
     }
 
-    public Result index() {
+    public Result index(boolean menu) {
         final Node master = serverNodes.master();
         return ok(views.html.gettingstarted.index.render(currentUser(),
                                                          master.getClusterId(),
@@ -23,6 +23,8 @@ public class GettingStartedController extends AuthenticatedController {
                                                          master.getVersion(),
                                                          Play.application().configuration().getString(
                                                                  "getting-started.url",
-                                                                 "https://versioncheck.graylog.com/getting-started")));
+                                                                 "https://gettingstarted.graylog.com/"),
+                                                         menu
+                                                         ));
     }
 }

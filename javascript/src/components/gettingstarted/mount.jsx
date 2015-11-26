@@ -7,8 +7,10 @@ if (elem) {
   const masterOs = elem.getAttribute('data-master-os');
   const masterVersion = elem.getAttribute('data-master-version');
   const gettingStartedUrl = elem.getAttribute('data-getting-started-url');
+  const noButton = elem.getAttribute('data-no-button') === 'true';
   React.render(<GettingStarted clusterId={clusterId}
                                masterOs={masterOs}
                                masterVersion={masterVersion}
-                               gettingStartedUrl={gettingStartedUrl} />, elem);
+                               gettingStartedUrl={gettingStartedUrl}
+                               noButton={noButton} />, elem);
 }

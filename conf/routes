@@ -14,7 +14,7 @@ GET           /disconnected                                                     
 GET           /                                                                                  @controllers.SearchController.globalSearch()
 
 # Getting started
-GET           /gettingstarted                                                                    @controllers.GettingStartedController.index()
+GET           /gettingstarted                                                                    @controllers.GettingStartedController.index(menu: Boolean ?= false)
 
 # Redirect for personal startpage.
 GET           /startpage                                                                         @controllers.StartpageController.redirect()
@@ -318,6 +318,9 @@ GET           /a/system/collectors                                              
 GET           /a/system/usagestats/opt-out                                                       @controllers.api.UsageStatsApiController.getOptOutState()
 POST          /a/system/usagestats/opt-out                                                       @controllers.api.UsageStatsApiController.setOptOutState()
 GET           /a/system/usagestats/plugin-enabled                                                @controllers.api.UsageStatsApiController.pluginEnabled()
+
+# Getting Started Guide
+POST          /a/system/gettingstarted/dismiss                                                   @controllers.api.SystemApiController.dismissGettingStarted()
 
 GET           /robots.txt                                                                        controllers.Assets.at(path="/public", file="robots.txt")
 

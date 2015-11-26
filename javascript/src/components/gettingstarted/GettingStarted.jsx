@@ -2,7 +2,10 @@
 
 import React, { PropTypes } from 'react';
 import Spinner from '../common/Spinner';
+import { Button, Grid, Row, Col } from 'react-bootstrap';
 import Qs from 'qs';
+import GettingStartedStore from '../../stores/gettingstarted/GettingStartedStore';
+import URLUtils from '../../util/URLUtils';
 
 const GettingStarted = React.createClass({
   propTypes() {
@@ -11,11 +14,13 @@ const GettingStarted = React.createClass({
       masterOs: PropTypes.string.isRequired,
       masterVersion: PropTypes.string.isRequired,
       gettingStartedUrl: PropTypes.string.isRequired,
+      noButton: PropTypes.bool.isRequired,
     };
   },
   getInitialState() {
     return {
       guideLoaded: false,
+      guideUrl: '',
       showStaticContent: false,
       frameHeight: '500px',
       minHeight: 200,
@@ -37,9 +42,20 @@ const GettingStarted = React.createClass({
     }
   },
   render() {
+    let dismissButton = null;
+    if (!this.props.noButton) {
+      dismissButton = <Button bsStyle="default" bsSize="small" onClick={this._dismissGuide}><i className="fa fa-times"></i> Dismiss guide</Button>;
+    }
     let gettingStartedContent = null;
     if (this.state.showStaticContent) {
-      gettingStartedContent = <div>Could not load dynamic content in time, living with static content for now.</div>;
+      gettingStartedContent = (<Grid>
+        <Row>
+          <Col mdPush={3} md={6} className="content content-head text-center" style={{minHeight: 180}}>
+            <h1 style={{marginBottom: 40}}>Welcome to Graylog</h1>
+            <span>Please visit the <a target="blank" href="https://gettingstarted.graylog.com">Graylog Getting Started Guide</a>.</span>
+            </Col>
+          </Row>
+      </Grid>);
     } else {
       const query = Qs.stringify({
         c: this.props.clusterId,
@@ -57,15 +73,19 @@ const GettingStarted = React.createClass({
         iframeStyles.display = 'none';
       }
 
-      const url = this.props.gettingStartedUrl + '?' + query;
+      const url = this.state.guideUrl === '' ? (this.props.gettingStartedUrl + '?' + query) : this.state.guideUrl;
       let spinner = null;
       if (!this.state.guideLoaded) {
-        spinner = (<div>
-          <h1>Welcome to Graylog</h1>
-          <Spinner text="Loading Graylog Getting started guide ..."/>
-        </div>);
+        spinner = (
+          <Grid>
+            <Row>
+              <Col mdPush={3} md={6} className="content content-head text-center" style={{minHeight: 180}}>
+                <h1 style={{marginBottom: 40}}>Welcome to Graylog</h1>
+                <Spinner text="Loading Graylog Getting started guide ..."/>
+              </Col>
+            </Row>
+          </Grid>);
       }
-
       gettingStartedContent = (<div>
         {spinner}
         <iframe src={url}
@@ -78,6 +98,7 @@ const GettingStarted = React.createClass({
       </div>);
     }
     return (<div>
+      <div className="pull-right">{dismissButton}</div>
       {gettingStartedContent}
     </div>);
   },
@@ -92,12 +113,16 @@ const GettingStarted = React.createClass({
       }
       this.setState({
         guideLoaded: messageEvent.data.guideLoaded,
+        guideUrl: messageEvent.data.guideUrl,
         minHeight: messageEvent.data.height === 0 ? this.state.minHeight : messageEvent.data.height,
       });
     }
   },
   _displayFallbackContent() {
     this.setState({showStaticContent: true});
+  },
+  _dismissGuide() {
+    GettingStartedStore.dismiss(() => document.location = URLUtils.appPrefixed('/'));
   },
 });
 
