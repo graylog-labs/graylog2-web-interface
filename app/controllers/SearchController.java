@@ -109,7 +109,7 @@ public class SearchController extends AuthenticatedController {
                 final DisplayGettingStarted gettingStarted = api().path(GettingStartedResource().displayGettingStarted(),
                                                                  DisplayGettingStarted.class).execute();
                 if (gettingStarted.show()) {
-                    return redirect(routes.GettingStartedController.index());
+                    return redirect(routes.GettingStartedController.index(false));
                 }
             } catch (Exception e) {
                 log.debug("Unable to determine whether to display getting started guide, not showing it.");
