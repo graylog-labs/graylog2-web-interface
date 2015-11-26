@@ -12,6 +12,7 @@ var MenuItem = require('react-bootstrap').MenuItem;
 
 var GlobalThroughput = require('../throughput/GlobalThroughput');
 var UserMenu = require('./UserMenu');
+var DocsHelper = require('util/DocsHelper');
 
 var Navigation = React.createClass({
     getInitialState() {
@@ -77,9 +78,22 @@ var Navigation = React.createClass({
 
                         <DropdownButton title="Help" active={this._isActive('/gettingstarted')}>
                             <MenuItem href={jsRoutes.controllers.GettingStartedController.index().url}>Getting Started</MenuItem>
-                            <MenuItem href="http://docs.graylog.org" target="blank"><i className="fa fa-external-link"></i> Documentation</MenuItem>
+                            <MenuItem href={DocsHelper.versionedDocsHomePage()} target="blank"><i className="fa fa-external-link"></i> Documentation</MenuItem>
                             <MenuItem divider />
-                            <MenuItem href="https://www.graylog.org/support/" target="blank"><i className="fa fa-external-link"></i> Get support</MenuItem>
+                            <MenuItem href="https://www.graylog.org/support/" target="blank"><i className="fa fa-external-link"></i> Get Support</MenuItem>
+                            <MenuItem href="https://graylog.wufoo.com/forms/qup3ebj0kp9cfo/" target="blank">
+                                <i className="fa fa-external-link"></i>&nbsp;Feedback
+                            </MenuItem>
+                            <MenuItem divider/>
+                            <MenuItem href="https://graylog.wufoo.com/forms/mzwusin1f7kudv/" target="blank">
+                                <i className="fa fa-external-link"></i>&nbsp;Ask a Question
+                            </MenuItem>
+                            <MenuItem href="https://graylog.wufoo.com/forms/zaw0hgh07cndha/" target="blank">
+                                <i className="fa fa-external-link"></i>&nbsp;Report a Problem
+                            </MenuItem>
+                            <MenuItem href="https://graylog.ideas.aha.io/?sort=popular" target="blank">
+                                <i className="fa fa-external-link"></i>&nbsp;Product Ideas
+                            </MenuItem>
                         </DropdownButton>
 
                         <UserMenu fullName={this.props.fullName} loginName={this.props.loginName}/>
