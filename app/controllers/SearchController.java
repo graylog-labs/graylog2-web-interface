@@ -104,17 +104,17 @@ public class SearchController extends AuthenticatedController {
     public Result globalSearch() {
         // if the user cannot create any inputs, it's currently pointless to display the getting started guide,
         // IOW check whether the user is an admin
-        // if (isPermitted(RestPermissions.INPUTS_CREATE)) {
-        //     try {
-        //         final DisplayGettingStarted gettingStarted = api().path(GettingStartedResource().displayGettingStarted(),
-        //                                                          DisplayGettingStarted.class).execute();
-        //         if (gettingStarted.show()) {
-        //             return redirect(routes.GettingStartedController.index(false));
-        //         }
-        //     } catch (Exception e) {
-        //         log.debug("Unable to determine whether to display getting started guide, not showing it.");
-        //     }
-        // }
+        if (isPermitted(RestPermissions.INPUTS_CREATE)) {
+            try {
+                final DisplayGettingStarted gettingStarted = api().path(GettingStartedResource().displayGettingStarted(),
+                                                                 DisplayGettingStarted.class).execute();
+                if (gettingStarted.show()) {
+                    return redirect(routes.GettingStartedController.index(false));
+                }
+            } catch (Exception e) {
+                log.debug("Unable to determine whether to display getting started guide, not showing it.");
+            }
+        }
         // User would not be allowed to do any global searches anyway, so we can redirect him to the streams page to avoid confusion.
         if (Permissions.isPermitted(RestPermissions.SEARCHES_ABSOLUTE)
                 || Permissions.isPermitted(RestPermissions.SEARCHES_RELATIVE)
