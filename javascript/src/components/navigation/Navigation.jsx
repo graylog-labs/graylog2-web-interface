@@ -78,20 +78,17 @@ var Navigation = React.createClass({
 
                         <DropdownButton title="Help" active={this._isActive('/gettingstarted')}>
                             <MenuItem href={jsRoutes.controllers.GettingStartedController.index(true).url}>Getting Started</MenuItem>
-                            <MenuItem href={DocsHelper.versionedDocsHomePage()} target="blank"><i className="fa fa-external-link"></i> Documentation</MenuItem>
+                            <MenuItem href={DocsHelper.versionedDocsHomePage()} target="_blank"><i className="fa fa-external-link"></i> Documentation</MenuItem>
                             <MenuItem divider />
-                            <MenuItem href="https://www.graylog.org/support/" target="blank"><i className="fa fa-external-link"></i> Get Support</MenuItem>
-                            <MenuItem href="https://graylog.wufoo.com/forms/qup3ebj0kp9cfo/" target="blank">
+                            <MenuItem href="https://www.graylog.org/support/" target="_blank"><i className="fa fa-external-link"></i> Get Support</MenuItem>
+                            <MenuItem href="http://info.graylog.org/product-feedback" target="_blank">
                                 <i className="fa fa-external-link"></i>&nbsp;Feedback
                             </MenuItem>
                             <MenuItem divider/>
-                            <MenuItem href="https://graylog.wufoo.com/forms/mzwusin1f7kudv/" target="blank">
+                            <MenuItem href="http://info.graylog.org/ask-a-question" target="_blank">
                                 <i className="fa fa-external-link"></i>&nbsp;Ask a Question
                             </MenuItem>
-                            <MenuItem href="https://graylog.wufoo.com/forms/zaw0hgh07cndha/" target="blank">
-                                <i className="fa fa-external-link"></i>&nbsp;Report a Problem
-                            </MenuItem>
-                            <MenuItem href="https://graylog.ideas.aha.io/?sort=popular" target="blank">
+                            <MenuItem href="https://www.graylog.org/product-ideas/" target="_blank">
                                 <i className="fa fa-external-link"></i>&nbsp;Product Ideas
                             </MenuItem>
                         </DropdownButton>
