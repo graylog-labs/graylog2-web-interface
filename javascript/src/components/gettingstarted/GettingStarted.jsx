@@ -23,7 +23,6 @@ const GettingStarted = React.createClass({
       guideUrl: '',
       showStaticContent: false,
       frameHeight: '500px',
-      minHeight: 200,
     };
   },
   componentDidMount() {
