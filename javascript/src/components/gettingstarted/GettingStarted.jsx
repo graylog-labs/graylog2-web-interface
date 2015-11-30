@@ -49,9 +49,11 @@ const GettingStarted = React.createClass({
     if (this.state.showStaticContent) {
       gettingStartedContent = (<Grid>
         <Row>
-          <Col mdPush={3} md={6} className="content content-head text-center" style={{minHeight: 180}}>
-            <h1 style={{marginBottom: 40}}>Welcome to Graylog</h1>
-            <span>Please visit the <a target="blank" href="https://gettingstarted.graylog.com">Graylog Getting Started Guide</a>.</span>
+          <Col mdPush={3} md={6} className="content content-head text-center" style={{paddingBottom: "15px"}}>
+            <span>
+              We could not load the <a target="blank" href="https://gettingstarted.graylog.org">Graylog Getting Started Guide</a>.
+              Please open it directly with a browser that can access the public internet.
+            </span>
             </Col>
           </Row>
       </Grid>);
@@ -78,8 +80,7 @@ const GettingStarted = React.createClass({
         spinner = (
           <Grid>
             <Row>
-              <Col mdPush={3} md={6} className="content content-head text-center" style={{minHeight: 180}}>
-                <h1 style={{marginBottom: 40}}>Welcome to Graylog</h1>
+              <Col mdPush={3} md={6} className="content content-head text-center"  style={{paddingBottom: "15px"}}>
                 <Spinner text="Loading Graylog Getting started guide ..."/>
               </Col>
             </Row>
@@ -91,7 +92,7 @@ const GettingStarted = React.createClass({
                 style={iframeStyles}
                 id="getting-started-frame"
                 frameBorder="0"
-                scrolling="no">
+                scrolling="yes">
           <p>Sorry, no iframes</p>
         </iframe>
       </div>);
