@@ -21,22 +21,11 @@ const IndicesStore = Reflux.createStore({
   },
   list() {
     const urlList = URLUtils.qualifyUrl(jsRoutes.controllers.api.IndicesApiController.list().url);
-    const promiseList = fetch('GET', urlList).then((response) => {
-      this.indices = response.indices;
-      return { indices: response.indices };
-    });
-
-    const urlListClosed = URLUtils.qualifyUrl(jsRoutes.controllers.api.IndicesApiController.listClosed().url);
-    const promiseListClosed = fetch('GET', urlListClosed).then((response) => {
-      this.closedIndices = response.indices;
-      return { closedIndices: response.indices };
-    });
-
-    const promise = Promise.all([promiseList, promiseListClosed]).then((values) => {
-      const result = jQuery.extend(values[0], values[1]);
-      this.trigger(result);
-
-      return result;
+    const promise = fetch('GET', urlList).then((response) => {
+      this.indices = response.all.indices;
+      this.closedIndices = response.closed.indices;
+      this.trigger({ indices: this.indices, closedIndices: this.closedIndices });
+      return { indices: this.indices, closedIndices: this.closedIndices };
     });
 
     IndicesActions.list.promise(promise);
