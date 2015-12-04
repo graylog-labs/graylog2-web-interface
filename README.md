@@ -1,49 +1,5 @@
-# Graylog Web Interface
-[![Build Status](https://travis-ci.org/Graylog2/graylog2-web-interface.png)](https://travis-ci.org/Graylog2/graylog2-web-interface)
+The Graylog Web Interface has moved and become a module in the server repository at https://github.com/Graylog2/graylog2-server
 
-## Development Setup
+After Graylog 1.3 the projects have been merged. If you are looking for the Graylog 1.3 Web Interface, please choose the "1.3" branch in the Github UI or visit https://github.com/Graylog2/graylog2-web-interface/tree/1.3 for any later version please see the Server repository.
 
-* Install [node.js](http://nodejs.org/) and npm.
-* `npm install`
-* `npm start`
-
-* open http://localhost:8080
-
-The `npm start` command will run the `webpack-dev-server`, which allows in-browser hot reloading.
-In order to make switching between different branches faster, we use a script to store all `node_modules` folders
-into `.node_cache` and then symlink the folder for the current branch to `node_modules`.
-
-When using IntelliJ or WebStorm, be sure to enable `JSX harmony` (available in IntelliJ 14 and WebStorm 9)
-as JavaScript language version to properly support react templates.
-
-You might get an error message during `npm install` from `gyp` because the installed (default) Python version is too recent (sic!):
-
-```
-gyp ERR! stack Error: Python executable "python" is v3.4.2, which is not supported by gyp.                                                                                                                 
-```
-
-In this case just set the correct (installed!) Python binary before running `npm install`:
-
-```
-npm config set python python2.7
-```
-
-#### Update Javascript dependencies
-
-a. Update a single dependency
-
-* Update `package.json` file with the new dependency
-* `npm update <npm-package>`
-* `npm shrinkwrap --dev` to save the whole dependency tree into the `npm-shrinkwrap.json` file
-
-b. Update devDependencies
-
-* `npm shinkwrap` to keep the dependency tree (without devDependencies) into `npm-shrinkwrap.json`
-* Update `package.json` file with the new devDependencies
-* `npm install`
-* Do more work with the new devDependencies
-* `npm shrinkwrap --dev` to export the whole dependency tree with the new devDependencies into `npm-shrinkwrap.json`
-
-![YourKit](https://s3.amazonaws.com/graylog2public/images/yourkit.png)
-
-YourKit supports our open source project by sponsoring its full-featured Java Profiler. YourKit, LLC is the creator of [YourKit Java Profiler](http://www.yourkit.com/java/profiler/index.jsp) and [YourKit .NET Profiler](http://www.yourkit.com/.net/profiler/index.jsp), innovative and intelligent tools for profiling Java and .NET applications.
+This repository will be kept for reference, but apart from the 1.3 release is no longer active. To file bug reports, please visit https://github.com/Graylog2/graylog2-server/issues and indicate the version and module of Graylog you have found a bug in.
