@@ -62,6 +62,7 @@ const GettingStarted = React.createClass({
         c: this.props.clusterId,
         o: this.props.masterOs,
         v: this.props.masterVersion,
+        m: this.props.noButton,
       });
 
       const iframeStyles = {
