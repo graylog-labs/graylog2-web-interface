@@ -14,7 +14,7 @@
         @Html(conditionDecorator.getThresholdTypesHtml)
         than
 
-        <input name="threshold" type="number" class="form-control validatable" data-validate="number" value="@conditionDecorator.getThreshold" />
+        <input name="threshold" type="number" step="0.01" class="form-control validatable" data-validate="number" value="@conditionDecorator.getThreshold" />
 
         in the last
 
