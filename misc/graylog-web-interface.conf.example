@@ -31,6 +31,11 @@ application.global=lib.Global
 # Global timeout for communication with Graylog server nodes; default: 5s
 #timeout.DEFAULT=5s
 
+# Enable gzip filter for compressing responses.
+# See https://www.playframework.com/documentation/2.3.x/GzipEncoding for details.
+# Default: false
+#graylog2.gzip-filter=false
+
 # Accept any server certificate without checking for validity; required if using self-signed certificates.
 # Default: true
 # graylog2.client.accept-any-certificate=true

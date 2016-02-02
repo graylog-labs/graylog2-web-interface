@@ -16,6 +16,7 @@ object ApplicationBuild extends Build {
   val appDependencies = Seq(
     cache,
     javaCore,
+    filters,
     "com.google.guava" % "guava" % "18.0",
     "org.apache.shiro" % "shiro-core" % "1.2.2",
     "com.google.inject" % "guice" % "4.0",

@@ -59,6 +59,7 @@ import play.Application;
 import play.Configuration;
 import play.GlobalSettings;
 import play.api.mvc.EssentialFilter;
+import play.filters.gzip.GzipFilter;
 import play.libs.F;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -77,6 +78,7 @@ public class Global extends GlobalSettings {
     private static Injector injector;
 
     private boolean gelfAccessLog = false;
+    private boolean gzipFilter = false;
 
     /**
      * Retrieve the application's global Guice injector.
@@ -137,6 +139,7 @@ public class Global extends GlobalSettings {
 
         // Dirty hack to disable the play2-graylog2 AccessLog if the plugin isn't there
         gelfAccessLog = app.configuration().getBoolean("graylog2.appender.send-access-log", false);
+        gzipFilter = app.configuration().getBoolean("graylog2.gzip-filter", false);
         final boolean clientAcceptAnyCertificate = app.configuration().getBoolean("graylog2.client.accept-any-certificate", true);
 
         final ObjectMapper objectMapper = Json.buildObjectMapper();
@@ -197,7 +200,12 @@ public class Global extends GlobalSettings {
     @Override
     @SuppressWarnings("unchecked")
     public <T extends EssentialFilter> Class<T>[] filters() {
-        final List<Class<T>> filters = Lists.newArrayList();
+        final List<Class<T>> filters = Lists.newArrayListWithCapacity(4);
+
+        if(gzipFilter) {
+            filters.add((Class<T>) GzipFilter.class);
+        }
+
         filters.add((Class<T>) NoCacheHeader.class);
         filters.add((Class<T>) UserAgentCompatibleHeader.class);
 
