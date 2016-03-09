@@ -18,6 +18,7 @@
  */
 package controllers;
 
+import com.google.common.base.Strings;
 import org.graylog2.rest.models.system.sessions.responses.SessionResponse;
 import org.graylog2.restclient.lib.APIException;
 import org.graylog2.restclient.lib.ServerNodes;
@@ -38,6 +39,7 @@ import play.mvc.Security;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.net.URI;
 
 import static play.data.Form.form;
 
@@ -62,18 +64,10 @@ public class SessionsController extends BaseController {
         String loggedInUserName = authenticator.getUsername(ctx());
         if (loggedInUserName != null) {
             log.debug("User {} already authenticated, redirecting to /", loggedInUserName);
-            if (destination != null && !destination.isEmpty()) {
-                return redirect(destination);
-            } else {
-                return redirect(routes.StartpageController.redirect());
-            }
+            return safeRedirect(destination);
         }
         if (session("username") != null && !session("username").isEmpty()) {
-            if (destination != null && !destination.isEmpty()) {
-                return redirect(destination);
-            } else {
-                return redirect(routes.StartpageController.redirect());
-            }
+            return safeRedirect(destination);
         }
         checkServerConnections();
         return ok(views.html.sessions.login.render(userForm, !serverNodes.isConnected(), destination));
@@ -103,11 +97,7 @@ public class SessionsController extends BaseController {
 
             // if we were redirected from somewhere else because the session had expired, redirect back to that page
             // otherwise use the configured startpage (or skip it if that was requested)
-            if (r.destination != null && !r.destination.isEmpty()) {
-                return redirect(r.destination);
-            }
-            // upon redirect, the auth layer will load the user with the given session and log the user in.
-            return redirect(routes.StartpageController.redirect());
+            return safeRedirect(r.destination);
         } catch (APIException e) {
             log.warn("Unable to authenticate user {}. Redirecting back to '/'", r.username, e);
             if (e.getCause() instanceof Graylog2ServerUnavailableException) {
@@ -137,4 +127,23 @@ public class SessionsController extends BaseController {
 		session().clear();
 		return redirect(routes.StartpageController.redirect());
 	}
+
+    private Result safeRedirect(String destination) {
+        if (Strings.isNullOrEmpty(destination)) {
+            return redirect(routes.StartpageController.redirect());
+        }
+
+        try {
+            final URI destinationUri = new URI(destination);
+            if (destinationUri.isAbsolute()) {
+                log.debug("Tried to redirect user to absolute URL, redirecting to their start page instead");
+            } else {
+                return redirect(destination);
+            }
+        } catch (Exception e) {
+            log.debug("Error parsing destination URI, redirecting to user's start page");
+        }
+
+        return redirect(routes.StartpageController.redirect());
+    }
 }
