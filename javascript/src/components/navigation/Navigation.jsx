@@ -77,11 +77,6 @@ var Navigation = React.createClass({
                         </NavItem>
 
                         <DropdownButton title="Help" active={this._isActive('/gettingstarted')}>
-                            <MenuItem href="http://info.graylog.org/report-a-problem" target="_blank"><i className="fa fa-external-link"></i> Report a Problem</MenuItem>
-                            <MenuItem href="http://info.graylog.org/ask-a-question" target="_blank"><i className="fa fa-external-link"></i> Ask a Question</MenuItem>
-                            <MenuItem href="http://info.graylog.org/product-feedback" target="_blank"><i className="fa fa-external-link"></i> Feedback to Product Team</MenuItem>
-
-                            <MenuItem divider />
                             <MenuItem href={jsRoutes.controllers.GettingStartedController.index(true).url}>Getting Started</MenuItem>
                             <MenuItem href={DocsHelper.versionedDocsHomePage()} target="_blank"><i className="fa fa-external-link"></i> Documentation</MenuItem>
                         </DropdownButton>
