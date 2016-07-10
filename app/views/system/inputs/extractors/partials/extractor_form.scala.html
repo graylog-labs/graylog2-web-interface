@@ -58,6 +58,10 @@
                         @views.html.system.inputs.extractors.configurations.regex(extractor)
                     }
 
+                    @if(extractorType.equals(Extractor.Type.REGEX_REPLACE)) {
+                        @views.html.system.inputs.extractors.configurations.regex_replace(extractor)
+                    }
+
                     @if(extractorType.equals(Extractor.Type.SUBSTRING)) {
                         @views.html.system.inputs.extractors.configurations.substring(extractor)
                     }
